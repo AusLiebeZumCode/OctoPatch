@@ -1,11 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using OctoPatch;
+using OctoPatch.Exchange;
 
 namespace OctoConsole
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            var repository = new Repository();
+
+
+            var engine = new Engine(repository);
+
+            var grid = new Grid
+            {
+                Name = "Testgrid",
+                Description = "This is a test grid",
+                NodeInstances = new[]
+                {
+                    new NodeInstance
+                    {
+                        Guid = Guid.Parse("{7D01A02E-6ADA-4A60-ACCF-8B74D246EACC}"),
+                        NodeDescription = Guid.Parse("{8AA1AB11-DB28-4098-9999-13A3A47E8A83}"),
+                        Configuration = "{}",
+                    }
+                }.ToList(),
+                WireInstances = new List<WireInstance>()
+            };
+
+            engine.Load(grid);
+
+
             //var dmxDevice = new DmxDevice();
             //dmxDevice.Configure(new DmxDeviceConfiguration());
 
