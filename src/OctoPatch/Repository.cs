@@ -12,14 +12,20 @@ namespace OctoPatch
     /// </summary>
     public sealed class Repository : IRepository
     {
+        /// <summary>
+        /// List of all known plugins
+        /// </summary>
         private readonly List<IPlugin> _plugins;
 
-        private readonly Dictionary<Guid, IPlugin> _nodeDescriptions;
+        /// <summary>
+        /// Mapping from node guid to responsible plugin
+        /// </summary>
+        private readonly Dictionary<Guid, IPlugin> _nodeToPluginMapping;
 
         public Repository()
         {
             _plugins = new List<IPlugin>();
-            _nodeDescriptions = new Dictionary<Guid, IPlugin>();
+            _nodeToPluginMapping = new Dictionary<Guid, IPlugin>();
 
             var executablePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             DirectoryInfo directoryInfo = new DirectoryInfo(executablePath);
@@ -29,6 +35,10 @@ namespace OctoPatch
             }
         }
 
+        /// <summary>
+        /// Loads the assembly of the given path and scan it for existing plugins
+        /// </summary>
+        /// <param name="filename">filename</param>
         private void LoadPluginsFromAssembly(string filename)
         {
             try
@@ -49,7 +59,7 @@ namespace OctoPatch
                         _plugins.Add(plugin);
                         foreach (var nodeDescription in plugin.GetNodeDescriptions())
                         {
-                            _nodeDescriptions.Add(nodeDescription.Guid, plugin);
+                            _nodeToPluginMapping.Add(nodeDescription.Guid, plugin);
                         }
                     }
                 }
@@ -74,6 +84,17 @@ namespace OctoPatch
         public IEnumerable<NodeDescription> GetNodeDescriptions()
         {
             return _plugins.SelectMany(p => p.GetNodeDescriptions());
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public INode CreateNode(Guid nodeGuid)
+        {
+            if (!_nodeToPluginMapping.TryGetValue(nodeGuid, out var plugin))
+                return null;
+
+            return plugin.CreateNode(nodeGuid);
         }
     }
 }
