@@ -65,7 +65,7 @@ namespace OctoPatch
         /// </summary>
         public IEnumerable<MessageDescription> GetMessageDescriptions()
         {
-            throw new NotImplementedException();
+            return _plugins.SelectMany(p => p.GetMessageDescriptions());
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace OctoPatch
         /// </summary>
         public IEnumerable<NodeDescription> GetNodeDescriptions()
         {
-            throw new NotImplementedException();
+            return _plugins.SelectMany(p => p.GetNodeDescriptions());
         }
     }
 }
