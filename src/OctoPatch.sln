@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch", "OctoPatch\Octo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoConsole", "OctoConsole\OctoConsole.csproj", "{262A1364-4683-49B4-8656-0DAF3F9CA70A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Host", "OctoPatch.Host\OctoPatch.Host.csproj", "{F3E0E7E6-061B-42E2-BEC5-96584EF9C589}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{262A1364-4683-49B4-8656-0DAF3F9CA70A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{262A1364-4683-49B4-8656-0DAF3F9CA70A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{262A1364-4683-49B4-8656-0DAF3F9CA70A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3E0E7E6-061B-42E2-BEC5-96584EF9C589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3E0E7E6-061B-42E2-BEC5-96584EF9C589}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3E0E7E6-061B-42E2-BEC5-96584EF9C589}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3E0E7E6-061B-42E2-BEC5-96584EF9C589}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
