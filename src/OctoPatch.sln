@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch", "OctoPatch\OctoPatch.csproj", "{9D7B95C5-53F4-4ED0-A708-E377D3C1EC63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoConsole", "OctoConsole\OctoConsole.csproj", "{262A1364-4683-49B4-8656-0DAF3F9CA70A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoConsole", "OctoConsole\OctoConsole.csproj", "{262A1364-4683-49B4-8656-0DAF3F9CA70A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Host", "OctoPatch.Host\OctoPatch.Host.csproj", "{F3E0E7E6-061B-42E2-BEC5-96584EF9C589}"
 EndProject
