@@ -1,4 +1,5 @@
-﻿using OctoPatch.Exchange;
+﻿using System.Collections.ObjectModel;
+using OctoPatch.Exchange;
 
 namespace OctoPatch
 {
@@ -7,6 +8,16 @@ namespace OctoPatch
     /// </summary>
     public interface IEngine
     {
+        /// <summary>
+        /// List of all node instances
+        /// </summary>
+        ReadOnlyObservableCollection<INode> Nodes { get; }
+
+        /// <summary>
+        /// List of all wires
+        /// </summary>
+        ReadOnlyObservableCollection<IWire> Wires { get; }
+
         /// <summary>
         /// Loads the given grid into the engine
         /// </summary>
