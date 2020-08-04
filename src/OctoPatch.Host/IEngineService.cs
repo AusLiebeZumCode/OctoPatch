@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OctoPatch.Exchange;
 
-namespace OctoConsole
+namespace OctoPatch.Host
 {
     /// <summary>
     /// Communication interface between configuration client and the engine

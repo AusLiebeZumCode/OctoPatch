@@ -1,7 +1,7 @@
 ﻿using System;
 using OctoPatch.Exchange;
 
-namespace OctoConsole
+namespace OctoPatch.Host
 {
     public interface IEngineServiceCallback
     {
