@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 
 namespace OctoPatch.DesktopClient
 {
-    internal sealed class OctoPatchClient : IEngineService
+    /// <summary>
+    /// Implementation of the engine service client
+    /// </summary>
+    internal sealed class EngineServiceClient : IEngineServiceClient, IEngineServiceCallback
     {
         private HubConnection _hubConnection;
 
-        public OctoPatchClient()
+        public EngineServiceClient()
         {
 
         }
@@ -24,6 +27,11 @@ namespace OctoPatch.DesktopClient
 
             _hubConnection.Closed += Connection_Closed;
 
+            _hubConnection.On<NodeInstance>(nameof(NodeAdded), NodeAdded);
+            _hubConnection.On<Guid>(nameof(NodeRemoved), NodeRemoved);
+            _hubConnection.On<WireInstance>(nameof(WireAdded), WireAdded);
+            _hubConnection.On<Guid>(nameof(WireRemoved), WireRemoved);
+
             await _hubConnection.StartAsync(cancellationToken);
         }
 
@@ -31,6 +39,8 @@ namespace OctoPatch.DesktopClient
         {
             return Task.CompletedTask;
         }
+
+        #region IEngineService
 
         /// <summary>
         /// <inheritdoc />
@@ -103,5 +113,65 @@ namespace OctoPatch.DesktopClient
         {
             return _hubConnection.InvokeAsync(nameof(SetNodeConfiguration), nodeGuid, configuration, cancellationToken, cancellationToken);
         }
+
+        #endregion
+
+        #region IEngineServiceCallback
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void NodeAdded(NodeInstance instance)
+        {
+            OnNodeAdded?.Invoke(instance);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void NodeRemoved(Guid instanceGuid)
+        {
+            OnNodeRemoved?.Invoke(instanceGuid);
+        }
+
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void WireAdded(WireInstance instance)
+        {
+            OnWireAdded?.Invoke(instance);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void WireRemoved(Guid instanceGuid)
+        {
+            OnWireRemoved?.Invoke(instanceGuid);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<NodeInstance> OnNodeAdded;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid> OnNodeRemoved;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<WireInstance> OnWireAdded;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid> OnWireRemoved;
     }
 }

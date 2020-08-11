@@ -16,7 +16,7 @@ namespace OctoPatch.DesktopClient
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            OctoPatchClient client = new OctoPatchClient();
+            EngineServiceClient client = new EngineServiceClient();
             await client.Setup(new Uri("http://localhost:5000/engineServiceHub"), CancellationToken.None);
 
             var nodes = await client.GetNodeDescriptions(CancellationToken.None);
