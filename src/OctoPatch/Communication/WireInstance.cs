@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch.Exchange
+namespace OctoPatch.Communication
 {
     /// <summary>
     /// Represents a wire between an input- and an output-connector

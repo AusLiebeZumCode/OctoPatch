@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using OctoPatch.Exchange;
+using OctoPatch.Communication;
 
 namespace OctoPatch
 {

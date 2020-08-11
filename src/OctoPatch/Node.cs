@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using OctoPatch.Exchange;
+using OctoPatch.Communication;
 
 namespace OctoPatch
 {

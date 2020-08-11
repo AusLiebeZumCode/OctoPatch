@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using OctoPatch.Exchange;
+using OctoPatch.Communication;
 
 namespace OctoPatch
 {

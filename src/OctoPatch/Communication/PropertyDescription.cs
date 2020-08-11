@@ -1,4 +1,4 @@
-﻿namespace OctoPatch.Exchange
+﻿namespace OctoPatch.Communication
 {
     /// <summary>
     /// Description for a single property of a custom message

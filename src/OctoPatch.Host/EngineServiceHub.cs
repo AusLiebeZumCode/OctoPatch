@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using OctoPatch.Exchange;
+using OctoPatch.Communication;
 
 namespace OctoPatch.Host
 {
     /// <summary>
     /// Common implementation of the engine service hub
+    /// StreamNote: Yannick: Preise sind ok :D (2020-08-11)
     /// </summary>
     public sealed class EngineServiceHub : Hub<IEngineServiceCallback>, IEngineService
     {
@@ -26,17 +29,17 @@ namespace OctoPatch.Host
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<NodeDescription> GetNodeDescriptions()
+        public Task<IEnumerable<NodeDescription>> GetNodeDescriptions(CancellationToken cancellationToken)
         {
-            return _repository.GetNodeDescriptions();
+            return Task.FromResult(_repository.GetNodeDescriptions());
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<MessageDescription> GetMessageDescriptions()
+        public Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
-            return _repository.GetMessageDescriptions();
+            return Task.FromResult(_repository.GetMessageDescriptions());
         }
 
         #endregion
@@ -46,33 +49,34 @@ namespace OctoPatch.Host
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<NodeInstance> GetNodes()
+        public Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken)
         {
-            return _engine.Nodes.Select(n => n.Instance);
+            return Task.FromResult(_engine.Nodes.Select(n => n.Instance));
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<WireInstance> GetWires()
+        public Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken)
         {
-            return _engine.Wires.Select(w => w.Instance);
+            return Task.FromResult(_engine.Wires.Select(w => w.Instance));
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Grid GetEngineConfiguration()
+        public Task<Grid> GetEngineConfiguration(CancellationToken cancellationToken)
         {
-            return _engine.Store();
+            return Task.FromResult(_engine.Store());
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void SetEngineConfiguration(Grid grid)
+        public Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken)
         {
             _engine.Load(grid);
+            return Task.CompletedTask;
         }
 
         #endregion
@@ -80,7 +84,7 @@ namespace OctoPatch.Host
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public string GetNodeEnvironment(Guid nodeGuid)
+        public Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken)
         {
             var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
             if (node == null)
@@ -89,13 +93,13 @@ namespace OctoPatch.Host
             }
 
             // TODO: What should be returned here?
-            return string.Empty;
+            return Task.FromResult(string.Empty);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public string GetNodeConfiguration(Guid nodeGuid)
+        public Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken)
         {
             var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
             if (node == null)
@@ -103,13 +107,13 @@ namespace OctoPatch.Host
                 throw new ArgumentException("node id does not exist");
             }
 
-            return node.Instance.Configuration;
+            return Task.FromResult(node.Instance.Configuration);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void SetNodeConfiguration(Guid nodeGuid, string configuration)
+        public Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken)
         {
             var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
             if (node == null)
@@ -117,6 +121,7 @@ namespace OctoPatch.Host
                 throw new ArgumentException("node id does not exist");
             }
 
+            return Task.CompletedTask;
             // TODO: Apply configuration to the node
         }
     }

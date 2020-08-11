@@ -1,8 +1,8 @@
-﻿using System;
+﻿using OctoPatch.Communication;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using OctoPatch.Exchange;
 
 namespace OctoPatch
 {

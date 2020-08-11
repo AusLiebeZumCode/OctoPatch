@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OctoPatch.Exchange
+namespace OctoPatch.Communication
 {
     /// <summary>
     /// Description of a custom message type

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using OctoPatch.Exchange;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace OctoPatch.Host
+namespace OctoPatch.Communication
 {
     /// <summary>
     /// Communication interface between configuration client and the engine
@@ -14,14 +15,16 @@ namespace OctoPatch.Host
         /// <summary>
         /// Returns the full list of known node descriptions
         /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>all node descriptions</returns>
-        IEnumerable<NodeDescription> GetNodeDescriptions();
+        Task<IEnumerable<NodeDescription>> GetNodeDescriptions(CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns the full list of known message descriptions
         /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>all message descriptions</returns>
-        IEnumerable<MessageDescription> GetMessageDescriptions();
+        Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
 
         #endregion
 
@@ -30,26 +33,30 @@ namespace OctoPatch.Host
         /// <summary>
         /// Returns a list of nodes within the current engine
         /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>list of nodes</returns>
-        IEnumerable<NodeInstance> GetNodes();
+        Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns a list of wires within the current engine
         /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>list of wires</returns>
-        IEnumerable<WireInstance> GetWires();
+        Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns the whole engine configuration
         /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>configuration</returns>
-        Grid GetEngineConfiguration();
+        Task<Grid> GetEngineConfiguration(CancellationToken cancellationToken);
 
         /// <summary>
         /// Applies the given configuration to the current engine
         /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <param name="grid">configuration</param>
-        void SetEngineConfiguration(Grid grid);
+        Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken);
 
         #endregion
 
@@ -59,22 +66,25 @@ namespace OctoPatch.Host
         /// Gets the current environment information of the requested node
         /// </summary>
         /// <param name="nodeGuid">guid of node</param>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>serialized environment information</returns>
-        string GetNodeEnvironment(Guid nodeGuid);
+        Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the configuration from the given node
         /// </summary>
         /// <param name="nodeGuid">node guid</param>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>serialized configuration for this node</returns>
-        string GetNodeConfiguration(Guid nodeGuid);
+        Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken);
 
         /// <summary>
         /// Applies the given serialized configuration to the node
         /// </summary>
         /// <param name="nodeGuid">node guid</param>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <param name="configuration">configuration</param>
-        void SetNodeConfiguration(Guid nodeGuid, string configuration);
+        Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken);
 
         #endregion
     }

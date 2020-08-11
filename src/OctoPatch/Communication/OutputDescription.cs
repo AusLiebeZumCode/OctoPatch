@@ -1,4 +1,4 @@
-﻿namespace OctoPatch.Exchange
+﻿namespace OctoPatch.Communication
 {
     /// <summary>
     /// Representation of a single output connector
