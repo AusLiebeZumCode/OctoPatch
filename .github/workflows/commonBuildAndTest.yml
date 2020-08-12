@@ -37,16 +37,19 @@ jobs:
         dotnet-version: '3.1.x'
 
     - name: Install dependencies
+      shell: bash
       run: dotnet restore --runtime win-x86 
-      working-directory: src/
+      working-directory: src
 
     - name: Build
+      shell: bash
       run: dotnet build --configuration Release --no-restore
-      working-directory: src/
+      working-directory: src
 
     - name: Test
+      shell: bash
       run: dotnet test --no-restore --verbosity normal
-      working-directory: src/
+      working-directory: src
 
     - name: Create NuGet Package
       run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
@@ -55,7 +58,7 @@ jobs:
       run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET-API-KEY }} -s https://api.nuget.org/v3/index.json
 
     - name: Publish OctoConsole
-      run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ needs.tag.outputs.version }}
+      run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Upload OctoConsole
       uses: actions/upload-artifact@v2
@@ -64,7 +67,7 @@ jobs:
         path: ./artifacts/octoconsole/
 
     - name: Publish OctoPatch.DesktopClient
-      run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ needs.tag.outputs.version }}
+      run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Upload OctoPatch.DesktopClient
       uses: actions/upload-artifact@v2
