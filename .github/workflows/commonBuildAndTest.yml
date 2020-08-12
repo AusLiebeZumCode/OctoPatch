@@ -41,15 +41,15 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore --runtime win-x86 
-      working-directory: src\
+      working-directory: src
 
     - name: Build
       run: dotnet build --configuration Release --no-restore
-      working-directory: src\
+      working-directory: src
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-      working-directory: src\
+      working-directory: src
 
     - name: Create NuGet Package
       run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
