@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Tom Wendel</Authors>
+    <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch</PackageProjectUrl>
+    <PackageLicenseExpression>https://github.com/AusLiebeZumCode/OctoPatch/blob/master/LICENSE</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/AusLiebeZumCode/OctoPatch</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>

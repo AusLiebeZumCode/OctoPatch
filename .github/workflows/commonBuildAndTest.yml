@@ -8,21 +8,57 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # set the fetch-depth for actions/checkout@master to be sure you retrieve all commits to look for the semver commit message.
+
+    - name: Bump version and push tag
+      id: tag-action
+      uses: anothrNick/github-tag-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: '3.1.x'
+
     - name: Install dependencies
       run: dotnet restore
       working-directory: src
+
     - name: Build
       run: dotnet build --configuration Release --no-restore
       working-directory: src
+
+    - name: Publish OctoConsole
+      run: dotnet publish OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+
+    - name: Upload OctoConsole
+      uses: actions/upload-artifact@v2
+      with:
+        name: OctoConsole
+        path: ./artifacts/octoconsole/
+
+    - name: Publish OctoPatch.DesktopClient
+      run: dotnet publish OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+
+    - name: Upload OctoPatch.DesktopClient
+      uses: actions/upload-artifact@v2
+      with:
+        name: OctoPatch.DesktopClient
+        path: ./artifacts/desktopclient/
+
     - name: Test
       run: dotnet test --no-restore --verbosity normal
       working-directory: src
+
+    - name: Create NuGet Package
+      run: dotnet pack OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+
+    # - name: Publish NuGet Package
+    #   run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET-API-KEY }} -s https://api.nuget.org/v3/index.json
