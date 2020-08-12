@@ -26,6 +26,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
 
+  package:
+    needs: [build]
+    runs-on: windows-latest
+
+    steps:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -44,23 +49,10 @@ jobs:
       working-directory: src
 
     - name: Create NuGet Package
-      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.build.outputs.version }} --no-restore
 
     - name: Publish NuGet Package
       run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET-API-KEY }} -s https://api.nuget.org/v3/index.json
-
-  package:
-    needs: [build]
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
 
     - name: Publish OctoConsole
       run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --runtime win-x86 --output ./artifacts/octoconsole/ -p:Version=${{ needs.build.outputs.version }}
