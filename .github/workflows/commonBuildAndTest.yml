@@ -35,8 +35,12 @@ jobs:
       run: dotnet build --configuration Release --no-restore
       working-directory: src
 
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+      working-directory: src
+    
     - name: Publish OctoConsole
-      run: dotnet publish OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+      run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
 
     - name: Upload OctoConsole
       uses: actions/upload-artifact@v2
@@ -45,7 +49,7 @@ jobs:
         path: ./artifacts/octoconsole/
 
     - name: Publish OctoPatch.DesktopClient
-      run: dotnet publish OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+      run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
 
     - name: Upload OctoPatch.DesktopClient
       uses: actions/upload-artifact@v2
@@ -53,12 +57,8 @@ jobs:
         name: OctoPatch.DesktopClient
         path: ./artifacts/desktopclient/
 
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
-      working-directory: src
-
     - name: Create NuGet Package
-      run: dotnet pack OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
 
     # - name: Publish NuGet Package
     #   run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET-API-KEY }} -s https://api.nuget.org/v3/index.json
