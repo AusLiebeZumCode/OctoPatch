@@ -62,6 +62,10 @@ jobs:
       with:
         dotnet-version: '3.1.x'
 
+    - name: Install dependencies
+      run: dotnet restore
+      working-directory: src
+
     - name: Publish OctoConsole
       run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --runtime win-x86 --output ./artifacts/octoconsole/ -p:Version=${{ needs.build.outputs.version }} --no-restore
 
