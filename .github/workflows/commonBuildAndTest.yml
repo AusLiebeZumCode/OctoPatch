@@ -21,6 +21,7 @@ jobs:
       uses: anothrNick/github-tag-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEFAULT_BUMP: patch
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
@@ -48,14 +49,14 @@ jobs:
         name: OctoConsole
         path: ./artifacts/octoconsole/
 
-    - name: Publish OctoPatch.DesktopClient
-      run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
+    # - name: Publish OctoPatch.DesktopClient
+    #   run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
 
-    - name: Upload OctoPatch.DesktopClient
-      uses: actions/upload-artifact@v2
-      with:
-        name: OctoPatch.DesktopClient
-        path: ./artifacts/desktopclient/
+    # - name: Upload OctoPatch.DesktopClient
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: OctoPatch.DesktopClient
+    #     path: ./artifacts/desktopclient/
 
     - name: Create NuGet Package
       run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
