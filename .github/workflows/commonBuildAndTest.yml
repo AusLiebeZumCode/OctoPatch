@@ -2,31 +2,44 @@ name: Common build and test
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ master, main ]
+    branches: [ main, develop ]
 
 jobs:
   tag:
     runs-on: ubuntu-latest
     
     outputs:
-      version: ${{ steps.tag-action.outputs.new_tag }}
+      versionwithoutsha: ${{ steps.tag_action.outputs.new_tag }}
+      version: ${{ steps.get-version.outputs.version }}
+      release: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' }}
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0 # set the fetch-depth for actions/checkout@master to be sure you retrieve all commits to look for the semver commit message.
+        fetch-depth: 0 # set the fetch-depth for actions/checkout to be sure you retrieve all commits to look for the semver commit message.
 
     - name: Bump version and push tag
-      id: tag-action
+      id: tag_action
       uses: anothrNick/github-tag-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
+        RELEASE_BRANCHES: 'main,develop'
 
-  package:
+    # When we are on develop we want a tag, but want to push the artifacts/packages 
+    # So we append to the tag the short sha
+    - name: Create version string
+      id: get-version
+      shell: pwsh
+      run: echo "::set-output name=version::$(&{If($env:GITHUB_REF -eq 'refs/heads/develop') {'${{ steps.tag_action.outputs.new_tag }}' + '-' + $env:GITHUB_SHA.Substring(0, 7)} Else {'${{ steps.tag_action.outputs.new_tag }}'}})"
+
+    - name: Print version string
+      run: echo ${{ steps.get-version.outputs.version }}
+
+  build:
     needs: [tag]
     runs-on: windows-latest
 
@@ -55,25 +68,70 @@ jobs:
       run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Publish NuGet Package
-      if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+      if: ${{ env.GITHUB_REPOSITORY == 'AusLiebeZumCode/OctoPatch' && needs.tag.outputs.release == 'true' }}
       working-directory: ./artifacts/nuget/
       run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
     - name: Publish OctoConsole
       run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
+    - name: Create artifacts folder
+      shell: pwsh
+      run: New-Item -ItemType Directory -Path C:\artifacts -Force
+
+    - name: Zip OctoConsole Files
+      shell: pwsh
+      run: Compress-Archive -Path ./artifacts/octoconsole/* -DestinationPath C:\artifacts\OctoConsole.zip
+
     - name: Upload OctoConsole
       uses: actions/upload-artifact@v2
       with:
         name: OctoConsole
-        path: ./artifacts/octoconsole/
+        path: ./artifacts/octoconsole/ # Use folder instead of .zip https://github.com/actions/upload-artifact#zipped-artifact-downloads
 
     - name: Publish OctoPatch.DesktopClient
       run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
+
+    - name: Zip OctoPatch.DesktopClient Files
+      shell: pwsh
+      run: Compress-Archive -Path ./artifacts/desktopclient/* -DestinationPath C:\artifacts\OctoPatch.DesktopClient.zip
 
     - name: Upload OctoPatch.DesktopClient
       uses: actions/upload-artifact@v2
       with:
         name: OctoPatch.DesktopClient
-        path: ./artifacts/desktopclient/
-       
+        path: ./artifacts/desktopclient/ # Use folder instead of .zip https://github.com/actions/upload-artifact#zipped-artifact-downloads
+
+    - name: Create Release
+      if: ${{ needs.tag.outputs.release == 'true' }}
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: ${{ needs.tag.outputs.versionwithoutsha }} # Use Version without sha because thats what we have as a tag on git
+        release_name: Release ${{ needs.tag.outputs.versionwithoutsha }}
+        draft: false
+        prerelease: ${{ github.ref != 'refs/heads/main' }}
+          
+    - name: Upload Release Asset OctoConsole
+      if: ${{ needs.tag.outputs.release == 'true' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: C:\artifacts\OctoConsole.zip
+        asset_name: OctoConsole.zip
+        asset_content_type: application/zip
+
+    - name: Upload Release Asset OctoPatch.DesktopClient
+      if: ${{ needs.tag.outputs.release == 'true' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: C:\artifacts\OctoPatch.DesktopClient.zip
+        asset_name: OctoPatch.DesktopClient.zip
+        asset_content_type: application/zip
