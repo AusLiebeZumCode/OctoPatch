@@ -47,7 +47,7 @@ jobs:
       run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
 
     - name: Publish NuGet Package
-      run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET-API-KEY }} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
   package:
     needs: [build]
