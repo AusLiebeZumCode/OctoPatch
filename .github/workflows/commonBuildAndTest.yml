@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  tag:
     runs-on: ubuntu-latest
     
     outputs:
@@ -26,31 +26,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEFAULT_BUMP: patch
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
-
-    - name: Install dependencies
-      run: dotnet restore
-      working-directory: src
-
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-      working-directory: src
-
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
-      working-directory: src
-
-    - name: Create NuGet Package
-      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ steps.tag-action.outputs.new_tag }} --no-restore
-
-    - name: Publish NuGet Package
-      run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-
   package:
-    needs: [build]
+    needs: [tag]
     runs-on: windows-latest
 
     steps:
@@ -62,8 +39,26 @@ jobs:
       with:
         dotnet-version: '3.1.x'
 
+    - name: Install dependencies
+      run: dotnet restore --runtime win-x86 
+      working-directory: src
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      working-directory: src
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+      working-directory: src
+
+    - name: Create NuGet Package
+      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
+
+    - name: Publish NuGet Package
+      run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+
     - name: Publish OctoConsole
-      run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --runtime win-x86 --output ./artifacts/octoconsole/ -p:Version=${{ needs.build.outputs.version }}
+      run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Upload OctoConsole
       uses: actions/upload-artifact@v2
@@ -72,7 +67,7 @@ jobs:
         path: ./artifacts/octoconsole/
 
     - name: Publish OctoPatch.DesktopClient
-      run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --runtime win-x86 --output ./artifacts/desktopclient/ -p:Version=${{ needs.build.outputs.version }}
+      run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Upload OctoPatch.DesktopClient
       uses: actions/upload-artifact@v2
