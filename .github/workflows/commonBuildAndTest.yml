@@ -2,9 +2,9 @@ name: Common build and test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, main ]
 
 jobs:
   tag:
@@ -55,7 +55,9 @@ jobs:
       run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Publish NuGet Package
-      run: dotnet nuget push ./artifacts/nuget/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+      if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+      working-directory: ./artifacts/nuget/
+      run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
     - name: Publish OctoConsole
       run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
