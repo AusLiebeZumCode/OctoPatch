@@ -34,7 +34,7 @@ jobs:
     - name: Create version string
       id: get-version
       shell: pwsh
-      run: echo "::set-output name=version::$(&{If($env:GITHUB_REF -eq 'refs/heads/develop') {'${{ steps.tag_action.outputs.new_tag }}' + '-' + $env:GITHUB_SHA.Substring(0, 7)} Else {'${{ steps.tag_action.outputs.new_tag }}'}})"
+      run: echo "::set-output name=version::$(&{If($env:GITHUB_REF -eq 'refs/heads/develop') {'${{ steps.tag_action.outputs.new_tag }}' + '--' + $env:GITHUB_SHA.Substring(0, 7)} Else {'${{ steps.tag_action.outputs.new_tag }}'}})"
 
     - name: Print version string
       run: echo ${{ steps.get-version.outputs.version }}
