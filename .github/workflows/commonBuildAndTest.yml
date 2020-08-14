@@ -68,7 +68,7 @@ jobs:
       run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Publish NuGet Package
-      if: ${{ env.GITHUB_REPOSITORY == 'AusLiebeZumCode/OctoPatch' && needs.tag.outputs.release == 'true' }}
+      if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch' && needs.tag.outputs.release == 'true' }}
       working-directory: ./artifacts/nuget/
       run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
