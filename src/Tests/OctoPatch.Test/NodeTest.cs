@@ -2,7 +2,10 @@
 
 namespace OctoPatch.Test
 {
-    public class NodeTest
+    /// <summary>
+    /// Collection of tests around nodes
+    /// </summary>
+    public sealed class NodeTest
     {
         [Fact]
         public void FirstTest()
