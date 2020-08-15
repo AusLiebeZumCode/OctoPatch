@@ -29,12 +29,11 @@ jobs:
         DEFAULT_BUMP: patch
         RELEASE_BRANCHES: 'main,develop'
 
-    # When we are on develop we want a tag, but want to push the artifacts/packages 
-    # So we append to the tag the short sha
+    # When we are on develop we want a prerelease
     - name: Create version string
       id: get-version
       shell: pwsh
-      run: echo "::set-output name=version::$(&{If($env:GITHUB_REF -eq 'refs/heads/develop') {'${{ steps.tag_action.outputs.new_tag }}' + '--' + $env:GITHUB_SHA.Substring(0, 7)} Else {'${{ steps.tag_action.outputs.new_tag }}'}})"
+      run: echo "::set-output name=version::$('${{ steps.tag_action.outputs.new_tag }}' + $(&{If($env:GITHUB_REF -eq 'refs/heads/develop') {'-pre'} Else {''}}))"
 
     - name: Print version string
       run: echo ${{ steps.get-version.outputs.version }}
