@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoPatch
 {
@@ -12,6 +13,8 @@ namespace OctoPatch
     /// </summary>
     public sealed class Engine : IEngine
     {
+        private readonly SemaphoreSlim _localLock;
+
         /// <summary>
         /// Reference to the repository
         /// </summary>
@@ -44,6 +47,8 @@ namespace OctoPatch
 
         public Engine(IRepository repository)
         {
+            _localLock = new SemaphoreSlim(1);
+
             _repository = repository;
             _descriptions = repository.GetNodeDescriptions().ToArray();
             _nodes = new ObservableCollection<INode>();
@@ -141,5 +146,78 @@ namespace OctoPatch
                 WireInstances = _wires.Select(w => w.Instance).ToList()
             };
         }
+
+        #region engine lifecycle
+
+        /// <summary>
+        /// Gets the current engine state
+        /// </summary>
+        public EngineState State { get; private set; }
+
+        /// <summary>
+        /// Starts the engine
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
+        public async Task Start(CancellationToken cancellationToken)
+        {
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                State = EngineState.Starting;
+
+                // Trying to start all existing nodes
+                foreach (var node in Nodes)
+                {
+                    try
+                    {
+                        await node.Start(cancellationToken);
+                    }
+                    catch (Exception)
+                    {
+                        // TODO: Log this!
+                    }
+                }
+
+                State = EngineState.Running;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
+
+        /// <summary>
+        /// Stops the engine
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
+        public async Task Stop(CancellationToken cancellationToken)
+        {
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                State = EngineState.Starting;
+
+                // Trying to stop all existing nodes
+                foreach (var node in Nodes)
+                {
+                    try
+                    {
+                        await node.Stop(cancellationToken);
+                    }
+                    catch (Exception)
+                    {
+                        // TODO: Log this!
+                    }
+                }
+
+                State = EngineState.Running;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
+
+        #endregion
     }
 }

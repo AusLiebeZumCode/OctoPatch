@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 using OctoPatch.Communication;
 
 namespace OctoPatch
@@ -29,5 +31,26 @@ namespace OctoPatch
         /// </summary>
         /// <returns>current grid setup</returns>
         Grid Store();
+
+        #region engine lifecycle
+
+        /// <summary>
+        /// Gets the current engine state
+        /// </summary>
+        EngineState State { get; }
+
+        /// <summary>
+        /// Starts the engine
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task Start(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Stops the engine
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task Stop(CancellationToken cancellationToken);
+
+        #endregion
     }
 }
