@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 
 namespace OctoPatch
 {
@@ -86,7 +87,7 @@ namespace OctoPatch
 
                 try
                 {
-                    node.Setup(nodeInstance);
+                    node.Setup(nodeInstance, CancellationToken.None);
                 }
                 catch (Exception)
                 {
