@@ -1,6 +1,5 @@
 ﻿using OctoPatch.Communication;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -135,19 +134,35 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode(Type type, CancellationToken cancellationToken)
+        public async Task<INode> AddNode(Type type, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByType(type);
-            return InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(type);
+                return await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode(Type type, Guid nodeId, CancellationToken cancellationToken)
+        public async Task<INode> AddNode(Type type, Guid nodeId, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByType(type);
-            return InternalAddNode(description, nodeId, cancellationToken);
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(type);
+                return await InternalAddNode(description, nodeId, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
@@ -155,10 +170,18 @@ namespace OctoPatch
         /// </summary>
         public async Task<INode> AddNode(Type type, string configuration, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByType(type);
-            var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
-            await InternalInitializeNode(node, configuration, cancellationToken);
-            return node;
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(type);
+                var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+                await InternalInitializeNode(node, configuration, cancellationToken);
+                return node;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
@@ -166,28 +189,52 @@ namespace OctoPatch
         /// </summary>
         public async Task<INode> AddNode(Type type, Guid nodeId, string configuration, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByType(type);
-            var node = await InternalAddNode(description, nodeId, cancellationToken);
-            await InternalInitializeNode(node, configuration, cancellationToken);
-            return node;
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(type);
+                var node = await InternalAddNode(description, nodeId, cancellationToken);
+                await InternalInitializeNode(node, configuration, cancellationToken);
+                return node;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode(Guid descriptionId, CancellationToken cancellationToken)
+        public async Task<INode> AddNode(Guid descriptionId, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByNodeDescriptionId(descriptionId);
-            return InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByNodeDescriptionId(descriptionId);
+                return await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode(Guid descriptionId, Guid nodeId, CancellationToken cancellationToken)
+        public async Task<INode> AddNode(Guid descriptionId, Guid nodeId, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByNodeDescriptionId(descriptionId);
-            return InternalAddNode(description, nodeId, cancellationToken);
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByNodeDescriptionId(descriptionId);
+                return await InternalAddNode(description, nodeId, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
@@ -195,10 +242,18 @@ namespace OctoPatch
         /// </summary>
         public async Task<INode> AddNode(Guid descriptionId, string configuration, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByNodeDescriptionId(descriptionId);
-            var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
-            await InternalInitializeNode(node, configuration, cancellationToken);
-            return node;
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByNodeDescriptionId(descriptionId);
+                var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+                await InternalInitializeNode(node, configuration, cancellationToken);
+                return node;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
 
@@ -207,29 +262,53 @@ namespace OctoPatch
         /// </summary>
         public async Task<INode> AddNode(Guid descriptionId, Guid nodeId, string configuration, CancellationToken cancellationToken)
         {
-            var description = FindDescriptionByNodeDescriptionId(descriptionId);
-            var node = await InternalAddNode(description, nodeId, cancellationToken);
-            await InternalInitializeNode(node, configuration, cancellationToken);
-            return node;
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByNodeDescriptionId(descriptionId);
+                var node = await InternalAddNode(description, nodeId, cancellationToken);
+                await InternalInitializeNode(node, configuration, cancellationToken);
+                return node;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode<T>(CancellationToken cancellationToken) where T : INode
+        public async Task<INode> AddNode<T>(CancellationToken cancellationToken) where T : INode
         {
-            var description = FindDescriptionByType(typeof(T));
-            return InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(typeof(T));
+                return await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode<T>(Guid nodeId, CancellationToken cancellationToken) where T : INode
+        public async Task<INode> AddNode<T>(Guid nodeId, CancellationToken cancellationToken) where T : INode
         {
-            var description = FindDescriptionByType(typeof(T));
-            return InternalAddNode(description, nodeId, cancellationToken);
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(typeof(T));
+                return await InternalAddNode(description, nodeId, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
@@ -237,10 +316,18 @@ namespace OctoPatch
         /// </summary>
         public async Task<INode> AddNode<T>(string configuration, CancellationToken cancellationToken) where T : INode
         {
-            var description = FindDescriptionByType(typeof(T));
-            var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
-            await InternalInitializeNode(node, configuration, cancellationToken);
-            return node;
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(typeof(T));
+                var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+                await InternalInitializeNode(node, configuration, cancellationToken);
+                return node;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
 
@@ -249,15 +336,39 @@ namespace OctoPatch
         /// </summary>
         public async Task<INode> AddNode<T>(Guid nodeId, string configuration, CancellationToken cancellationToken) where T : INode
         {
-            var description = FindDescriptionByType(typeof(T));
-            var node = await InternalAddNode(description, nodeId, cancellationToken);
-            await InternalInitializeNode(node, configuration, cancellationToken);
-            return node;
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var description = FindDescriptionByType(typeof(T));
+                var node = await InternalAddNode(description, nodeId, cancellationToken);
+                await InternalInitializeNode(node, configuration, cancellationToken);
+                return node;
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
-        private Task<INode> InternalAddNode(NodeDescription description, Guid nodeId, CancellationToken cancellationToken)
+        /// <summary>
+        /// Creates an instance of the given node type and adds it to the collection
+        /// </summary>
+        /// <param name="description">reference to the related description</param>
+        /// <param name="nodeId">node id</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>node instance</returns>
+        private async Task<INode> InternalAddNode(NodeDescription description, Guid nodeId, CancellationToken cancellationToken)
         {
-            return _repository.CreateNode(description.Guid, nodeId, cancellationToken);
+            // Double check for node id collisions
+            if (_nodes.ToArray().Any(n => n.NodeId == nodeId))
+            {
+                throw new ArgumentException("node with this id already exists", nameof(nodeId));
+            }
+
+            var node = await _repository.CreateNode(description.Guid, nodeId, cancellationToken);
+            _nodes.Add(node);
+
+            return node;
         }
 
         private Task InternalInitializeNode(INode node, string configuration, CancellationToken cancellationToken)
@@ -268,18 +379,78 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task RemoveNode(INode node)
+        public async Task RemoveNode(INode node, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
 
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                await InternalRemoveNode(node, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task RemoveNode(Guid nodeId)
+        public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                var node = _nodes.ToArray().FirstOrDefault(n => n.NodeId == nodeId);
+                if (node == null)
+                {
+                    throw new ArgumentException("node is not part of the engine", nameof(nodeId));
+                }
+
+                await InternalRemoveNode(node, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
+
+        /// <summary>
+        /// Removes the given node from the system
+        /// - Stops and disposes it
+        /// - Removes all wires
+        /// - removes it
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task InternalRemoveNode(INode node, CancellationToken cancellationToken)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            if (_nodes.ToArray().Contains(node))
+            {
+                throw new ArgumentException("node is not part of the engine", nameof(node));
+            }
+
+            // Shut down and dispose it
+            await node.Deinitialize(cancellationToken);
+
+            // Remove all wires
+            foreach (var wire in _wires.ToArray()
+                .Where(w => w.Instance.InputNode == node.NodeId || w.Instance.OutputNode == node.NodeId))
+            {
+                await InternalRemoveWire(wire, cancellationToken);
+            }
+
+            _nodes.Remove(node);
         }
 
         /// <summary>
@@ -326,25 +497,86 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IWire> AddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector)
+        public async Task<IWire> AddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector, CancellationToken cancellationToken)
         {
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                return await InternalAddWire(outputNode, outputConnector, inputNode, inputConnector, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
+
+        private Task<IWire> InternalAddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector,
+            CancellationToken cancellationToken)
+        {
+            // Identify nodes and outputs
+            // Create the wire
+            // Attach it
+            // Add it
+
             throw new NotImplementedException();
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task RemoveWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector)
+        public async Task RemoveWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                // Lookup wire
+                var wire = _wires.ToArray().FirstOrDefault(w =>
+                    w.Instance.OutputNode == outputNode && w.Instance.OutputConnector == outputConnector &&
+                    w.Instance.InputNode == inputNode && w.Instance.InputConnector == inputConnector);
+
+                if (wire == null)
+                {
+                    throw new ArgumentException("there is no wire with this parameter");
+                }
+
+                await InternalRemoveWire(wire, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task RemoveWire(IWire wire)
+        public async Task RemoveWire(IWire wire, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (wire == null)
+            {
+                throw new ArgumentNullException(nameof(wire));
+            }
+
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                await InternalRemoveWire(wire, cancellationToken);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
+
+        private Task InternalRemoveWire(IWire wire, CancellationToken cancellationToken)
+        {
+            if (wire == null)
+            {
+                throw new ArgumentNullException(nameof(wire));
+            }
+
+            _wires.Remove(wire);
+            return Task.CompletedTask;
         }
 
         #endregion

@@ -155,13 +155,15 @@ namespace OctoPatch
         /// Removes the given node from the engine and deletes also all related wires.
         /// </summary>
         /// <param name="node">node reference</param>
-        Task RemoveNode(INode node);
+        /// <param name="cancellationToken">cancellation token</param>
+        Task RemoveNode(INode node, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id and deletes also all related wires.
         /// </summary>
         /// <param name="nodeId">node id</param>
-        Task RemoveNode(Guid nodeId);
+        /// <param name="cancellationToken">cancellation token</param>
+        Task RemoveNode(Guid nodeId, CancellationToken cancellationToken);
 
         #endregion
 
@@ -174,8 +176,9 @@ namespace OctoPatch
         /// <param name="outputConnector">connector id of the output</param>
         /// <param name="inputNode">node id of the input node</param>
         /// <param name="inputConnector">connector id</param>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>reference to the new wire</returns>
-        Task<IWire> AddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector);
+        Task<IWire> AddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the wire with the given parameters
@@ -184,13 +187,15 @@ namespace OctoPatch
         /// <param name="outputConnector">connector id of the output</param>
         /// <param name="inputNode">node id of the input node</param>
         /// <param name="inputConnector">connector id</param>
-        Task RemoveWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector);
+        /// <param name="cancellationToken">cancellation token</param>
+        Task RemoveWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the given wire
         /// </summary>
         /// <param name="wire">reference to the wire</param>
-        Task RemoveWire(IWire wire);
+        /// <param name="cancellationToken">cancellation token</param>
+        Task RemoveWire(IWire wire, CancellationToken cancellationToken);
 
         #endregion
     }
