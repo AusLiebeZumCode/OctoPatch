@@ -48,9 +48,11 @@ namespace OctoPatch
         public Engine(IRepository repository)
         {
             _localLock = new SemaphoreSlim(1);
+            State = EngineState.Stopped;
 
             _repository = repository;
             _descriptions = repository.GetNodeDescriptions().ToArray();
+
             _nodes = new ObservableCollection<INode>();
             _wires = new ObservableCollection<IWire>();
             Nodes = new ReadOnlyObservableCollection<INode>(_nodes);
@@ -130,7 +132,7 @@ namespace OctoPatch
                 var wire = new Wire(wireInstance, inputConnector, outputConnector);
 
                 _wires.Add(wire);
-                
+
                 // TODO: Wire up by subscribe
             }
         }
@@ -146,14 +148,13 @@ namespace OctoPatch
         #region engine lifecycle
 
         /// <summary>
-        /// Gets the current engine state
+        /// <inheritdoc />
         /// </summary>
         public EngineState State { get; private set; }
 
         /// <summary>
-        /// Starts the engine
+        /// <inheritdoc />
         /// </summary>
-        /// <param name="cancellationToken">cancellation token</param>
         public async Task Start(CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -183,15 +184,14 @@ namespace OctoPatch
         }
 
         /// <summary>
-        /// Stops the engine
+        /// <inheritdoc />
         /// </summary>
-        /// <param name="cancellationToken">cancellation token</param>
         public async Task Stop(CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
             try
             {
-                State = EngineState.Starting;
+                State = EngineState.Stopping;
 
                 // Trying to stop all existing nodes
                 foreach (var node in Nodes)
@@ -206,12 +206,139 @@ namespace OctoPatch
                     }
                 }
 
-                State = EngineState.Running;
+                State = EngineState.Stopped;
             }
             finally
             {
                 _localLock.Release();
             }
+        }
+
+        #endregion
+
+        #region node management
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode(Type type, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode(Type type, string configuration, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode(Type type, Guid nodeId, string configuration, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode(Guid descriptionId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode(Guid descriptionId, string configuration, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode(Guid descriptionId, Guid nodeId, string configuration, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode<T>(CancellationToken cancellationToken) where T : INode
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode<T>(string configuration, CancellationToken cancellationToken) where T : INode
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode<T>(Guid nodeId, string configuration, CancellationToken cancellationToken) where T : INode
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task RemoveNode(INode node)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task RemoveNode(Guid nodeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region wire management
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<IWire> AddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task RemoveWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task RemoveWire(IWire wire)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
