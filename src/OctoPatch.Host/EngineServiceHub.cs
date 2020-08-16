@@ -69,7 +69,8 @@ namespace OctoPatch.Host
         /// </summary>
         public Task<Grid> GetEngineConfiguration(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_engine.Store());
+            throw new NotImplementedException();
+            // return Task.FromResult(_engine.Store());
         }
 
         /// <summary>
@@ -77,8 +78,9 @@ namespace OctoPatch.Host
         /// </summary>
         public Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken)
         {
-            _engine.Load(grid);
-            return Task.CompletedTask;
+            throw new NotImplementedException();
+            //_engine.Load(grid);
+            //return Task.CompletedTask;
         }
 
         #endregion

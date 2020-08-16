@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Communication;
 
 namespace OctoPatch
 {
@@ -20,18 +19,6 @@ namespace OctoPatch
         /// List of all wires
         /// </summary>
         ReadOnlyObservableCollection<IWire> Wires { get; }
-
-        /// <summary>
-        /// Loads the given grid into the engine
-        /// </summary>
-        /// <param name="grid">grid setup</param>
-        void Load(Grid grid);
-
-        /// <summary>
-        /// Returns the current grid setup
-        /// </summary>
-        /// <returns>current grid setup</returns>
-        Grid Store();
 
         #region engine lifecycle
 
