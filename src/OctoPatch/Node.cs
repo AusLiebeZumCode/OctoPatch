@@ -18,14 +18,14 @@ namespace OctoPatch
         private readonly SemaphoreSlim _localLock;
 
         /// <summary>
-        /// Holds the latest configuration
-        /// </summary>
-        private T _configuration;
-
-        /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Guid NodeId { get; private set; }
+        public Guid NodeId { get; }
+
+        /// <summary>
+        /// Internal reference to the current configuration
+        /// </summary>
+        protected T Configuration { get; private set; }
 
         /// <summary>
         /// <inheritdoc />
@@ -47,11 +47,11 @@ namespace OctoPatch
         /// </summary>
         public IEnumerable<IOutputConnector> Outputs => _outputs;
 
-        protected Node()
+        protected Node(Guid nodeId)
         {
             _localLock = new SemaphoreSlim(1);
 
-            NodeId = Guid.Empty;
+            NodeId = nodeId;
             State = NodeState.Uninitialized;
 
             _inputs = new List<IInputConnector>();
@@ -63,7 +63,7 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task Initialize(Guid nodeId, string configuration, CancellationToken cancellationToken)
+        public async Task Initialize(string configuration, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
             try
@@ -71,26 +71,26 @@ namespace OctoPatch
                 switch (State)
                 {
                     case NodeState.Uninitialized:
-                        await InternalInitialize(nodeId, configuration, cancellationToken);
+                        await InternalInitialize(configuration, cancellationToken);
                         break;
                     case NodeState.Stopped:
                         await InternalDeinitialize(cancellationToken);
-                        await InternalInitialize(nodeId, configuration, cancellationToken);
+                        await InternalInitialize(configuration, cancellationToken);
                         break;
                     case NodeState.Running:
                         await InternalStop(cancellationToken);
                         await InternalDeinitialize(cancellationToken);
-                        await InternalInitialize(nodeId, configuration, cancellationToken);
+                        await InternalInitialize(configuration, cancellationToken);
                         await InternalStart(cancellationToken);
                         break;
                     case NodeState.InitializationFailed:
                         await InternalInitializeReset(cancellationToken);
-                        await InternalInitialize(nodeId, configuration, cancellationToken);
+                        await InternalInitialize(configuration, cancellationToken);
                         break;
                     case NodeState.Failed:
                         await InternalReset(cancellationToken);
                         await InternalDeinitialize(cancellationToken);
-                        await InternalInitialize(nodeId, configuration, cancellationToken);
+                        await InternalInitialize(configuration, cancellationToken);
                         break;
                     default:
                         throw new NotSupportedException($"node is in the wrong state ({State})");
@@ -105,20 +105,14 @@ namespace OctoPatch
         /// <summary>
         /// Internal initialization without lock. This method is used to chain transitions.
         /// </summary>
-        /// <param name="nodeId">node id</param>
         /// <param name="configuration">configuration string</param>
         /// <param name="cancellationToken">cancellation token</param>
-        private async Task InternalInitialize(Guid nodeId, string configuration, CancellationToken cancellationToken)
+        private async Task InternalInitialize(string configuration, CancellationToken cancellationToken)
         {
             var previousState = State;
             try
             {
                 State = NodeState.Initializing;
-
-                if (nodeId == Guid.Empty)
-                {
-                    throw new ArgumentException("empty guid is not a valid id", nameof(nodeId));
-                }
 
                 if (string.IsNullOrEmpty(configuration))
                 {
@@ -144,8 +138,7 @@ namespace OctoPatch
                 await OnInitialize(config, cancellationToken);
 
                 // Write back values
-                NodeId = nodeId;
-                _configuration = config;
+                Configuration = config;
 
                 State = NodeState.Stopped;
             }

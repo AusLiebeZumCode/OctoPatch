@@ -39,8 +39,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="configuration">configuration string</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="nodeId">id of the current node</param>
-        Task Initialize(Guid nodeId, string configuration, CancellationToken cancellationToken);
+        Task Initialize(string configuration, CancellationToken cancellationToken);
 
         /// <summary>
         /// Starts the node and set state to <see cref="NodeState.Running"/> and can lead to <see cref="NodeState.Failed"/> in case of an error.

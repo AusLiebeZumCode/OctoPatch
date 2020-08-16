@@ -19,20 +19,6 @@ namespace OctoPatch.Test
         #region wrong parameters
 
         /// <summary>
-        /// Tests the behavior when no valid node id was given
-        /// </summary>
-        [Fact]
-        public async Task InvalidNodeIdTest()
-        {
-            // Setup
-            var node = await CreateNode(NodeState.Uninitialized);
-
-            // Act && Assert
-            await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                node.Initialize(Guid.Empty, "{}", CancellationToken.None));
-        }
-
-        /// <summary>
         /// Tests the behavior with broken configuration
         /// </summary>
         /// <param name="configuration">configuration samples</param>
@@ -47,7 +33,7 @@ namespace OctoPatch.Test
 
             // Act && Assert
             await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                node.Initialize(Guid.NewGuid(), configuration, CancellationToken.None));
+                node.Initialize(configuration, CancellationToken.None));
         }
 
         #endregion
@@ -66,7 +52,7 @@ namespace OctoPatch.Test
 
             // Act
             await Assert.ThrowsAsync<NotSupportedException>(() =>
-                node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None));
+                node.Initialize("{}", CancellationToken.None));
 
             // Assert
             Assert.Equal(NodeState.InitializationFailed, node.State);
@@ -85,7 +71,7 @@ namespace OctoPatch.Test
             node.InitializeResetBehavior = MockBehavior.ThrowException;
 
             // Act
-            await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
+            await node.Initialize( "{}", CancellationToken.None);
 
             // Assert
             Assert.Equal(NodeState.Stopped, node.State);
@@ -195,7 +181,7 @@ namespace OctoPatch.Test
             node.InitializeBehavior = MockBehavior.WaitForCancel;
 
             // Act
-            await ExecuteWithToken(node, node.InitializeTrigger, (n, t) => n.Initialize(Guid.NewGuid(), "{}", t));
+            await ExecuteWithToken(node, node.InitializeTrigger, (n, t) => n.Initialize( "{}", t));
 
             // Assert
             Assert.Equal(exceptedState, node.State);
@@ -275,7 +261,7 @@ namespace OctoPatch.Test
             node.InitializeResetBehavior = MockBehavior.WaitForCancel;
 
             // Act
-            await ExecuteWithToken(node, node.InitializeResetTrigger, (n, t) => n.Initialize(Guid.NewGuid(), "{}", t));
+            await ExecuteWithToken(node, node.InitializeResetTrigger, (n, t) => n.Initialize( "{}", t));
 
             // Assert
             Assert.Equal(NodeState.InitializationFailed, node.State);
@@ -340,7 +326,7 @@ namespace OctoPatch.Test
         [InlineData(NodeState.Failed, false, NodeState.Stopped, ResetName, nameof(INode.Deinitialize), nameof(INode.Initialize))]
         public Task InitializeTest(NodeState currentState, bool exception, NodeState targetState, params string[] expectedCalls)
         {
-            return ExecuteTest((n, t) => n.Initialize(Guid.NewGuid(), "{}", t), currentState, exception, targetState, expectedCalls);
+            return ExecuteTest((n, t) => n.Initialize( "{}", t), currentState, exception, targetState, expectedCalls);
         }
 
         /// <summary>
@@ -443,17 +429,17 @@ namespace OctoPatch.Test
             {
                 case NodeState.Uninitialized: break;
                 case NodeState.Stopped:
-                    await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
+                    await node.Initialize( "{}", CancellationToken.None);
                     break;
                 case NodeState.Running:
-                    await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
+                    await node.Initialize( "{}", CancellationToken.None);
                     await node.Start(CancellationToken.None);
                     break;
                 case NodeState.InitializationFailed:
                     node.InitializeBehavior = MockBehavior.ThrowException;
                     try
                     {
-                        await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
+                        await node.Initialize("{}", CancellationToken.None);
                     }
                     catch (Exception)
                     {
@@ -462,7 +448,7 @@ namespace OctoPatch.Test
 
                     break;
                 case NodeState.Failed:
-                    await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
+                    await node.Initialize( "{}", CancellationToken.None);
                     await node.LetFail(CancellationToken.None);
                     break;
                 case NodeState.Resetting:
@@ -555,7 +541,7 @@ namespace OctoPatch.Test
             /// </summary>
             public ManualResetEvent DeinitializeTrigger { get; }
 
-            public NodeMock()
+            public NodeMock() : base(Guid.NewGuid())
             {
                 CallList = new List<string>();
                 InitializeTrigger = new ManualResetEvent(false);
