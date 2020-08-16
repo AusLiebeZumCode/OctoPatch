@@ -114,9 +114,34 @@ namespace OctoPatch
             try
             {
                 State = NodeState.Initializing;
+
+                if (nodeId == Guid.Empty)
+                {
+                    throw new ArgumentException(nameof(nodeId));
+                }
+
+                // Deserialization of configuration
+                T config;
+                try
+                {
+                    config = JsonConvert.DeserializeObject<T>(configuration);
+                }
+                catch (JsonSerializationException ex)
+                {
+                    throw new ArgumentException("could not deserialize configuration", ex);
+                }
+                catch (JsonReaderException ex)
+                {
+                    throw new ArgumentException("could not read configuration", ex);
+                }
+
+                // Initialize
+                await OnInitialize(config, cancellationToken);
+
+                // Write back values
                 NodeId = nodeId;
-                _configuration = JsonConvert.DeserializeObject<T>(configuration);
-                await OnInitialize(_configuration, cancellationToken);
+                _configuration = config;
+
                 State = NodeState.Stopped;
             }
             catch (TaskCanceledException ex) when (ex.CancellationToken == cancellationToken)
@@ -138,7 +163,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="configuration">configuration</param>
         /// <param name="cancellationToken">cancellation token</param>
-        public abstract Task OnInitialize(T configuration, CancellationToken cancellationToken);
+        protected abstract Task OnInitialize(T configuration, CancellationToken cancellationToken);
 
         /// <summary>
         /// <inheritdoc />
@@ -195,7 +220,7 @@ namespace OctoPatch
             catch (Exception)
             {
                 // set to fail state
-                InternalFail(false);
+                InternalFail(true);
                 throw;
             }
         }
@@ -260,7 +285,7 @@ namespace OctoPatch
             catch (Exception)
             {
                 // set to fail state
-                InternalFail(false);
+                InternalFail(true);
                 throw;
             }
         }
@@ -324,7 +349,6 @@ namespace OctoPatch
             {
                 State = NodeState.Deinitializing;
                 await OnDeinitialize(cancellationToken);
-                State = NodeState.Uninitialized;
             }
             catch (TaskCanceledException ex) when (ex.CancellationToken == cancellationToken)
             {
@@ -334,9 +358,12 @@ namespace OctoPatch
             }
             catch (Exception)
             {
-                // set to fail state
-                InternalFail(false);
-                throw;
+                // All exceptions are ignored
+                // TODO: but log this of course
+            }
+            finally
+            {
+                State = NodeState.Uninitialized;
             }
         }
 
@@ -357,7 +384,6 @@ namespace OctoPatch
             {
                 State = NodeState.Resetting;
                 await OnInitializeReset(cancellationToken);
-                State = NodeState.Uninitialized;
             }
             catch (TaskCanceledException ex) when (ex.CancellationToken == cancellationToken)
             {
@@ -367,9 +393,12 @@ namespace OctoPatch
             }
             catch (Exception)
             {
-                // set to fail state
-                InternalFail(false);
-                throw;
+                // All exceptions are ignored
+                // TODO: but log this of course
+            }
+            finally
+            {
+                State = NodeState.Uninitialized;
             }
         }
 
@@ -390,7 +419,6 @@ namespace OctoPatch
             {
                 State = NodeState.Resetting;
                 await OnReset(cancellationToken);
-                State = NodeState.Stopped;
             }
             catch (TaskCanceledException ex) when (ex.CancellationToken == cancellationToken)
             {
@@ -400,9 +428,12 @@ namespace OctoPatch
             }
             catch (Exception)
             {
-                // set to fail state
-                InternalFail(false);
-                throw;
+                // All exceptions are ignored
+                // TODO: but log this of course
+            }
+            finally
+            {
+                State = NodeState.Stopped;
             }
         }
 

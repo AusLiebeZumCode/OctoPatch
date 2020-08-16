@@ -16,6 +16,165 @@ namespace OctoPatch.Test
 
         public const string InitializeResetName = "InitializeReset";
 
+        #region wrong parameters
+
+        /// <summary>
+        /// Tests the behavior when no valid node id was given
+        /// </summary>
+        [Fact]
+        public async Task InvalidNodeIdTest()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Uninitialized);
+
+            // Act && Assert
+            await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                node.Initialize(Guid.Empty, "{}", CancellationToken.None));
+        }
+
+        /// <summary>
+        /// Tests the behavior with broken configuration
+        /// </summary>
+        /// <param name="configuration">configuration samples</param>
+        [Theory]
+        [InlineData(null)] // null is invalid
+        [InlineData("")] // empty string is invalid
+        [InlineData("rubbish data")] // not deserializable 
+        public async Task InvalidConfigurationTest(string configuration)
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Uninitialized);
+
+            // Act && Assert
+            await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                node.Initialize(Guid.NewGuid(), configuration, CancellationToken.None));
+        }
+
+        #endregion
+
+        #region Exception handling
+
+        /// <summary>
+        /// Tests behavior when exceptions happen in initialize
+        /// </summary>
+        [Fact]
+        public async Task ExceptionsDuringInitialize()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Uninitialized);
+            node.InitializeBehavior = MockBehavior.ThrowException;
+
+            // Act
+            await Assert.ThrowsAsync<NotSupportedException>(() =>
+                node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None));
+
+            // Assert
+            Assert.Equal(NodeState.InitializationFailed, node.State);
+            Assert.Single(node.CallList);
+            Assert.Equal(nameof(INode.Initialize), node.CallList[0]);
+        }
+
+        /// <summary>
+        /// Tests behavior when exceptions happen in initialize reset (Exception should not bubble up)
+        /// </summary>
+        [Fact]
+        public async Task ExceptionsDuringInitializeReset()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.InitializationFailed);
+            node.InitializeResetBehavior = MockBehavior.ThrowException;
+
+            // Act
+            await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
+
+            // Assert
+            Assert.Equal(NodeState.Stopped, node.State);
+            Assert.Equal(2, node.CallList.Count);
+            Assert.Equal(InitializeResetName, node.CallList[0]);
+            Assert.Equal(nameof(INode.Initialize), node.CallList[1]);
+        }
+
+        /// <summary>
+        /// Tests behavior when exception happens in start
+        /// </summary>
+        [Fact]
+        public async Task ExceptionsDuringStart()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Stopped);
+            node.StartBehavior = MockBehavior.ThrowException;
+
+            // Act
+            await Assert.ThrowsAsync<NotSupportedException>(() =>
+                node.Start(CancellationToken.None));
+
+            // Assert
+            Assert.Equal(NodeState.Failed, node.State);
+            Assert.Single(node.CallList);
+            Assert.Equal(nameof(INode.Start), node.CallList[0]);
+        }
+
+        /// <summary>
+        /// Tests behavior when exception happens in stop
+        /// </summary>
+        [Fact]
+        public async Task ExceptionsDuringStop()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Running);
+            node.StopBehavior = MockBehavior.ThrowException;
+
+            // Act
+            await Assert.ThrowsAsync<NotSupportedException>(() =>
+                node.Stop(CancellationToken.None));
+
+            // Assert
+            Assert.Equal(NodeState.Failed, node.State);
+            Assert.Single(node.CallList);
+            Assert.Equal(nameof(INode.Stop), node.CallList[0]);
+        }
+
+        /// <summary>
+        /// Tests behavior when exception happens in reset
+        /// </summary>
+        [Fact]
+        public async Task ExceptionsDuringReset()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Failed);
+            node.ResetBehavior = MockBehavior.ThrowException;
+
+            // Act
+            await node.Start(CancellationToken.None);
+
+            // Assert
+            Assert.Equal(NodeState.Running, node.State);
+            Assert.Equal(2, node.CallList.Count);
+            Assert.Equal(ResetName, node.CallList[0]);
+            Assert.Equal(nameof(INode.Start), node.CallList[1]);
+        }
+
+        /// <summary>
+        /// Tests behavior when exceptions happen in deinitialize (does not bubble up)
+        /// </summary>
+        [Fact]
+        public async Task ExceptionsDuringDeinitialize()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Stopped);
+            node.DeinitializeBehavior = MockBehavior.ThrowException;
+
+            // Act
+            await node.Deinitialize(CancellationToken.None);
+
+            // Assert
+            Assert.Equal(NodeState.Uninitialized, node.State);
+            Assert.Single(node.CallList);
+            Assert.Equal(nameof(INode.Deinitialize), node.CallList[0]);
+        }
+
+        #endregion
+
         #region Transitions
 
         /// <summary>
@@ -33,7 +192,7 @@ namespace OctoPatch.Test
         [InlineData(NodeState.Failed, false, NodeState.Stopped, ResetName, nameof(INode.Deinitialize), nameof(INode.Initialize))]
         public Task InitializeTest(NodeState currentState, bool exception, NodeState targetState, params string[] expectedCalls)
         {
-            return ExecuteTest((n, t) => n.Initialize(Guid.Empty, "{}", t), currentState, exception, targetState, expectedCalls);
+            return ExecuteTest((n, t) => n.Initialize(Guid.NewGuid(), "{}", t), currentState, exception, targetState, expectedCalls);
         }
 
         /// <summary>
@@ -136,17 +295,17 @@ namespace OctoPatch.Test
             {
                 case NodeState.Uninitialized: break;
                 case NodeState.Stopped:
-                    await node.Initialize(Guid.Empty, "{}", CancellationToken.None);
+                    await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
                     break;
                 case NodeState.Running:
-                    await node.Initialize(Guid.Empty, "{}", CancellationToken.None);
+                    await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
                     await node.Start(CancellationToken.None);
                     break;
                 case NodeState.InitializationFailed:
                     node.InitializeBehavior = MockBehavior.ThrowException;
                     try
                     {
-                        await node.Initialize(Guid.Empty, "{}", CancellationToken.None);
+                        await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
                     }
                     catch (Exception)
                     {
@@ -155,7 +314,7 @@ namespace OctoPatch.Test
 
                     break;
                 case NodeState.Failed:
-                    await node.Initialize(Guid.Empty, "{}", CancellationToken.None);
+                    await node.Initialize(Guid.NewGuid(), "{}", CancellationToken.None);
                     await node.LetFail(CancellationToken.None);
                     break;
                 case NodeState.Resetting:
@@ -233,7 +392,7 @@ namespace OctoPatch.Test
                 HandlerTrigger = new ManualResetEvent(false);
             }
 
-            public override Task OnInitialize(NodeConfigurationMock configuration, CancellationToken cancellationToken)
+            protected override Task OnInitialize(NodeConfigurationMock configuration, CancellationToken cancellationToken)
             {
                 if (configuration == null)
                 {
