@@ -92,7 +92,7 @@ namespace OctoPatch
 
                 try
                 {
-                    node.Setup(nodeInstance, CancellationToken.None);
+                    node.Initialize(nodeInstance.Guid, nodeInstance.Configuration, CancellationToken.None);
                 }
                 catch (Exception)
                 {
@@ -140,11 +140,7 @@ namespace OctoPatch
         /// </summary>
         public Grid Store()
         {
-            return new Grid
-            {
-                NodeInstances = _nodes.Select(n => n.Instance).ToList(),
-                WireInstances = _wires.Select(w => w.Instance).ToList()
-            };
+            throw new NotImplementedException();
         }
 
         #region engine lifecycle

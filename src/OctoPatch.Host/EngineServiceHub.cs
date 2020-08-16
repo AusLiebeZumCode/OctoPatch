@@ -51,7 +51,9 @@ namespace OctoPatch.Host
         /// </summary>
         public Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_engine.Nodes.Select(n => n.Instance));
+            throw new NotImplementedException();
+            
+            // return Task.FromResult(_engine.Nodes.Select(n => n.Instance));
         }
 
         /// <summary>
@@ -86,14 +88,16 @@ namespace OctoPatch.Host
         /// </summary>
         public Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken)
         {
-            var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
-            if (node == null)
-            {
-                throw new ArgumentException("node id does not exist");
-            }
+            throw new NotImplementedException();
 
-            // TODO: What should be returned here?
-            return Task.FromResult(string.Empty);
+            //var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
+            //if (node == null)
+            //{
+            //    throw new ArgumentException("node id does not exist");
+            //}
+
+            //// TODO: What should be returned here?
+            //return Task.FromResult(string.Empty);
         }
 
         /// <summary>
@@ -101,13 +105,15 @@ namespace OctoPatch.Host
         /// </summary>
         public Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken)
         {
-            var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
-            if (node == null)
-            {
-                throw new ArgumentException("node id does not exist");
-            }
+            throw new NotImplementedException();
 
-            return Task.FromResult(node.Instance.Configuration);
+            //var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
+            //if (node == null)
+            //{
+            //    throw new ArgumentException("node id does not exist");
+            //}
+
+            //return Task.FromResult(node.Instance.Configuration);
         }
 
         /// <summary>
@@ -115,14 +121,16 @@ namespace OctoPatch.Host
         /// </summary>
         public Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken)
         {
-            var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
-            if (node == null)
-            {
-                throw new ArgumentException("node id does not exist");
-            }
+            throw new NotImplementedException();
 
-            return Task.CompletedTask;
-            // TODO: Apply configuration to the node
+            //var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
+            //if (node == null)
+            //{
+            //    throw new ArgumentException("node id does not exist");
+            //}
+
+            //return Task.CompletedTask;
+            //// TODO: Apply configuration to the node
         }
     }
 }

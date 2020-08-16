@@ -1,4 +1,4 @@
-﻿using OctoPatch.Communication;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,14 +12,14 @@ namespace OctoPatch
     public interface INode
     {
         /// <summary>
+        /// Gets the node id. This is only set when initialized.
+        /// </summary>
+        Guid NodeId { get; }
+
+        /// <summary>
         /// Returns the current state of the node
         /// </summary>
         NodeState State { get; }
-
-        /// <summary>
-        /// Gets the current node instance information
-        /// </summary>
-        NodeInstance Instance { get; }
 
         /// <summary>
         /// Gets the list of all inputs
@@ -34,36 +34,31 @@ namespace OctoPatch
         #region Lifecycle methods
 
         /// <summary>
-        /// Configures the current node instance
+        /// Initializes the current node. This leads to a state change between <see cref="NodeState.Uninitialized"/>
+        /// to <see cref="NodeState.Stopped"/> and can lead to <see cref="NodeState.InitializationFailed"/> in case of an error.
         /// </summary>
-        /// <param name="instance">instance information</param>
+        /// <param name="configuration">configuration string</param>
         /// <param name="cancellationToken">cancellation token</param>
-        Task Setup(NodeInstance instance, CancellationToken cancellationToken);
+        /// <param name="nodeId">id of the current node</param>
+        Task Initialize(Guid nodeId, string configuration, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Starts the node and set state to <see cref="NodeState.Running"/>
+        /// Starts the node and set state to <see cref="NodeState.Running"/> and can lead to <see cref="NodeState.Failed"/> in case of an error.
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         Task Start(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Stops the node and set state to <see cref="NodeState.Stopped"/>
+        /// Stops the node and set state to <see cref="NodeState.Stopped"/> and can lead to <see cref="NodeState.Failed"/> in case of an error.
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         Task Stop(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Disposes the node and reset it to <see cref="NodeState.NotReady"/>
+        /// Deinitializes the node. This leads to <see cref="NodeState.Uninitialized"/>
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        Task Dispose(CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Resets the node from <see cref="NodeState.Failed"/> to <see cref="NodeState.NotReady"/>
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task Reset(CancellationToken cancellationToken);
+        Task Deinitialize(CancellationToken cancellationToken);
 
         #endregion
     }
