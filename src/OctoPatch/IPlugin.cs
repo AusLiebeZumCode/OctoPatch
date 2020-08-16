@@ -1,6 +1,8 @@
 ﻿using OctoPatch.Communication;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OctoPatch
 {
@@ -39,9 +41,11 @@ namespace OctoPatch
         /// <summary>
         /// Method to generate a new instance of the node with the given node guid.
         /// </summary>
-        /// <param name="nodeGuid">node guid</param>
+        /// <param name="nodeDescriptionGuid">node description guid</param>
+        /// <param name="nodeId">id of the new node</param>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new instance of a node with the given guid</returns>
-        INode CreateNode(Guid nodeGuid);
+        Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken);
 
     }
 }
