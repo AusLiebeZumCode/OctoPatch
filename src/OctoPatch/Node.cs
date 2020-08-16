@@ -117,7 +117,12 @@ namespace OctoPatch
 
                 if (nodeId == Guid.Empty)
                 {
-                    throw new ArgumentException(nameof(nodeId));
+                    throw new ArgumentException("empty guid is not a valid id", nameof(nodeId));
+                }
+
+                if (string.IsNullOrEmpty(configuration))
+                {
+                    throw new ArgumentNullException(nameof(configuration));
                 }
 
                 // Deserialization of configuration
@@ -327,11 +332,6 @@ namespace OctoPatch
                         throw new NotSupportedException($"node is in the wrong state ({State})");
                 }
             }
-            catch (Exception)
-            {
-                State = NodeState.Failed;
-                throw;
-            }
             finally
             {
                 _localLock.Release();
@@ -361,10 +361,8 @@ namespace OctoPatch
                 // All exceptions are ignored
                 // TODO: but log this of course
             }
-            finally
-            {
-                State = NodeState.Uninitialized;
-            }
+
+            State = NodeState.Uninitialized;
         }
 
         /// <summary>
@@ -396,10 +394,8 @@ namespace OctoPatch
                 // All exceptions are ignored
                 // TODO: but log this of course
             }
-            finally
-            {
-                State = NodeState.Uninitialized;
-            }
+
+            State = NodeState.Uninitialized;
         }
 
         /// <summary>
@@ -431,10 +427,8 @@ namespace OctoPatch
                 // All exceptions are ignored
                 // TODO: but log this of course
             }
-            finally
-            {
-                State = NodeState.Stopped;
-            }
+
+            State = NodeState.Stopped;
         }
 
         /// <summary>

@@ -175,6 +175,154 @@ namespace OctoPatch.Test
 
         #endregion
 
+        #region Cancellation handling
+
+        /// <summary>
+        /// Checks behavior of a cancelled initialize call
+        /// </summary>
+        /// <param name="initState">initial state</param>
+        /// <param name="exceptedState">expected state</param>
+        [Theory]
+        [InlineData(NodeState.Uninitialized, NodeState.Uninitialized)]
+        [InlineData(NodeState.InitializationFailed, NodeState.Uninitialized)]
+        [InlineData(NodeState.Stopped, NodeState.Uninitialized)]
+        [InlineData(NodeState.Running, NodeState.Uninitialized)]
+        [InlineData(NodeState.Failed, NodeState.Uninitialized)]
+        public async Task CancellationDuringInitialize(NodeState initState, NodeState exceptedState)
+        {
+            // Setup
+            var node = await CreateNode(initState);
+            node.InitializeBehavior = MockBehavior.WaitForCancel;
+
+            // Act
+            await ExecuteWithToken(node, node.InitializeTrigger, (n, t) => n.Initialize(Guid.NewGuid(), "{}", t));
+
+            // Assert
+            Assert.Equal(exceptedState, node.State);
+        }
+
+        /// <summary>
+        /// Checks behavior of a cancelled start call
+        /// </summary>
+        /// <param name="initState">initial state</param>
+        /// <param name="exceptedState">expected state</param>
+        [Theory]
+        [InlineData(NodeState.Stopped, NodeState.Stopped)]
+        [InlineData(NodeState.Failed, NodeState.Stopped)]
+        public async Task CancellationDuringStart(NodeState initState, NodeState exceptedState)
+        {
+            // Setup
+            var node = await CreateNode(initState);
+            node.StartBehavior = MockBehavior.WaitForCancel;
+
+            // Act
+            await ExecuteWithToken(node, node.StartTrigger, (n, t) => n.Start(t));
+
+            // Assert
+            Assert.Equal(exceptedState, node.State);
+        }
+
+        /// <summary>
+        /// Checks behavior of a cancelled stop call
+        /// </summary>
+        /// <param name="initState">initial state</param>
+        /// <param name="exceptedState">expected state</param>
+        [Theory]
+        [InlineData(NodeState.Running, NodeState.Running)]
+        public async Task CancellationDuringStop(NodeState initState, NodeState exceptedState)
+        {
+            // Setup
+            var node = await CreateNode(initState);
+            node.StopBehavior = MockBehavior.WaitForCancel;
+
+            // Act
+            await ExecuteWithToken(node, node.StopTrigger, (n, t) => n.Stop(t));
+
+            // Assert
+            Assert.Equal(exceptedState, node.State);
+        }
+
+        /// <summary>
+        /// Checks behavior of a cancelled initialize call
+        /// </summary>
+        /// <param name="initState">initial state</param>
+        /// <param name="exceptedState">expected state</param>
+        [Theory]
+        [InlineData(NodeState.Stopped, NodeState.Stopped)]
+        [InlineData(NodeState.Running, NodeState.Stopped)]
+        [InlineData(NodeState.Failed, NodeState.Stopped)]
+        public async Task CancellationDuringDeinitialize(NodeState initState, NodeState exceptedState)
+        {
+            // Setup
+            var node = await CreateNode(initState);
+            node.DeinitializeBehavior = MockBehavior.WaitForCancel;
+
+            // Act
+            await ExecuteWithToken(node, node.DeinitializeTrigger, (n, t) => n.Deinitialize(t));
+
+            // Assert
+            Assert.Equal(exceptedState, node.State);
+        }
+
+        /// <summary>
+        /// Checks behavior of a cancelled initialize reset call (implicit)
+        /// </summary>
+        [Fact]
+        public async Task CancellationDuringInitializeReset()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.InitializationFailed);
+            node.InitializeResetBehavior = MockBehavior.WaitForCancel;
+
+            // Act
+            await ExecuteWithToken(node, node.InitializeResetTrigger, (n, t) => n.Initialize(Guid.NewGuid(), "{}", t));
+
+            // Assert
+            Assert.Equal(NodeState.InitializationFailed, node.State);
+        }
+
+        /// <summary>
+        /// Checks behavior of a cancelled initialize call (implicit)
+        /// </summary>
+        [Fact]
+        public async Task CancellationDuringReset()
+        {
+            // Setup
+            var node = await CreateNode(NodeState.Failed);
+            node.ResetBehavior = MockBehavior.WaitForCancel;
+
+            // Act
+            await ExecuteWithToken(node, node.ResetTrigger, (n, t) => n.Start(t));
+
+            // Assert
+            Assert.Equal(NodeState.Failed, node.State);
+        }
+
+        /// <summary>
+        /// Executes and cancels the given action
+        /// </summary>
+        /// <param name="node">reference to the node</param>
+        /// <param name="resetEvent">fitting reset event for cancellation wait</param>
+        /// <param name="action">delegate</param>
+        private async Task ExecuteWithToken(NodeMock node, ManualResetEvent resetEvent, Func<INode, CancellationToken, Task> action)
+        {
+            using var tokenSource = new CancellationTokenSource();
+
+            // Start method
+            var executionTask = action(node, tokenSource.Token);
+
+            // Wait until the call enters the inner handler
+            resetEvent.WaitOne();
+
+            // cancel process
+            tokenSource.Cancel();
+
+            // Wait for end of execution
+            await Assert.ThrowsAsync<TaskCanceledException>(() => executionTask);
+        }
+
+        #endregion
+
         #region Transitions
 
         /// <summary>
@@ -328,11 +476,7 @@ namespace OctoPatch.Test
             }
 
             // Cleanup node
-            node.CallList.Clear();
-            node.InitializeBehavior = MockBehavior.DoNothing;
-            node.StartBehavior = MockBehavior.DoNothing;
-            node.StopBehavior = MockBehavior.DoNothing;
-            node.DeinitializeBehavior = MockBehavior.DoNothing;
+            node.Reset();
 
             return node;
         }
@@ -382,49 +526,93 @@ namespace OctoPatch.Test
             public List<string> CallList { get; }
 
             /// <summary>
-            /// Trigger when call enters the inner handle method
+            /// Trigger when call enters OnInitialize
             /// </summary>
-            public ManualResetEvent HandlerTrigger { get; }
+            public ManualResetEvent InitializeTrigger { get; }
+
+            /// <summary>
+            /// Trigger when call enters OnInitializeReset
+            /// </summary>
+            public ManualResetEvent InitializeResetTrigger { get; }
+
+            /// <summary>
+            /// Trigger when call enters OnStart
+            /// </summary>
+            public ManualResetEvent StartTrigger { get; }
+
+            /// <summary>
+            /// Trigger when call enters OnStop
+            /// </summary>
+            public ManualResetEvent StopTrigger { get; }
+
+            /// <summary>
+            /// Trigger when call enters OnInitialize
+            /// </summary>
+            public ManualResetEvent ResetTrigger { get; }
+
+            /// <summary>
+            /// Trigger when call enters OnInitialize
+            /// </summary>
+            public ManualResetEvent DeinitializeTrigger { get; }
 
             public NodeMock()
             {
                 CallList = new List<string>();
-                HandlerTrigger = new ManualResetEvent(false);
+                InitializeTrigger = new ManualResetEvent(false);
+                InitializeResetTrigger = new ManualResetEvent(false);
+                StartTrigger = new ManualResetEvent(false);
+                StopTrigger = new ManualResetEvent(false);
+                ResetTrigger = new ManualResetEvent(false);
+                DeinitializeTrigger = new ManualResetEvent(false);
+            }
+
+            public void Reset()
+            {
+                CallList.Clear();
+
+                InitializeBehavior = MockBehavior.DoNothing;
+                InitializeResetBehavior = MockBehavior.DoNothing;
+                StartBehavior = MockBehavior.DoNothing;
+                StopBehavior = MockBehavior.DoNothing;
+                ResetBehavior = MockBehavior.DoNothing;
+                DeinitializeBehavior = MockBehavior.DoNothing;
+
+                InitializeTrigger.Reset();
+                InitializeResetTrigger.Reset();
+                StartTrigger.Reset();
+                StopTrigger.Reset();
+                ResetTrigger.Reset();
+                DeinitializeTrigger.Reset();
             }
 
             protected override Task OnInitialize(NodeConfigurationMock configuration, CancellationToken cancellationToken)
             {
-                if (configuration == null)
-                {
-                    throw new ArgumentNullException(nameof(configuration));
-                }
-
-                return HandleBehavior(InitializeBehavior, cancellationToken, nameof(INode.Initialize));
+                return HandleBehavior(InitializeBehavior, InitializeTrigger, cancellationToken, nameof(INode.Initialize));
             }
 
             protected override Task OnStart(CancellationToken cancellationToken)
             {
-                return HandleBehavior(StartBehavior, cancellationToken, nameof(INode.Start));
+                return HandleBehavior(StartBehavior, StartTrigger, cancellationToken, nameof(INode.Start));
             }
 
             protected override Task OnStop(CancellationToken cancellationToken)
             {
-                return HandleBehavior(StopBehavior, cancellationToken, nameof(INode.Stop));
+                return HandleBehavior(StopBehavior, StopTrigger, cancellationToken, nameof(INode.Stop));
             }
 
             protected override Task OnDeinitialize(CancellationToken cancellationToken)
             {
-                return HandleBehavior(DeinitializeBehavior, cancellationToken, nameof(INode.Deinitialize));
+                return HandleBehavior(DeinitializeBehavior, DeinitializeTrigger, cancellationToken, nameof(INode.Deinitialize));
             }
 
             protected override Task OnReset(CancellationToken cancellationToken)
             {
-                return HandleBehavior(ResetBehavior, cancellationToken, ResetName);
+                return HandleBehavior(ResetBehavior, ResetTrigger, cancellationToken, ResetName);
             }
 
             protected override Task OnInitializeReset(CancellationToken cancellationToken)
             {
-                return HandleBehavior(InitializeResetBehavior, cancellationToken, InitializeResetName);
+                return HandleBehavior(InitializeResetBehavior, InitializeResetTrigger, cancellationToken, InitializeResetName);
             }
 
             public Task LetFail(CancellationToken cancellationToken)
@@ -436,15 +624,16 @@ namespace OctoPatch.Test
             /// Handles the current call based on the configured behavior
             /// </summary>
             /// <param name="behavior">method behavior</param>
+            /// <param name="resetEvent">related reset event</param>
             /// <param name="cancellationToken">cancellation token</param>
             /// <param name="callerName">caller name</param>
-            private Task HandleBehavior(MockBehavior behavior, CancellationToken cancellationToken, string callerName)
+            private Task HandleBehavior(MockBehavior behavior, ManualResetEvent resetEvent, CancellationToken cancellationToken, string callerName)
             {
                 // Add this call to the list
                 CallList.Add(callerName);
 
                 // Trigger event
-                HandlerTrigger.Set();
+                resetEvent.Set();
 
                 // Handle the behavior
                 switch (behavior)
@@ -454,8 +643,7 @@ namespace OctoPatch.Test
                     case MockBehavior.ThrowException:
                         throw new NotSupportedException("based on behavior");
                     case MockBehavior.WaitForCancel:
-                        Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
-                        return Task.CompletedTask;
+                        return Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
