@@ -52,6 +52,15 @@ namespace OctoPatch
         Task<INode> AddNode(Type type, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Adds a new node to the engine
+        /// </summary>
+        /// <param name="type">type of node</param>
+        /// <param name="nodeId">id of the new node</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>new node</returns>
+        Task<INode> AddNode(Type type, Guid nodeId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Adds a new node to the engine and configures it
         /// </summary>
         /// <param name="type">type of node</param>
@@ -79,6 +88,15 @@ namespace OctoPatch
         Task<INode> AddNode(Guid descriptionId, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Adds a new node to the engine
+        /// </summary>
+        /// <param name="descriptionId">id of the node description</param>
+        /// <param name="nodeId">id of the new node</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>new node</returns>
+        Task<INode> AddNode(Guid descriptionId, Guid nodeId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Adds a new node to the engine and configures it
         /// </summary>
         /// <param name="descriptionId">id of the node description</param>
@@ -104,6 +122,15 @@ namespace OctoPatch
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new node</returns>
         Task<INode> AddNode<T>(CancellationToken cancellationToken) where T : INode;
+
+        /// <summary>
+        /// Adds a new node to the engine
+        /// </summary>
+        /// <typeparam name="T">type of node</typeparam>
+        /// <param name="nodeId">id of the new node</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>new node</returns>
+        Task<INode> AddNode<T>(Guid nodeId, CancellationToken cancellationToken) where T : INode;
 
         /// <summary>
         /// Adds a new node to the engine and configures it

@@ -137,23 +137,39 @@ namespace OctoPatch
         /// </summary>
         public Task<INode> AddNode(Type type, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var description = FindDescriptionByType(type);
+            return InternalAddNode(description, Guid.NewGuid(), cancellationToken);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode(Type type, string configuration, CancellationToken cancellationToken)
+        public Task<INode> AddNode(Type type, Guid nodeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var description = FindDescriptionByType(type);
+            return InternalAddNode(description, nodeId, cancellationToken);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode(Type type, Guid nodeId, string configuration, CancellationToken cancellationToken)
+        public async Task<INode> AddNode(Type type, string configuration, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var description = FindDescriptionByType(type);
+            var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            await InternalInitializeNode(node, configuration, cancellationToken);
+            return node;
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task<INode> AddNode(Type type, Guid nodeId, string configuration, CancellationToken cancellationToken)
+        {
+            var description = FindDescriptionByType(type);
+            var node = await InternalAddNode(description, nodeId, cancellationToken);
+            await InternalInitializeNode(node, configuration, cancellationToken);
+            return node;
         }
 
         /// <summary>
@@ -161,25 +177,40 @@ namespace OctoPatch
         /// </summary>
         public Task<INode> AddNode(Guid descriptionId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var description = FindDescriptionByNodeDescriptionId(descriptionId);
+            return InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode(Guid descriptionId, Guid nodeId, CancellationToken cancellationToken)
+        {
+            var description = FindDescriptionByNodeDescriptionId(descriptionId);
+            return InternalAddNode(description, nodeId, cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task<INode> AddNode(Guid descriptionId, string configuration, CancellationToken cancellationToken)
+        {
+            var description = FindDescriptionByNodeDescriptionId(descriptionId);
+            var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            await InternalInitializeNode(node, configuration, cancellationToken);
+            return node;
         }
 
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode(Guid descriptionId, string configuration, CancellationToken cancellationToken)
+        public async Task<INode> AddNode(Guid descriptionId, Guid nodeId, string configuration, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
-
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public Task<INode> AddNode(Guid descriptionId, Guid nodeId, string configuration, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+            var description = FindDescriptionByNodeDescriptionId(descriptionId);
+            var node = await InternalAddNode(description, nodeId, cancellationToken);
+            await InternalInitializeNode(node, configuration, cancellationToken);
+            return node;
         }
 
 
@@ -188,27 +219,51 @@ namespace OctoPatch
         /// </summary>
         public Task<INode> AddNode<T>(CancellationToken cancellationToken) where T : INode
         {
-            throw new NotImplementedException();
+            var description = FindDescriptionByType(typeof(T));
+            return InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task<INode> AddNode<T>(Guid nodeId, CancellationToken cancellationToken) where T : INode
+        {
+            var description = FindDescriptionByType(typeof(T));
+            return InternalAddNode(description, nodeId, cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public async Task<INode> AddNode<T>(string configuration, CancellationToken cancellationToken) where T : INode
+        {
+            var description = FindDescriptionByType(typeof(T));
+            var node = await InternalAddNode(description, Guid.NewGuid(), cancellationToken);
+            await InternalInitializeNode(node, configuration, cancellationToken);
+            return node;
         }
 
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> AddNode<T>(string configuration, CancellationToken cancellationToken) where T : INode
+        public async Task<INode> AddNode<T>(Guid nodeId, string configuration, CancellationToken cancellationToken) where T : INode
         {
-            throw new NotImplementedException();
+            var description = FindDescriptionByType(typeof(T));
+            var node = await InternalAddNode(description, nodeId, cancellationToken);
+            await InternalInitializeNode(node, configuration, cancellationToken);
+            return node;
         }
 
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public Task<INode> AddNode<T>(Guid nodeId, string configuration, CancellationToken cancellationToken) where T : INode
+        private Task<INode> InternalAddNode(NodeDescription description, Guid nodeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return _repository.CreateNode(description.Guid, nodeId, cancellationToken);
         }
 
+        private Task InternalInitializeNode(INode node, string configuration, CancellationToken cancellationToken)
+        {
+            return node.Initialize(configuration, cancellationToken);
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -225,6 +280,43 @@ namespace OctoPatch
         public Task RemoveNode(Guid nodeId)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Finds the right <see cref="NodeDescription"/> for the given type
+        /// </summary>
+        /// <param name="type">requested type</param>
+        /// <returns>description</returns>
+        private NodeDescription FindDescriptionByType(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            var description = _descriptions.FirstOrDefault(d => d.TypeName == type.FullName);
+            if (description == null)
+            {
+                throw new ArgumentException("unknown node type");
+            }
+
+            return description;
+        }
+
+        /// <summary>
+        /// Finds the right <see cref="NodeDescription"/> for the given type
+        /// </summary>
+        /// <param name="nodeDescriptionId">id of the requested node</param>
+        /// <returns>description</returns>
+        private NodeDescription FindDescriptionByNodeDescriptionId(Guid nodeDescriptionId)
+        {
+            var description = _descriptions.FirstOrDefault(d => d.Guid == nodeDescriptionId);
+            if (description == null)
+            {
+                throw new ArgumentException("unknown node id");
+            }
+
+            return description;
         }
 
         #endregion
