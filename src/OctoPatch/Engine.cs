@@ -47,7 +47,6 @@ namespace OctoPatch
         public Engine(IRepository repository)
         {
             _localLock = new SemaphoreSlim(1);
-            State = EngineState.Stopped;
 
             _repository = repository;
             _descriptions = repository.GetNodeDescriptions().ToArray();
@@ -57,77 +56,6 @@ namespace OctoPatch
             Nodes = new ReadOnlyObservableCollection<INode>(_nodes);
             Wires = new ReadOnlyObservableCollection<IWire>(_wires);
         }
-
-        #region engine lifecycle
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public EngineState State { get; private set; }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task Start(CancellationToken cancellationToken)
-        {
-            await _localLock.WaitAsync(cancellationToken);
-            try
-            {
-                State = EngineState.Starting;
-
-                // Trying to start all existing nodes
-                foreach (var node in Nodes)
-                {
-                    try
-                    {
-                        await node.Start(cancellationToken);
-                    }
-                    catch (Exception)
-                    {
-                        // TODO: Log this!
-                    }
-                }
-
-                State = EngineState.Running;
-            }
-            finally
-            {
-                _localLock.Release();
-            }
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task Stop(CancellationToken cancellationToken)
-        {
-            await _localLock.WaitAsync(cancellationToken);
-            try
-            {
-                State = EngineState.Stopping;
-
-                // Trying to stop all existing nodes
-                foreach (var node in Nodes)
-                {
-                    try
-                    {
-                        await node.Stop(cancellationToken);
-                    }
-                    catch (Exception)
-                    {
-                        // TODO: Log this!
-                    }
-                }
-
-                State = EngineState.Stopped;
-            }
-            finally
-            {
-                _localLock.Release();
-            }
-        }
-
-        #endregion
 
         #region node management
 
@@ -255,7 +183,6 @@ namespace OctoPatch
                 _localLock.Release();
             }
         }
-
 
         /// <summary>
         /// <inheritdoc />
