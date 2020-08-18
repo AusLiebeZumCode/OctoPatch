@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OctoPatch;
-using OctoPatch.Host;
+using OctoPatch.Communication;
+using OctoPatch.Communication.Host;
+using OctoPatch.Runtime;
 
 namespace OctoConsole
 {
@@ -21,13 +21,14 @@ namespace OctoConsole
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddSignalR();
 
             var repository = new Repository();
-            var engine = new Engine(repository);
+            var engine = new Runtime(repository);
 
             services.AddSingleton<IRepository>(repository);
-            services.AddSingleton<IEngine>(engine);
+            services.AddSingleton<IEngineService>(engine);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,11 +40,16 @@ namespace OctoConsole
             }
             else
             {
+                
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
  
+            app.UseCors(options => 
+                options.AllowAnyHeader().AllowCredentials()
+                    .WithOrigins("https://ausliebezumcode.github.io"));
+
             app.UseRouting();
             app.UseStaticFiles();
         

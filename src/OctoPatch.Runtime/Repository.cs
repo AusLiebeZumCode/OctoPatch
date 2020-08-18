@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Communication;
 
-namespace OctoPatch
+namespace OctoPatch.Runtime
 {
     /// <summary>
     /// Implementation for a custom types repository

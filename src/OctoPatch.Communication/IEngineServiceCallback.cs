@@ -4,8 +4,6 @@ namespace OctoPatch.Communication
 {
     public interface IEngineServiceCallback
     {
-        #region Engine callbacks
-
         /// <summary>
         /// Gets a call when the engine gets a new node
         /// </summary>
@@ -29,7 +27,5 @@ namespace OctoPatch.Communication
         /// </summary>
         /// <param name="instanceGuid">wire guid</param>
         void WireRemoved(Guid instanceGuid);
-
-        #endregion
     }
 }

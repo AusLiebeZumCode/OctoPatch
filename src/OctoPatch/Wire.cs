@@ -1,17 +1,10 @@
-﻿using OctoPatch.Communication;
-
-namespace OctoPatch
+﻿namespace OctoPatch
 {
     /// <summary>
     /// Represents a single wire between two connectors
     /// </summary>
     public sealed class Wire : IWire
     {
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public WireInstance Instance { get; }
-
         /// <summary>
         /// <inheritdoc />
         /// </summary>
@@ -22,9 +15,8 @@ namespace OctoPatch
         /// </summary>
         public IOutputConnector OutputConnector { get; }
 
-        public Wire(WireInstance instance, IInputConnector input, IOutputConnector output)
+        public Wire(IInputConnector input, IOutputConnector output)
         {
-            Instance = instance;
             InputConnector = input;
             OutputConnector = output;
         }

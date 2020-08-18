@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using OctoPatch.Communication;
+using OctoPatch.Runtime;
 
-namespace OctoPatch.Host
+namespace OctoPatch.Communication.Host
 {
     /// <summary>
     /// Common implementation of the engine service hub
@@ -16,12 +15,12 @@ namespace OctoPatch.Host
     {
         private readonly IRepository _repository;
 
-        private readonly IEngine _engine;
+        private readonly IEngineService _runtime;
 
-        public EngineServiceHub(IRepository repository, IEngine engine)
+        public EngineServiceHub(IRepository repository, IEngineService runtime)
         {
             _repository = repository;
-            _engine = engine;
+            _runtime = runtime;
         }
 
         #region Meta information
@@ -52,7 +51,7 @@ namespace OctoPatch.Host
         public Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-            
+
             // return Task.FromResult(_engine.Nodes.Select(n => n.Instance));
         }
 
@@ -61,7 +60,7 @@ namespace OctoPatch.Host
         /// </summary>
         public Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_engine.Wires.Select(w => w.Instance));
+            return _runtime.GetWires(cancellationToken);
         }
 
         /// <summary>
@@ -82,6 +81,30 @@ namespace OctoPatch.Host
             //_engine.Load(grid);
             //return Task.CompletedTask;
         }
+
+        public Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
 

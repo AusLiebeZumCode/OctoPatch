@@ -1,10 +1,10 @@
-﻿using OctoPatch.Communication;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.Communication;
 
-namespace OctoPatch
+namespace OctoPatch.Runtime
 {
     /// <summary>
     /// Interface to describe a plugin

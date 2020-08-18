@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using OctoPatch.Communication;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.Communication;
+using OctoPatch.Communication.Client;
 
 namespace OctoPatch.DesktopClient
 {
     /// <summary>
     /// Implementation of the engine service client
     /// </summary>
-    internal sealed class EngineServiceClient : IEngineServiceClient, IEngineServiceCallback
+    public sealed class EngineServiceClient : IEngineServiceClient, IEngineServiceCallback
     {
         private HubConnection _hubConnection;
 
@@ -112,6 +113,30 @@ namespace OctoPatch.DesktopClient
         public Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken)
         {
             return _hubConnection.InvokeAsync(nameof(SetNodeConfiguration), nodeGuid, configuration, cancellationToken, cancellationToken);
+        }
+
+        public Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

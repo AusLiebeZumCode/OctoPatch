@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OctoPatch\src\OctoPatch\OctoPatch.csproj" />
+    <ProjectReference Include="..\OctoPatch.Runtime\OctoPatch.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

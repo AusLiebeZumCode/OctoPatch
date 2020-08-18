@@ -58,6 +58,15 @@ namespace OctoPatch.Communication
         /// <param name="grid">configuration</param>
         Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken);
 
+        Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken);
+
+        Task RemoveNode(Guid nodeId, CancellationToken cancellationToken);
+
+        Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+            CancellationToken cancellationToken);
+
+        Task RemoveWire(Guid wireId, CancellationToken cancellationToken);
+
         #endregion
 
         #region Node configuration

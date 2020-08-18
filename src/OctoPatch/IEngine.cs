@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,124 +10,21 @@ namespace OctoPatch
     public interface IEngine
     {
         /// <summary>
-        /// List of all node instances
-        /// </summary>
-        ReadOnlyObservableCollection<INode> Nodes { get; }
-
-        /// <summary>
-        /// List of all wires
-        /// </summary>
-        ReadOnlyObservableCollection<IWire> Wires { get; }
-
-        #region node management
-
-        /// <summary>
         /// Adds a new node to the engine
         /// </summary>
-        /// <param name="type">type of node</param>
+        /// <param name="node">node instance</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new node</returns>
-        Task<INode> AddNode(Type type, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds a new node to the engine
-        /// </summary>
-        /// <param name="type">type of node</param>
-        /// <param name="nodeId">id of the new node</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode(Type type, Guid nodeId, CancellationToken cancellationToken);
+        Task AddNode(INode node, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds a new node to the engine and configures it
         /// </summary>
-        /// <param name="type">type of node</param>
+        /// <param name="node">node instance</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <param name="configuration">configuration string</param>
         /// <returns>new node</returns>
-        Task<INode> AddNode(Type type, string configuration, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds a new node to the engine and configures it
-        /// </summary>
-        /// <param name="type">type of node</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="nodeId">id of the new node</param>
-        /// <param name="configuration">configuration string</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode(Type type, Guid nodeId, string configuration, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds a new node to the engine
-        /// </summary>
-        /// <param name="descriptionId">id of the node description</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode(Guid descriptionId, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds a new node to the engine
-        /// </summary>
-        /// <param name="descriptionId">id of the node description</param>
-        /// <param name="nodeId">id of the new node</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode(Guid descriptionId, Guid nodeId, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds a new node to the engine and configures it
-        /// </summary>
-        /// <param name="descriptionId">id of the node description</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="configuration">configuration string</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode(Guid descriptionId, string configuration, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds a new node to the engine and configures it
-        /// </summary>
-        /// <param name="descriptionId">id of the node description</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="nodeId">id of the new node</param>
-        /// <param name="configuration">configuration string</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode(Guid descriptionId, Guid nodeId, string configuration, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Adds a new node to the engine
-        /// </summary>
-        /// <typeparam name="T">type of node</typeparam>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode<T>(CancellationToken cancellationToken) where T : INode;
-
-        /// <summary>
-        /// Adds a new node to the engine
-        /// </summary>
-        /// <typeparam name="T">type of node</typeparam>
-        /// <param name="nodeId">id of the new node</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode<T>(Guid nodeId, CancellationToken cancellationToken) where T : INode;
-
-        /// <summary>
-        /// Adds a new node to the engine and configures it
-        /// </summary>
-        /// <typeparam name="T">type of node</typeparam>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="configuration">configuration string</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode<T>(string configuration, CancellationToken cancellationToken) where T : INode;
-
-        /// <summary>
-        /// Adds a new node to the engine and configures it
-        /// </summary>
-        /// <typeparam name="T">type of node</typeparam>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="nodeId">id of the new node</param>
-        /// <param name="configuration">configuration string</param>
-        /// <returns>new node</returns>
-        Task<INode> AddNode<T>(Guid nodeId, string configuration, CancellationToken cancellationToken) where T : INode;
+        Task AddNode(INode node, string configuration, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the given node from the engine and deletes also all related wires.
@@ -143,10 +39,6 @@ namespace OctoPatch
         /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         Task RemoveNode(Guid nodeId, CancellationToken cancellationToken);
-
-        #endregion
-
-        #region wire management
 
         /// <summary>
         /// Adds a wire between the given nodes and outputs.
@@ -175,7 +67,5 @@ namespace OctoPatch
         /// <param name="wire">reference to the wire</param>
         /// <param name="cancellationToken">cancellation token</param>
         Task RemoveWire(IWire wire, CancellationToken cancellationToken);
-
-        #endregion
     }
 }

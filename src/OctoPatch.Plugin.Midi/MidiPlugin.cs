@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Communication;
+using OctoPatch.Runtime;
 
 namespace OctoPatch.Midi
 {

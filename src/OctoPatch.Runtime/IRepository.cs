@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Communication;
 
-namespace OctoPatch
+namespace OctoPatch.Runtime
 {
     /// <summary>
     /// Repository for some plugin driven types

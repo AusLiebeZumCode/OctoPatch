@@ -7,7 +7,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\OctoPatch\src\OctoConsole\OctoConsole.csproj" />
-		<ProjectReference Include="..\OctoPatch.Midi\OctoPatch.Midi.csproj" />
 	</ItemGroup>
 
 </Project>

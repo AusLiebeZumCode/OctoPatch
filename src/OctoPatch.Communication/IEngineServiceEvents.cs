@@ -1,12 +1,10 @@
-﻿using OctoPatch.Communication;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace OctoPatch.DesktopClient
+namespace OctoPatch.Communication
 {
-    /// <summary>
-    /// Represents a connection to the engine host
-    /// </summary>
-    public interface IEngineServiceClient : IEngineService
+    public interface IEngineServiceEvents
     {
         /// <summary>
         /// Gets a call when a new node instance was added
