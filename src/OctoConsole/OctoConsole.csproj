@@ -10,9 +10,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\OctoPatch.Communication.Host\OctoPatch.Communication.Host.csproj" />
-	  <ProjectReference Include="..\OctoPatch.Communication\OctoPatch.Communication.csproj" />
-	  <ProjectReference Include="..\OctoPatch.Runtime\OctoPatch.Runtime.csproj" />
+	  <ProjectReference Include="..\OctoPatch.Core\OctoPatch.Core.csproj" />
+	  <ProjectReference Include="..\OctoPatch.Server\OctoPatch.Server.csproj" />
+	  <ProjectReference Include="..\OctoPatch\OctoPatch.csproj" />
 	</ItemGroup>
 
 </Project>
