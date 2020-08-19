@@ -64,35 +64,20 @@ jobs:
       working-directory: src
 
     - name: Create NuGet Package (OctoPatch)
-      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/OctoPatch -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create NuGet Package (OctoPatch.Core)
-      run: dotnet pack src/OctoPatch.Core/OctoPatch.Core.csproj --configuration Release --output ./artifacts/nuget/OctoPatch.Core -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/OctoPatch.Core/OctoPatch.Core.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create NuGet Package (OctoPatch.Server)
-      run: dotnet pack src/OctoPatch.Server/OctoPatch.Server.csproj --configuration Release --output ./artifacts/nuget/OctoPatch.Server -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/OctoPatch.Server/OctoPatch.Server.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create NuGet Package (OctoPatch.Client)
-      run: dotnet pack src/OctoPatch.Client/OctoPatch.Client.csproj --configuration Release --output ./artifacts/nuget/OctoPatch.Client -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/OctoPatch.Client/OctoPatch.Client.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
-    - name: Publish NuGet Package (OctoPatch)
+    - name: Publish NuGet Package
       if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch' && needs.tag.outputs.release == 'true' }}
       working-directory: ./artifacts/nuget/OctoPatch
-      run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-
-    - name: Publish NuGet Package (OctoPatch.Core)
-      if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch.Core' && needs.tag.outputs.release == 'true' }}
-      working-directory: ./artifacts/nuget/OctoPatch.Core
-      run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-
-    - name: Publish NuGet Package (OctoPatch.Server)
-      if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch.Server' && needs.tag.outputs.release == 'true' }}
-      working-directory: ./artifacts/nuget/OctoPatch.Server
-      run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-
-    - name: Publish NuGet Package (OctoPatch.Client)
-      if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch.Client' && needs.tag.outputs.release == 'true' }}
-      working-directory: ./artifacts/nuget/OctoPatch.Client
       run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
     - name: Publish OctoConsole
