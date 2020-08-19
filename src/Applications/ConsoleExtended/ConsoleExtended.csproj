@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\OctoPatch\src\OctoConsole\OctoConsole.csproj" />
+	  <ProjectReference Include="..\OctoConsole\OctoConsole.csproj" />
 	</ItemGroup>
 
 </Project>
