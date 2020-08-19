@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Tom Wendel</Authors>
-    <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AusLiebeZumCode/OctoPatch</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AusLiebeZumCode/OctoPatch.Core</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Core</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
