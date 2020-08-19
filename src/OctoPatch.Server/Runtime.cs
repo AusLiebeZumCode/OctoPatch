@@ -7,7 +7,7 @@ using OctoPatch.Core;
 
 namespace OctoPatch.Server
 {
-    public class Runtime : IRuntimeMethods
+    public sealed class Runtime : IRuntime
     {
         /// <summary>
         /// Engine instance
@@ -128,5 +128,10 @@ namespace OctoPatch.Server
             await node.node.Initialize(configuration, cancellationToken);
             node.instance.Configuration = configuration;
         }
+
+        public event Action<NodeInstance> OnNodeAdded;
+        public event Action<Guid> OnNodeRemoved;
+        public event Action<WireInstance> OnWireAdded;
+        public event Action<Guid> OnWireRemoved;
     }
 }

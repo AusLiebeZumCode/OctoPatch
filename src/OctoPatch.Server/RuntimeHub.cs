@@ -10,13 +10,13 @@ namespace OctoPatch.Server
     /// Common implementation of the engine service hub
     /// StreamNote: Yannick: Preise sind ok :D (2020-08-11)
     /// </summary>
-    public sealed class EngineServiceHub : Hub<IRuntimeCallbacks>, IRuntimeMethods
+    public sealed class RuntimeHub : Hub<IRuntimeCallbacks>, IRuntimeMethods
     {
         private readonly IRepository _repository;
 
         private readonly IRuntimeMethods _runtime;
 
-        public EngineServiceHub(IRepository repository, IRuntimeMethods runtime)
+        public RuntimeHub(IRepository repository, IRuntimeMethods runtime)
         {
             _repository = repository;
             _runtime = runtime;
