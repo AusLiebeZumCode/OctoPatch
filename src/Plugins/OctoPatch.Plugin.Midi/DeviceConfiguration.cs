@@ -1,4 +1,6 @@
-﻿namespace OctoPatch.Midi
+﻿using OctoPatch.Core;
+
+namespace OctoPatch.Plugin.Midi
 {
     /// <summary>
     /// Configuration set for the MIDI Devices

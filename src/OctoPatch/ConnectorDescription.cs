@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OctoPatch.Communication
+namespace OctoPatch
 {
     /// <summary>
     /// Basic description for node connectors

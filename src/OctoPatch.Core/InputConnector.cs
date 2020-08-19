@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch
+namespace OctoPatch.Core
 {
     public sealed class InputConnector<T> : IInputConnector, IObserver<T> where T : struct
     {

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Communication;
+using OctoPatch.Core;
 
-namespace OctoPatch.Runtime
+namespace OctoPatch.Server
 {
     /// <summary>
     /// Implementation for a custom types repository

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.Core;
 using RtMidi.Core;
 using RtMidi.Core.Devices;
 using RtMidi.Core.Messages;
 
-namespace OctoPatch.Midi
+namespace OctoPatch.Plugin.Midi
 {
     /// <summary>
     /// Represents a single midi device

@@ -1,4 +1,4 @@
-﻿namespace OctoPatch
+﻿namespace OctoPatch.Core
 {
     /// <summary>
     /// Base interface for all kind of node configuration

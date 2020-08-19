@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OctoPatch
+namespace OctoPatch.Core
 {
     /// <summary>
     /// Interface for the central grid runtime

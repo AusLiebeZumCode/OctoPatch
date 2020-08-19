@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch.Communication
+namespace OctoPatch
 {
     public interface IEngineServiceCallback
     {

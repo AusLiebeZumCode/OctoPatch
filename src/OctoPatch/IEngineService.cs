@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OctoPatch.Communication
+namespace OctoPatch
 {
     /// <summary>
     /// Communication interface between configuration client and the engine

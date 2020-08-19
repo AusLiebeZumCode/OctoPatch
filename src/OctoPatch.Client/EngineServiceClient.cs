@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Communication;
-using OctoPatch.Communication.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 
-namespace OctoPatch.DesktopClient
+namespace OctoPatch.Client
 {
     /// <summary>
     /// Implementation of the engine service client

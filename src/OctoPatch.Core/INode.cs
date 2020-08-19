@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OctoPatch
+namespace OctoPatch.Core
 {
     /// <summary>
     /// Represents the interface of a node within the OctoPatch grid

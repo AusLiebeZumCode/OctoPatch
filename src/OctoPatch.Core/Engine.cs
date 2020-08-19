@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OctoPatch
+namespace OctoPatch.Core
 {
     /// <summary>
     /// Implementation of the OctoPatch Engine

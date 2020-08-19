@@ -1,4 +1,4 @@
-﻿namespace OctoPatch.Midi
+﻿namespace OctoPatch.Plugin.Midi
 {
     /// <summary>
     /// Single message from a midi device

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Communication;
+using OctoPatch.Core;
 
-namespace OctoPatch.Runtime
+namespace OctoPatch.Server
 {
     public class Runtime : IEngineService
     {

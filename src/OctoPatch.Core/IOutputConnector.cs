@@ -1,4 +1,4 @@
-﻿namespace OctoPatch
+﻿namespace OctoPatch.Core
 {
     /// <summary>
     /// Interface for an output connector

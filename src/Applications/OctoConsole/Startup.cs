@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OctoPatch;
 using OctoPatch.Communication;
-using OctoPatch.Communication.Host;
-using OctoPatch.Runtime;
+using OctoPatch.Server;
 
 namespace OctoConsole
 {

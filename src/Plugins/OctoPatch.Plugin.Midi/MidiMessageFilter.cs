@@ -3,8 +3,9 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.Core;
 
-namespace OctoPatch.Midi
+namespace OctoPatch.Plugin.Midi
 {
     public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration>, IDisposable
     {

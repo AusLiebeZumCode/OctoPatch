@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace OctoPatch
+namespace OctoPatch.Core
 {
     /// <summary>
     /// Base class for all kind of node implementations

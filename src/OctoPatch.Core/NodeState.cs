@@ -1,4 +1,4 @@
-﻿namespace OctoPatch
+﻿namespace OctoPatch.Core
 {
     /// <summary>
     /// List of all possible states of a single node

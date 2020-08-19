@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using OctoPatch.Runtime;
 
-namespace OctoPatch.Communication.Host
+namespace OctoPatch.Server
 {
     /// <summary>
     /// Common implementation of the engine service hub

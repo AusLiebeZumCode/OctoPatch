@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace OctoPatch.Communication
+namespace OctoPatch
 {
     public interface IEngineServiceEvents
     {

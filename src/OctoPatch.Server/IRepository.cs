@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Communication;
+using OctoPatch.Core;
 
-namespace OctoPatch.Runtime
+namespace OctoPatch.Server
 {
     /// <summary>
     /// Repository for some plugin driven types

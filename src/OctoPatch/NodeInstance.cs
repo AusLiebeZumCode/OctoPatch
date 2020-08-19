@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch.Communication
+namespace OctoPatch
 {
     /// <summary>
     /// Represents an instance of a node within a grid

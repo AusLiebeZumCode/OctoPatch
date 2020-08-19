@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Communication;
-using OctoPatch.Runtime;
+using OctoPatch.Core;
+using OctoPatch.Server;
 
-namespace OctoPatch.Midi
+namespace OctoPatch.Plugin.Midi
 {
     /// <summary>
     /// Implementation for the MIDI Plugin

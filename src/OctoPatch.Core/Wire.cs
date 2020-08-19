@@ -1,4 +1,4 @@
-﻿namespace OctoPatch
+﻿namespace OctoPatch.Core
 {
     /// <summary>
     /// Represents a single wire between two connectors

@@ -1,4 +1,4 @@
-﻿namespace OctoPatch.Communication
+﻿namespace OctoPatch
 {
     /// <summary>
     /// Representation of a single input connector
