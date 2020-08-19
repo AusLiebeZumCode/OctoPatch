@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	  <Authors>Tom Wendel</Authors>
+	  <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Server</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/AusLiebeZumCode/OctoPatch.Server</RepositoryUrl>
+	  <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Server</PackageProjectUrl>
+	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OctoPatch.Core\OctoPatch.Core.csproj" />
+    <ProjectReference Include="..\OctoPatch\OctoPatch.csproj" />
+  </ItemGroup>
+
+</Project>
