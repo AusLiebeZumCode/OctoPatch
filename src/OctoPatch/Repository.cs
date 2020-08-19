@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using OctoPatch.Communication;
 
 namespace OctoPatch
@@ -89,12 +91,12 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public INode CreateNode(Guid nodeGuid)
+        public Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken)
         {
-            if (!_nodeToPluginMapping.TryGetValue(nodeGuid, out var plugin))
+            if (!_nodeToPluginMapping.TryGetValue(nodeDescriptionGuid, out var plugin))
                 return null;
 
-            return plugin.CreateNode(nodeGuid);
+            return plugin.CreateNode(nodeDescriptionGuid, nodeId, cancellationToken);
         }
     }
 }
