@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OctoPatch.Client\OctoPatch.Client.csproj" />
+    <ProjectReference Include="..\..\OctoPatch.Server\OctoPatch.Server.csproj" />
   </ItemGroup>
 
 </Project>

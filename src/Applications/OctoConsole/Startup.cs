@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OctoPatch;
-using OctoPatch.Communication;
 using OctoPatch.Server;
 
 namespace OctoConsole
@@ -28,7 +27,7 @@ namespace OctoConsole
             var engine = new Runtime(repository);
 
             services.AddSingleton<IRepository>(repository);
-            services.AddSingleton<IEngineService>(engine);
+            services.AddSingleton<IRuntimeMethods>(engine);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +54,7 @@ namespace OctoConsole
         
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<EngineServiceHub>("/engineServiceHub");
+                endpoints.MapHub<RuntimeHub>("/runtimeHub");
             });
         }
     }
