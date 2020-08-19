@@ -2,7 +2,10 @@
 
 namespace OctoPatch
 {
-    public interface IEngineServiceCallback
+    /// <summary>
+    /// Interface with runtime event callback translations
+    /// </summary>
+    public interface IRuntimeCallbacks
     {
         /// <summary>
         /// Gets a call when the engine gets a new node

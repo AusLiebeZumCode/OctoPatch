@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace OctoPatch
 {
     /// <summary>
-    /// Communication interface between configuration client and the engine
+    /// interface with all the methods of the patch runtime
     /// </summary>
-    public interface IEngineService
+    public interface IRuntimeMethods
     {
         #region Meta information
 
@@ -58,13 +58,38 @@ namespace OctoPatch
         /// <param name="grid">configuration</param>
         Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Adds a new node to the patch
+        /// </summary>
+        /// <param name="nodeDescriptionGuid">node description id</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>new node instance</returns>
         Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Removes the node with the given id from the patch
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="cancellationToken">cancellation token</param>
         Task RemoveNode(Guid nodeId, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Adds a new wire to the patch
+        /// </summary>
+        /// <param name="outputNodeId">node id of the output node</param>
+        /// <param name="outputConnectorId">connector id for the output</param>
+        /// <param name="inputNodeId">node id of the input node</param>
+        /// <param name="intputConnectorId">connector id for the input</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>new wire instance</returns>
         Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
             CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Removes the wire with the given id
+        /// </summary>
+        /// <param name="wireId">wire id</param>
+        /// <param name="cancellationToken">cancellation token</param>
         Task RemoveWire(Guid wireId, CancellationToken cancellationToken);
 
         #endregion

@@ -9,7 +9,7 @@ namespace OctoPatch.Client
     /// <summary>
     /// Implementation of the engine service client
     /// </summary>
-    public sealed class EngineServiceClient : IEngineServiceClient, IEngineServiceCallback
+    public sealed class EngineServiceClient : IEngineServiceClient, IRuntimeCallbacks
     {
         private HubConnection _hubConnection;
 

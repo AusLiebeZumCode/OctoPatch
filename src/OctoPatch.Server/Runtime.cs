@@ -7,7 +7,7 @@ using OctoPatch.Core;
 
 namespace OctoPatch.Server
 {
-    public class Runtime : IEngineService
+    public class Runtime : IRuntimeMethods
     {
         /// <summary>
         /// Engine instance

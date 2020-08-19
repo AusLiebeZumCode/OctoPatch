@@ -2,7 +2,10 @@
 
 namespace OctoPatch
 {
-    public interface IEngineServiceEvents
+    /// <summary>
+    /// Interface with all the events from the runtime
+    /// </summary>
+    public interface IRuntimeEvents
     {
         /// <summary>
         /// Gets a call when a new node instance was added

@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a connection to the engine host
     /// </summary>
-    public interface IEngineServiceClient : IEngineService, IEngineServiceEvents
+    public interface IEngineServiceClient : IRuntimeMethods, IRuntimeEvents
     {
     }
 }
