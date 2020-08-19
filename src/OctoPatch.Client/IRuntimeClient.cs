@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace OctoPatch.Client
 {
     /// <summary>
-    /// Represents a connection to the engine host
+    /// Represents a connection to the runtime
     /// </summary>
     public interface IRuntimeClient : IRuntimeMethods, IRuntimeEvents
     {

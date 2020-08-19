@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 namespace OctoPatch.Client
 {
     /// <summary>
-    /// Implementation of the engine service client
+    /// Implementation of the runtime hub
     /// </summary>
     public sealed class RuntimeClient : IRuntimeClient, IRuntimeCallbacks
     {
@@ -39,14 +39,14 @@ namespace OctoPatch.Client
             return Task.CompletedTask;
         }
 
-        #region IEngineService
+        #region IRuntimeMethods
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<Grid> GetEngineConfiguration(CancellationToken cancellationToken)
+        public Task<Grid> GetConfiguration(CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync<Grid>(nameof(GetEngineConfiguration), cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync<Grid>(nameof(GetConfiguration), cancellationToken, cancellationToken);
         }
 
         /// <summary>
@@ -100,9 +100,9 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken)
+        public Task SetConfiguration(Grid grid, CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync(nameof(SetEngineConfiguration), grid, cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync(nameof(SetConfiguration), grid, cancellationToken, cancellationToken);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace OctoPatch.Client
 
         #endregion
 
-        #region IEngineServiceCallback
+        #region IRuntimeCallbacks
 
         /// <summary>
         /// <inheritdoc />

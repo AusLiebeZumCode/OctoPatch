@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OctoPatch;
 using OctoPatch.Server;
 
 namespace OctoConsole
@@ -24,10 +23,10 @@ namespace OctoConsole
             services.AddSignalR();
 
             var repository = new Repository();
-            var engine = new Runtime(repository);
+            var runtime = new Runtime(repository);
 
             services.AddSingleton<IRepository>(repository);
-            services.AddSingleton<IRuntimeMethods>(engine);
+            services.AddSingleton<IRuntime>(runtime);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -10,9 +10,9 @@ namespace OctoPatch.Server
     public sealed class Runtime : IRuntime
     {
         /// <summary>
-        /// Engine instance
+        /// patch instance
         /// </summary>
-        private readonly IEngine _engine;
+        private readonly IPatch _patch;
 
         /// <summary>
         /// Reference to the repository
@@ -30,7 +30,7 @@ namespace OctoPatch.Server
 
         public Runtime(IRepository repository)
         {
-            _engine = new Engine();
+            _patch = new Patch();
 
             _repository = repository;
             _descriptions = repository.GetNodeDescriptions().ToArray();
@@ -43,7 +43,7 @@ namespace OctoPatch.Server
         {
             var description = _descriptions.First(d => d.Guid == nodeDescriptionGuid);
             var node = await _repository.CreateNode(description.Guid, Guid.NewGuid(), cancellationToken);
-            await _engine.AddNode(node, cancellationToken);
+            await _patch.AddNode(node, cancellationToken);
 
             var instance = new NodeInstance
             {
@@ -94,16 +94,16 @@ namespace OctoPatch.Server
             return Task.FromResult(_wireMapping.Values.AsEnumerable());
         }
 
-        public Task<Grid> GetEngineConfiguration(CancellationToken cancellationToken)
+        public Task<Grid> GetConfiguration(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken)
+        public Task SetConfiguration(Grid grid, CancellationToken cancellationToken)
         {
             //var description = _descriptions.First(d => d.Guid == nodeInstance.NodeDescription);
             //var node = await _repository.CreateNode(description.Guid, nodeInstance.Guid, cancellationToken);
-            //await _engine.AddNode(node, cancellationToken);
+            //await _patch.AddNode(node, cancellationToken);
 
             // _instanceMapping.Add(node.NodeId, (node, nodeInstance));
 

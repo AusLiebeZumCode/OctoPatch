@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace OctoPatch.Core
 {
     /// <summary>
-    /// Implementation of the OctoPatch Engine
+    /// Implementation of a patch
     /// </summary>
-    public sealed class Engine : IEngine
+    public sealed class Patch : IPatch
     {
         private readonly SemaphoreSlim _localLock;
 
@@ -23,7 +23,7 @@ namespace OctoPatch.Core
         /// </summary>
         private readonly HashSet<IWire> _wires;
 
-        public Engine()
+        public Patch()
         {
             _localLock = new SemaphoreSlim(1);
 
@@ -117,7 +117,7 @@ namespace OctoPatch.Core
                 var node = _nodes.ToArray().FirstOrDefault(n => n.NodeId == nodeId);
                 if (node == null)
                 {
-                    throw new ArgumentException("node is not part of the engine", nameof(nodeId));
+                    throw new ArgumentException("node does not exist", nameof(nodeId));
                 }
 
                 await InternalRemoveNode(node, cancellationToken);
@@ -146,7 +146,7 @@ namespace OctoPatch.Core
 
             if (_nodes.ToArray().Contains(node))
             {
-                throw new ArgumentException("node is not part of the engine", nameof(node));
+                throw new ArgumentException("node does not exist", nameof(node));
             }
 
             // Shut down and dispose it

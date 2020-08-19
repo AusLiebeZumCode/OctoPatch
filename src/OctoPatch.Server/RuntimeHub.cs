@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace OctoPatch.Server
 {
     /// <summary>
-    /// Common implementation of the engine service hub
+    /// Common implementation of the runtime hub
     /// StreamNote: Yannick: Preise sind ok :D (2020-08-11)
     /// </summary>
     public sealed class RuntimeHub : Hub<IRuntimeCallbacks>, IRuntimeMethods
@@ -42,7 +42,7 @@ namespace OctoPatch.Server
 
         #endregion
 
-        #region Engine manipulation
+        #region Patch manipulation
 
         /// <summary>
         /// <inheritdoc />
@@ -51,7 +51,7 @@ namespace OctoPatch.Server
         {
             throw new NotImplementedException();
 
-            // return Task.FromResult(_engine.Nodes.Select(n => n.Instance));
+            // return Task.FromResult(_patch.Nodes.Select(n => n.Instance));
         }
 
         /// <summary>
@@ -65,19 +65,19 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<Grid> GetEngineConfiguration(CancellationToken cancellationToken)
+        public Task<Grid> GetConfiguration(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-            // return Task.FromResult(_engine.Store());
+            // return Task.FromResult(_patch.Store());
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken)
+        public Task SetConfiguration(Grid grid, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-            //_engine.Load(grid);
+            //_patch.Load(grid);
             //return Task.CompletedTask;
         }
 
@@ -114,7 +114,7 @@ namespace OctoPatch.Server
         {
             throw new NotImplementedException();
 
-            //var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
+            //var node = _patch.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
             //if (node == null)
             //{
             //    throw new ArgumentException("node id does not exist");
@@ -131,7 +131,7 @@ namespace OctoPatch.Server
         {
             throw new NotImplementedException();
 
-            //var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
+            //var node = _patch.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
             //if (node == null)
             //{
             //    throw new ArgumentException("node id does not exist");
@@ -147,7 +147,7 @@ namespace OctoPatch.Server
         {
             throw new NotImplementedException();
 
-            //var node = _engine.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
+            //var node = _patch.Nodes.FirstOrDefault(n => n.Instance.Guid == nodeGuid);
             //if (node == null)
             //{
             //    throw new ArgumentException("node id does not exist");

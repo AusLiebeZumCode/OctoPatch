@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 namespace OctoPatch.Core
 {
     /// <summary>
-    /// Interface for the central grid runtime
+    /// Interface for the central patch
     /// </summary>
-    public interface IEngine
+    public interface IPatch
     {
         /// <summary>
-        /// Adds a new node to the engine
+        /// Adds a new node
         /// </summary>
         /// <param name="node">node instance</param>
         /// <param name="cancellationToken">cancellation token</param>
@@ -18,7 +18,7 @@ namespace OctoPatch.Core
         Task AddNode(INode node, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Adds a new node to the engine and configures it
+        /// Adds a new node and configures it
         /// </summary>
         /// <param name="node">node instance</param>
         /// <param name="cancellationToken">cancellation token</param>
@@ -27,7 +27,7 @@ namespace OctoPatch.Core
         Task AddNode(INode node, string configuration, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Removes the given node from the engine and deletes also all related wires.
+        /// Removes the given node and deletes also all related wires.
         /// </summary>
         /// <param name="node">node reference</param>
         /// <param name="cancellationToken">cancellation token</param>

@@ -28,35 +28,35 @@ namespace OctoPatch
 
         #endregion
 
-        #region Engine manipulation
+        #region Patch manipulation
 
         /// <summary>
-        /// Returns a list of nodes within the current engine
+        /// Returns a list of nodes
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>list of nodes</returns>
         Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Returns a list of wires within the current engine
+        /// Returns a list of wires
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>list of wires</returns>
         Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Returns the whole engine configuration
+        /// Returns the whole configuration
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>configuration</returns>
-        Task<Grid> GetEngineConfiguration(CancellationToken cancellationToken);
+        Task<Grid> GetConfiguration(CancellationToken cancellationToken);
 
         /// <summary>
-        /// Applies the given configuration to the current engine
+        /// Applies the given configuration
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <param name="grid">configuration</param>
-        Task SetEngineConfiguration(Grid grid, CancellationToken cancellationToken);
+        Task SetConfiguration(Grid grid, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds a new node to the patch
