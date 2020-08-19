@@ -1,18 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<Authors>Tom Wendel</Authors>
+		<PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Plugin.Midi</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/AusLiebeZumCode/OctoPatch.Plugin.Midi</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Plugin.Midi</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="RtMidi.Core" Version="1.0.50" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="RtMidi.Core" Version="1.0.50" />
+		<PackageReference Include="System.Reactive" Version="4.4.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\OctoPatch.Core\OctoPatch.Core.csproj" />
-    <ProjectReference Include="..\..\OctoPatch.Server\OctoPatch.Server.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\OctoPatch.Core\OctoPatch.Core.csproj" />
+		<ProjectReference Include="..\..\OctoPatch.Server\OctoPatch.Server.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -75,9 +75,12 @@ jobs:
     - name: Create NuGet Package (OctoPatch.Client)
       run: dotnet pack src/OctoPatch.Client/OctoPatch.Client.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
-    - name: Publish NuGet Package
+    - name: Create NuGet Package (OctoPatch.Plugin.Midi)
+      run: dotnet pack src/Plugins/OctoPatch.Plugin.Midi/OctoPatch.Plugin.Midi.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+
+    - name: Publish NuGet Packages
       if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch' && needs.tag.outputs.release == 'true' }}
-      working-directory: ./artifacts/nuget/OctoPatch
+      working-directory: ./artifacts/nuget
       run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
     - name: Publish OctoConsole
