@@ -43,6 +43,7 @@ namespace OctoPatch.Plugin.Midi
                 {
                     Guid = Guid.Parse("{8AA1AB11-DB28-4098-9999-13A3A47E8A83}"),
                     Name = "MIDI Device",
+                    Description = "This is our first plugin to see how it works",
                     Version = Version.ToString(),
                     TypeName = typeof(MidiDevice).FullName,
                 }

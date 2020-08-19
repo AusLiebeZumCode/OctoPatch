@@ -66,6 +66,10 @@ namespace OctoPatch.Server
                     }
                 }
             }
+            catch (ReflectionTypeLoadException)
+            {
+                // Ignore reflection issues
+            }
             catch (BadImageFormatException)
             {
                 // Sad :( This file does not load properly
