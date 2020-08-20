@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Server;
@@ -24,7 +25,32 @@ namespace OctoPatch.DesktopClient.ViewModels
             var repository = new Repository();
             _runtime = new Runtime(repository);
 
+            _runtime.OnNodeAdded += RuntimeOnOnNodeAdded;
+            _runtime.OnNodeRemoved += RuntimeOnOnNodeRemoved;
+            _runtime.OnWireAdded += RuntimeOnOnWireAdded;
+            _runtime.OnWireRemoved += RuntimeOnOnWireRemoved;
+
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private void RuntimeOnOnWireRemoved(Guid obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RuntimeOnOnWireAdded(WireInstance obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RuntimeOnOnNodeRemoved(Guid obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RuntimeOnOnNodeAdded(NodeInstance obj)
+        {
+            throw new System.NotImplementedException();
         }
 
         public async Task Setup(CancellationToken cancellationToken)

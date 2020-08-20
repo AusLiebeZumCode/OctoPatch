@@ -9,9 +9,14 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <ListBox ItemsSource="{Binding NodeDescriptions}">
+        <ListBox 
+            Grid.Column="0"
+            ItemsSource="{Binding NodeDescriptions}" 
+            PreviewMouseLeftButtonDown="UIElement_OnPreviewMouseLeftButtonDown" 
+            PreviewMouseMove="UIElement_OnPreviewMouseMove">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -27,5 +32,13 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
+        <Canvas 
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Background="CornflowerBlue"
+            Grid.Column="1" 
+            AllowDrop="True" 
+            DragEnter="UIElement_OnDragEnter" 
+            Drop="UIElement_OnDrop" />
     </Grid>
 </UserControl>
