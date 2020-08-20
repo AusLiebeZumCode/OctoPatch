@@ -63,16 +63,28 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
       working-directory: src
 
-    - name: Create NuGet Package
-      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
+    - name: Create NuGet Package (OctoPatch)
+      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
-    - name: Publish NuGet Package
+    - name: Create NuGet Package (OctoPatch.Core)
+      run: dotnet pack src/OctoPatch.Core/OctoPatch.Core.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+
+    - name: Create NuGet Package (OctoPatch.Server)
+      run: dotnet pack src/OctoPatch.Server/OctoPatch.Server.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+
+    - name: Create NuGet Package (OctoPatch.Client)
+      run: dotnet pack src/OctoPatch.Client/OctoPatch.Client.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+
+    - name: Create NuGet Package (OctoPatch.Plugin.Midi)
+      run: dotnet pack src/Plugins/OctoPatch.Plugin.Midi/OctoPatch.Plugin.Midi.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+
+    - name: Publish NuGet Packages
       if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch' && needs.tag.outputs.release == 'true' }}
-      working-directory: ./artifacts/nuget/
+      working-directory: ./artifacts/nuget
       run: dotnet nuget push *.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
 
     - name: Publish OctoConsole
-      run: dotnet publish src/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet publish src/Applications/OctoConsole/OctoConsole.csproj --configuration Release --output ./artifacts/octoconsole/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create artifacts folder
       shell: pwsh
@@ -89,7 +101,7 @@ jobs:
         path: ./artifacts/octoconsole/ # Use folder instead of .zip https://github.com/actions/upload-artifact#zipped-artifact-downloads
 
     - name: Publish OctoPatch.DesktopClient
-      run: dotnet publish src/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet publish src/Applications/OctoPatch.DesktopClient/OctoPatch.DesktopClient.csproj --configuration Release --output ./artifacts/desktopclient/ -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Zip OctoPatch.DesktopClient Files
       shell: pwsh
