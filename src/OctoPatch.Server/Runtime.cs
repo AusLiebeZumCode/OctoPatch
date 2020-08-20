@@ -54,6 +54,7 @@ namespace OctoPatch.Server
             };
 
             _instanceMapping.Add(node.NodeId, (node, instance));
+            OnNodeAdded?.Invoke(instance);
 
             return instance;
         }

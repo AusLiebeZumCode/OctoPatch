@@ -1,18 +1,44 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Server;
 
 namespace OctoPatch.DesktopClient.ViewModels
 {
-    public sealed class RuntimeViewModel
+    public sealed class RuntimeViewModel : INotifyPropertyChanged
     {
         private readonly IRuntime _runtime;
 
         public ObservableCollection<NodeDescription> NodeDescriptions { get; }
 
+        private NodeDescription _selectedNodeDescription;
+
+        public NodeDescription SelectedNodeDescription
+        {
+            get => _selectedNodeDescription;
+            set
+            {
+                _selectedNodeDescription = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<NodeInstance> Nodes { get; }
+
+        private NodeInstance _selectedNode;
+
+        public NodeInstance SelectedNode
+        {
+            get => _selectedNode;
+            set
+            {
+                _selectedNode = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ObservableCollection<WireInstance> Wires { get; }
 
@@ -50,7 +76,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnOnNodeAdded(NodeInstance obj)
         {
-            throw new System.NotImplementedException();
+            Nodes.Add(obj);
         }
 
         public async Task Setup(CancellationToken cancellationToken)
@@ -60,6 +86,18 @@ namespace OctoPatch.DesktopClient.ViewModels
             {
                 NodeDescriptions.Add(description);    
             }
+        }
+
+        public async void AddNode(NodeDescription description)
+        {
+            await _runtime.AddNode(description.Guid, CancellationToken.None);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

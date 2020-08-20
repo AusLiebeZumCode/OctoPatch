@@ -4,41 +4,79 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:OctoPatch.DesktopClient.ViewModels"
+             xmlns:views="clr-namespace:OctoPatch.DesktopClient.Views"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:RuntimeViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <!-- Column 1 -->
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Toolbox -->
+            <ListBox 
+                Grid.Column="0"
+                MouseDoubleClick="Control_OnMouseDoubleClick"
+                ItemsSource="{Binding NodeDescriptions}"
+                SelectedItem="{Binding SelectedNodeDescription}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                            <Label Content="{Binding Name}" FontWeight="Bold" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Block infos -->
+            <views:NodeDescriptionView Grid.Row="1" DataContext="{Binding SelectedNodeDescription}" />
+
+            <!-- buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Add" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Existing blocks -->
         <ListBox 
-            Grid.Column="0"
-            ItemsSource="{Binding NodeDescriptions}" 
-            PreviewMouseLeftButtonDown="UIElement_OnPreviewMouseLeftButtonDown" 
-            PreviewMouseMove="UIElement_OnPreviewMouseMove">
+            Grid.Column="1"
+            ItemsSource="{Binding Nodes}"
+            SelectedItem="{Binding SelectedNode}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0" Content="{Binding Name}" FontWeight="Bold" />
-                        <Label Grid.Row="1" Content="{Binding Description}" />
-                    </Grid>
+                    <Label Content="{Binding Name}" FontWeight="Bold" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Canvas 
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="CornflowerBlue"
-            Grid.Column="1" 
-            AllowDrop="True" 
-            DragEnter="UIElement_OnDragEnter" 
-            Drop="UIElement_OnDrop" />
+
+        <Grid Grid.Column="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Properties -->
+            <views:NodeInstanceView Grid.Row="1" 
+                                    DataContext="{Binding SelectedNode}" />
+
+            <!-- buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Remove" />
+                <Button Content="Start" />
+                <Button Content="Stop" />
+            </StackPanel>
+        </Grid>
+        
     </Grid>
 </UserControl>

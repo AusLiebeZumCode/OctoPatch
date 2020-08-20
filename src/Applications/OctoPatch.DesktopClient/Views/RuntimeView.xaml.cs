@@ -10,10 +10,12 @@ namespace OctoPatch.DesktopClient.Views
     /// </summary>
     public partial class RuntimeView : UserControl
     {
+        private readonly RuntimeViewModel _viewModel;
+
         public RuntimeView()
         {
             InitializeComponent();
-            DataContext = new RuntimeViewModel();
+            DataContext = _viewModel = new RuntimeViewModel();
         }
 
         private void UIElement_OnDragEnter(object sender, DragEventArgs e)
@@ -34,6 +36,16 @@ namespace OctoPatch.DesktopClient.Views
         private void UIElement_OnPreviewMouseMove(object sender, MouseEventArgs e)
         {
             
+        }
+
+        private void Control_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var list = (ListBox)sender;
+
+            if (list.SelectedItem != null)
+            {
+                _viewModel.AddNode((NodeDescription)list.SelectedItem);
+            }
         }
     }
 }
