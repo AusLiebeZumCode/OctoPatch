@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OctoPatch.Client\OctoPatch.Client.csproj" />
-    <ProjectReference Include="..\..\OctoPatch.Server\OctoPatch.Server.csproj" />
+    <ProjectReference Include="..\..\Core\OctoPatch.Client\OctoPatch.Client.csproj" />
+    <ProjectReference Include="..\..\Core\OctoPatch.Server\OctoPatch.Server.csproj" />
     <ProjectReference Include="..\..\Plugins\OctoPatch.Plugin.Midi\OctoPatch.Plugin.Midi.csproj" />
   </ItemGroup>
 

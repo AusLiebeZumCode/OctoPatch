@@ -1,0 +1,86 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FA7B21A1-3ADA-4C35-BF59-100BFD2A689D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{826BC5FD-CEF2-466A-88E5-55489BDAD44B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{1395C320-0CBE-4FCE-878B-806FF7395542}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleExtended", "src\Applications\ConsoleExtended\ConsoleExtended.csproj", "{D1E14A5E-ED2A-44EB-B015-7D89350C8589}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoConsole", "src\Applications\OctoConsole\OctoConsole.csproj", "{7F6F04B2-0C10-4C88-8A46-BA4589632A68}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.DesktopClient", "src\Applications\OctoPatch.DesktopClient\OctoPatch.DesktopClient.csproj", "{45784DFD-A197-4C61-AE68-AD07F3DE3677}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Plugin.Midi", "src\Plugins\OctoPatch.Plugin.Midi\OctoPatch.Plugin.Midi.csproj", "{639499F3-9B9A-4175-B8CF-1C96D880987F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Test", "test\OctoPatch.Test\OctoPatch.Test.csproj", "{DBA37B79-AF44-4C21-8BD6-B7704BD339F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch", "src\Core\OctoPatch\OctoPatch.csproj", "{909D3320-0555-4704-855A-C36DCEC0F879}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Client", "src\Core\OctoPatch.Client\OctoPatch.Client.csproj", "{7E0C6630-AB2F-4F94-A93E-395D62BADF52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Core", "src\Core\OctoPatch.Core\OctoPatch.Core.csproj", "{DAC461F3-D9AF-4145-B402-952502D4900E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Server", "src\Core\OctoPatch.Server\OctoPatch.Server.csproj", "{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1E14A5E-ED2A-44EB-B015-7D89350C8589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E14A5E-ED2A-44EB-B015-7D89350C8589}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E14A5E-ED2A-44EB-B015-7D89350C8589}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E14A5E-ED2A-44EB-B015-7D89350C8589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F6F04B2-0C10-4C88-8A46-BA4589632A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F6F04B2-0C10-4C88-8A46-BA4589632A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F6F04B2-0C10-4C88-8A46-BA4589632A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F6F04B2-0C10-4C88-8A46-BA4589632A68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45784DFD-A197-4C61-AE68-AD07F3DE3677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45784DFD-A197-4C61-AE68-AD07F3DE3677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45784DFD-A197-4C61-AE68-AD07F3DE3677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45784DFD-A197-4C61-AE68-AD07F3DE3677}.Release|Any CPU.Build.0 = Release|Any CPU
+		{639499F3-9B9A-4175-B8CF-1C96D880987F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{639499F3-9B9A-4175-B8CF-1C96D880987F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{639499F3-9B9A-4175-B8CF-1C96D880987F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{639499F3-9B9A-4175-B8CF-1C96D880987F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBA37B79-AF44-4C21-8BD6-B7704BD339F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBA37B79-AF44-4C21-8BD6-B7704BD339F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBA37B79-AF44-4C21-8BD6-B7704BD339F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBA37B79-AF44-4C21-8BD6-B7704BD339F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{909D3320-0555-4704-855A-C36DCEC0F879}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{909D3320-0555-4704-855A-C36DCEC0F879}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{909D3320-0555-4704-855A-C36DCEC0F879}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{909D3320-0555-4704-855A-C36DCEC0F879}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E0C6630-AB2F-4F94-A93E-395D62BADF52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E0C6630-AB2F-4F94-A93E-395D62BADF52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E0C6630-AB2F-4F94-A93E-395D62BADF52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E0C6630-AB2F-4F94-A93E-395D62BADF52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAC461F3-D9AF-4145-B402-952502D4900E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAC461F3-D9AF-4145-B402-952502D4900E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAC461F3-D9AF-4145-B402-952502D4900E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAC461F3-D9AF-4145-B402-952502D4900E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D1E14A5E-ED2A-44EB-B015-7D89350C8589} = {1395C320-0CBE-4FCE-878B-806FF7395542}
+		{7F6F04B2-0C10-4C88-8A46-BA4589632A68} = {1395C320-0CBE-4FCE-878B-806FF7395542}
+		{45784DFD-A197-4C61-AE68-AD07F3DE3677} = {1395C320-0CBE-4FCE-878B-806FF7395542}
+		{639499F3-9B9A-4175-B8CF-1C96D880987F} = {826BC5FD-CEF2-466A-88E5-55489BDAD44B}
+		{DBA37B79-AF44-4C21-8BD6-B7704BD339F5} = {FA7B21A1-3ADA-4C35-BF59-100BFD2A689D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8F9B99B3-F5BE-4428-9751-1CC99FA5761B}
+	EndGlobalSection
+EndGlobal

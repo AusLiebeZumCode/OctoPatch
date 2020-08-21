@@ -53,27 +53,24 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore --runtime win-x86 
-      working-directory: src
 
     - name: Build
       run: dotnet build --configuration Release --no-restore
-      working-directory: src
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-      working-directory: src
 
     - name: Create NuGet Package (OctoPatch)
-      run: dotnet pack src/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/Core/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create NuGet Package (OctoPatch.Core)
-      run: dotnet pack src/OctoPatch.Core/OctoPatch.Core.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/Core/OctoPatch.Core/OctoPatch.Core.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create NuGet Package (OctoPatch.Server)
-      run: dotnet pack src/OctoPatch.Server/OctoPatch.Server.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/Core/OctoPatch.Server/OctoPatch.Server.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create NuGet Package (OctoPatch.Client)
-      run: dotnet pack src/OctoPatch.Client/OctoPatch.Client.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      run: dotnet pack src/Core/OctoPatch.Client/OctoPatch.Client.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
     - name: Create NuGet Package (OctoPatch.Plugin.Midi)
       run: dotnet pack src/Plugins/OctoPatch.Plugin.Midi/OctoPatch.Plugin.Midi.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
