@@ -22,15 +22,64 @@ namespace OctoPatch.Core
         /// </summary>
         public Guid NodeId { get; }
 
+        private TConfiguration _configuration;
+
+        private string _configurationString;
+
         /// <summary>
         /// Internal reference to the current configuration
         /// </summary>
-        protected T Configuration { get; private set; }
+        protected TConfiguration Configuration
+        {
+            get => _configuration;
+            private set
+            {
+                _configuration = value;
+
+                if (value == null)
+                {
+                    _configurationString = null;
+                }
+                else
+                {
+                    try
+                    {
+                        _configurationString = JsonConvert.SerializeObject(value);
+                    }
+                    catch (JsonSerializationException)
+                    {
+                        // TODO: Log somehow
+                        _configurationString = null;
+                    }
+                    catch (JsonReaderException)
+                    {
+                        // TODO: Log somehow
+                        _configurationString = null;
+                    }
+                }
+
+                ConfigurationChanged?.Invoke(this, _configurationString);
+            }
+        }
+
+        private NodeState _state;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public NodeState State { get; private set; }
+        public NodeState State
+        {
+            get => _state;
+            private set
+            {
+                if (_state != value)
+                {
+                    _state = value;
+                    StateChanged?.Invoke(this, value);
+                }
+
+            }
+        }
 
         protected readonly List<IInputConnector> _inputs;
 
@@ -58,7 +107,6 @@ namespace OctoPatch.Core
             _outputs = new List<IOutputConnector>();
         }
 
-        #region Lifecycle methods
 
         /// <summary>
         /// <inheritdoc />
@@ -456,6 +504,14 @@ namespace OctoPatch.Core
             State = initialized ? NodeState.Failed : NodeState.InitializationFailed;
         }
 
-        #endregion
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event EventHandler<NodeState> StateChanged;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event EventHandler<string> ConfigurationChanged;
     }
 }

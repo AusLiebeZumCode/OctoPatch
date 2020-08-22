@@ -31,7 +31,6 @@ namespace OctoPatch.Core
         /// </summary>
         IEnumerable<IOutputConnector> Outputs { get; }
 
-        #region Lifecycle methods
 
         /// <summary>
         /// Initializes the current node. This leads to a state change between <see cref="NodeState.Uninitialized"/>
@@ -59,6 +58,14 @@ namespace OctoPatch.Core
         /// <param name="cancellationToken">cancellation token</param>
         Task Deinitialize(CancellationToken cancellationToken);
 
-        #endregion
+        /// <summary>
+        /// Gets a call when the current node state changes.
+        /// </summary>
+        event EventHandler<NodeState> StateChanged;
+
+        /// <summary>
+        /// Gets a call when the current configuration changes.
+        /// </summary>
+        event EventHandler<string> ConfigurationChanged;
     }
 }
