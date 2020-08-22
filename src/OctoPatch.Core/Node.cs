@@ -9,8 +9,10 @@ namespace OctoPatch.Core
     /// <summary>
     /// Base class for all kind of node implementations
     /// </summary>
-    /// <typeparam name="T">configuration type</typeparam>
-    public abstract class Node<T> : INode where T : INodeConfiguration
+    /// <typeparam name="TConfiguration">configuration type</typeparam>
+    public abstract class Node<TConfiguration, TEnvironment> : INode
+        where TConfiguration : INodeConfiguration
+        where TEnvironment : INodeEnvironment
     {
         /// <summary>
         /// Local lock to synchronize the node lifecycle
@@ -21,6 +23,46 @@ namespace OctoPatch.Core
         /// <inheritdoc />
         /// </summary>
         public Guid NodeId { get; }
+
+        private TEnvironment _environment;
+
+        private string _environmentString;
+
+        /// <summary>
+        /// Internal reference to the current environment
+        /// </summary>
+        protected TEnvironment Environment
+        {
+            get => _environment;
+            set
+            {
+                _environment = value;
+
+                if (value == null)
+                {
+                    _environmentString = null;
+                }
+                else
+                {
+                    try
+                    {
+                        _environmentString = JsonConvert.SerializeObject(value);
+                    }
+                    catch (JsonSerializationException)
+                    {
+                        // TODO: Log somehow
+                        _environmentString = null;
+                    }
+                    catch (JsonReaderException)
+                    {
+                        // TODO: Log somehow
+                        _environmentString = null;
+                    }
+                }
+
+                EnvironmentChanged?.Invoke(this, _environmentString);
+            }
+        }
 
         private TConfiguration _configuration;
 
@@ -85,7 +127,6 @@ namespace OctoPatch.Core
 
         protected readonly List<IOutputConnector> _outputs;
 
-
         /// <summary>
         /// <inheritdoc />
         /// </summary>
@@ -107,6 +148,15 @@ namespace OctoPatch.Core
             _outputs = new List<IOutputConnector>();
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public string GetEnvironment() => _environmentString;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public string GetConfiguration() => _configurationString;
 
         /// <summary>
         /// <inheritdoc />
@@ -168,10 +218,10 @@ namespace OctoPatch.Core
                 }
 
                 // Deserialization of configuration
-                T config;
+                TConfiguration config;
                 try
                 {
-                    config = JsonConvert.DeserializeObject<T>(configuration);
+                    config = JsonConvert.DeserializeObject<TConfiguration>(configuration);
                 }
                 catch (JsonSerializationException ex)
                 {
@@ -209,7 +259,7 @@ namespace OctoPatch.Core
         /// </summary>
         /// <param name="configuration">configuration</param>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnInitialize(T configuration, CancellationToken cancellationToken);
+        protected abstract Task OnInitialize(TConfiguration configuration, CancellationToken cancellationToken);
 
         /// <summary>
         /// <inheritdoc />
@@ -513,5 +563,10 @@ namespace OctoPatch.Core
         /// <inheritdoc />
         /// </summary>
         public event EventHandler<string> ConfigurationChanged;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event EventHandler<string> EnvironmentChanged;
     }
 }

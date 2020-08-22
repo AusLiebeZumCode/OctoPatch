@@ -31,6 +31,17 @@ namespace OctoPatch.Core
         /// </summary>
         IEnumerable<IOutputConnector> Outputs { get; }
 
+        /// <summary>
+        /// Returns the current environment serialized as string
+        /// </summary>
+        /// <returns>serialized environment</returns>
+        string GetEnvironment();
+
+        /// <summary>
+        /// Returns the current configuration serialized as string
+        /// </summary>
+        /// <returns>serialized configuration</returns>
+        string GetConfiguration();
 
         /// <summary>
         /// Initializes the current node. This leads to a state change between <see cref="NodeState.Uninitialized"/>
@@ -67,5 +78,10 @@ namespace OctoPatch.Core
         /// Gets a call when the current configuration changes.
         /// </summary>
         event EventHandler<string> ConfigurationChanged;
+
+        /// <summary>
+        /// Gets a call when the current environment changes.
+        /// </summary>
+        event EventHandler<string> EnvironmentChanged;
     }
 }
