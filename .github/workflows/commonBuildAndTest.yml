@@ -38,6 +38,7 @@ jobs:
       - name: Print version string
         run: echo ${{ steps.get-version.outputs.version }}
 
+
   scan:
     env:
       SONAR_HOST_URL: "https://sonarcloud.io"
