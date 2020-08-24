@@ -32,9 +32,9 @@ namespace OctoPatch.Core
         /// </summary>
         public NodeState State { get; private set; }
 
-        protected readonly List<IInputConnector> _inputs;
+        private readonly List<IInputConnector> _inputs;
 
-        protected readonly List<IOutputConnector> _outputs;
+        private readonly List<IOutputConnector> _outputs;
 
 
         /// <summary>
@@ -57,6 +57,24 @@ namespace OctoPatch.Core
             _inputs = new List<IInputConnector>();
             _outputs = new List<IOutputConnector>();
         }
+
+        #region Connector configuration
+
+        protected IOutputConnector RegisterOutputConnector(Guid guid)
+        {
+            var outputConnector = new OutputConnector(guid);
+            _outputs.Add(outputConnector);
+            return outputConnector;
+        }
+
+        protected IInputConnector RegisterInputConnector(Guid guid)
+        {
+            var inputConnector = new InputConnector(guid);
+            _inputs.Add(inputConnector);
+            return inputConnector;
+        }
+
+        #endregion
 
         #region Lifecycle methods
 

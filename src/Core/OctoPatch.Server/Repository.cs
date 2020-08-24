@@ -79,9 +79,9 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<MessageDescription> GetMessageDescriptions()
+        public IEnumerable<ComplexTypeDescription> GetMessageDescriptions()
         {
-            return _plugins.SelectMany(p => p.GetMessageDescriptions());
+            return _plugins.SelectMany(p => p.GetTypeDescriptions());
         }
 
         /// <summary>

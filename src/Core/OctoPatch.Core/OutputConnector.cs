@@ -2,21 +2,48 @@
 
 namespace OctoPatch.Core
 {
-    public sealed class OutputConnector<T> : IOutputConnector, IObservable<T> where T : struct
+    public sealed class OutputConnector : IOutputConnector
     {
         public Guid Guid { get; }
 
-        private readonly IObservable<T> _subject;
-
-        public OutputConnector(IObservable<T> subject, Guid guid)
+        public OutputConnector(Guid guid)
         {
             Guid = guid;
-            _subject = subject;
         }
 
-        public IDisposable Subscribe(IObserver<T> observer)
+        public void SendEmpty()
         {
-            return _subject.Subscribe(observer);
+
+        }
+
+        public void SendInteger(int value)
+        {
+
+        }
+
+        public void SendFloat(float value)
+        {
+
+        }
+
+        public void SendBool(bool value)
+        {
+
+        }
+
+        public void SendString(string value)
+        {
+
+        }
+
+        public void SendBinary(byte[] value)
+        {
+
+        }
+
+        public void SendComplex<T>(T value)
+        {
+
         }
     }
 }

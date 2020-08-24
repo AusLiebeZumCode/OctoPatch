@@ -35,7 +35,7 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<ComplexTypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
             return Task.FromResult(_repository.GetMessageDescriptions());
         }

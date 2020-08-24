@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,17 +12,25 @@ namespace OctoPatch.Plugin.Midi
 
         private readonly Subject<MidiMessage> _subject;
 
+        private readonly IOutputConnector _output;
+
         public MidiMessageFilter(Guid nodeId) : base(nodeId)
         {
-            _subject = new Subject<MidiMessage>();
-            var output = new OutputConnector<MidiMessage>(_subject.Where(Valid), Guid.Parse("{B7B1B419-1AEC-444F-8554-67415AB8F4F4}"));
-            _outputs.Add(output);
+            _output = RegisterOutputConnector(Guid.Parse("{B7B1B419-1AEC-444F-8554-67415AB8F4F4}"));
 
             // StreamNote: PatteKi "und auch hier war ich :D" (2020-06-30 22:25)
             // StreamNote: m4cx: "Da war ich auch dran ;)" (2020-06-30 22:26)
 
-            var input = new InputConnector<MidiMessage>(_subject, Guid.Parse("{482E6ABA-F11E-44CB-B945-D5DC6AE50286}"));
-            _inputs.Add(input);
+            RegisterInputConnector(Guid.Parse("{482E6ABA-F11E-44CB-B945-D5DC6AE50286}"))
+                .HandleComplex<MidiMessage>(Handle);
+        }
+
+        private void Handle(MidiMessage message)
+        {
+            if (Valid(message))
+            {
+                _output.SendComplex(message);
+            }
         }
 
         private bool Valid(MidiMessage message)

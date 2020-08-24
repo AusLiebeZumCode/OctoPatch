@@ -24,7 +24,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>all message descriptions</returns>
-        Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
+        Task<IEnumerable<ComplexTypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
 
         #endregion
 

@@ -2,31 +2,48 @@
 
 namespace OctoPatch.Core
 {
-    public sealed class InputConnector<T> : IInputConnector, IObserver<T> where T : struct
+    public sealed class InputConnector : IInputConnector
     {
         public Guid Guid { get; }
 
-        private readonly IObserver<T> _observer;
-
-        public InputConnector(IObserver<T> observer, Guid guid)
+        public InputConnector(Guid guid)
         {
             Guid = guid;
-            _observer = observer;
         }
 
-        public void OnCompleted()
+        public IInputConnector HandleEmpty(Action handler)
         {
-            _observer.OnCompleted();
+            return this;
         }
 
-        public void OnError(Exception exception)
+        public IInputConnector HandleBool(Action<bool> handler)
         {
-            _observer.OnError(exception);
+            return this;
+        }
+        
+        public IInputConnector HandleInteger(Action<int> handler)
+        {
+            return this;
         }
 
-        public void OnNext(T value)
+        public IInputConnector HandleFloat(Action<float> handler)
         {
-            _observer.OnNext(value);
+            return this;
+        }
+        
+        public IInputConnector HandleString(Action<string> handler)
+        {
+            return this;
+        }
+        
+        public IInputConnector HandleBinary(Action<byte[]> handler)
+        {
+            return this;
+        }
+        
+        public IInputConnector HandleComplex<T>(Action<T> handler)
+        {
+            return this;
         }
     }
 }

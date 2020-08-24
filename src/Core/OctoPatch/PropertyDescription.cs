@@ -16,8 +16,8 @@
         public string Description { get; set; }
 
         /// <summary>
-        /// Name of the type
+        /// Description of the type
         /// </summary>
-        public string Type { get; set; }
+        public MessageDescription Type { get; set; }
     }
 }

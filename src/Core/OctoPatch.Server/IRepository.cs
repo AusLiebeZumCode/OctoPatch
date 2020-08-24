@@ -15,7 +15,7 @@ namespace OctoPatch.Server
         /// Returns all discovered messages
         /// </summary>
         /// <returns>all messages</returns>
-        IEnumerable<MessageDescription> GetMessageDescriptions();
+        IEnumerable<ComplexTypeDescription> GetMessageDescriptions();
 
         /// <summary>
         /// Returns all discovered nodes

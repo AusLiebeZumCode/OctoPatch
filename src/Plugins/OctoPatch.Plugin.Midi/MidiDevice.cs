@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Core;
@@ -16,14 +15,13 @@ namespace OctoPatch.Plugin.Midi
     /// </summary>
     public sealed class MidiDevice : Node<DeviceConfiguration>
     {
-        private readonly Subject<MidiMessage> _output;
+        private IOutputConnector _output;
 
         private IMidiInputDevice _device;
 
         public MidiDevice(Guid nodeId) : base(nodeId)
         {
-            _output = new Subject<MidiMessage>();
-            _outputs.Add(new OutputConnector<MidiMessage>(_output, Guid.Parse("{3148D6F6-48CC-42D6-8A69-49536BDB2F8E}")));
+            _output = RegisterOutputConnector(Guid.Parse("{3148D6F6-48CC-42D6-8A69-49536BDB2F8E}"));
         }
 
         protected override Task OnInitialize(DeviceConfiguration configuration, CancellationToken cancellationToken)
@@ -78,7 +76,7 @@ namespace OctoPatch.Plugin.Midi
 
         private void DeviceOnControlChange(IMidiInputDevice sender, in ControlChangeMessage msg)
         {
-            _output.OnNext(new MidiMessage
+            _output.SendComplex(new MidiMessage
             {
                 MessageType = 3,
                 Channel = (int)msg.Channel,
@@ -89,7 +87,7 @@ namespace OctoPatch.Plugin.Midi
 
         private void DeviceOnNoteOff(IMidiInputDevice sender, in NoteOffMessage msg)
         {
-            _output.OnNext(new MidiMessage
+            _output.SendComplex(new MidiMessage
             {
                 MessageType = 1,
                 Channel = (int)msg.Channel,
@@ -100,7 +98,7 @@ namespace OctoPatch.Plugin.Midi
 
         private void DeviceOnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
         {
-            _output.OnNext(new MidiMessage
+            _output.SendComplex(new MidiMessage
             {
                 MessageType = 2,
                 Channel = (int)msg.Channel,

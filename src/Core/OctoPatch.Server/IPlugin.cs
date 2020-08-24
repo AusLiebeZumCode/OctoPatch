@@ -33,10 +33,10 @@ namespace OctoPatch.Server
         IEnumerable<NodeDescription> GetNodeDescriptions();
 
         /// <summary>
-        /// Lists up all containing message descriptions.
+        /// Lists up all containing type descriptions.
         /// </summary>
-        /// <returns>List of message descriptions</returns>
-        IEnumerable<MessageDescription> GetMessageDescriptions();
+        /// <returns>List of type descriptions</returns>
+        IEnumerable<ComplexTypeDescription> GetTypeDescriptions();
 
         /// <summary>
         /// Method to generate a new instance of the node with the given node guid.

@@ -53,9 +53,41 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<MessageDescription> GetMessageDescriptions()
+        public IEnumerable<ComplexTypeDescription> GetTypeDescriptions()
         {
-            return Enumerable.Empty<MessageDescription>();
+            var midiMessage = new ComplexTypeDescription
+            {
+                Name = nameof(MidiMessage),
+                Description = "a MIDI message",
+                PropertyDescriptions = new List<PropertyDescription>()
+            };
+
+            midiMessage.PropertyDescriptions.Add(new PropertyDescription
+            {
+                Name = nameof(MidiMessage.Channel),
+                Description = "Describes the channel for this message",
+                Type = new IntegerMessageDescription
+                {
+                    MinimumValue = 1,
+                    MaximumValue = 16
+                }
+            });
+
+            midiMessage.PropertyDescriptions.Add(new PropertyDescription
+            {
+                Name = nameof(MidiMessage.MessageType),
+                Description = "Describes type of messsage MIDI sends",
+                Type = new IntegerMessageDescription
+                {
+                    MinimumValue = 1,
+                    MaximumValue = 16
+                }
+            });
+
+            return new[]
+            {
+                midiMessage
+            };
         }
 
         /// <summary>

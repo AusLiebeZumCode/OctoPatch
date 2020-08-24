@@ -52,9 +52,9 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<ComplexTypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync<IEnumerable<MessageDescription>>(nameof(GetMessageDescriptions), cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync<IEnumerable<ComplexTypeDescription>>(nameof(GetMessageDescriptions), cancellationToken, cancellationToken);
         }
 
         /// <summary>

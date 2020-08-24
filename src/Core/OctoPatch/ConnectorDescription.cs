@@ -27,6 +27,6 @@ namespace OctoPatch
         /// Optional list of supported types. If this is null
         /// the connector supports all kind of types
         /// </summary>
-        public List<string> SupportedTypes { get; set; }
+        public List<MessageDescription> SupportedTypes { get; set; }
     }
 }
