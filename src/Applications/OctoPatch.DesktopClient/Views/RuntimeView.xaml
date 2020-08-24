@@ -26,7 +26,6 @@
             <!-- Toolbox -->
             <ListBox 
                 Grid.Column="0"
-                MouseDoubleClick="Control_OnMouseDoubleClick"
                 ItemsSource="{Binding NodeDescriptions}"
                 SelectedItem="{Binding SelectedNodeDescription}">
                 <ListBox.ItemTemplate>
@@ -41,7 +40,7 @@
 
             <!-- buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Add" />
+                <Button Content="Add" Command="{Binding AddSelectedNodeDescription}" />
             </StackPanel>
         </Grid>
 
@@ -72,9 +71,9 @@
 
             <!-- buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Remove" />
-                <Button Content="Start" />
-                <Button Content="Stop" />
+                <Button Content="Remove" Command="{Binding RemoveSelectedNode}" />
+                <Button Content="Start" Command="{Binding StartSelectedNode}" />
+                <Button Content="Stop" Command="{Binding StopSelectedNode}" />
             </StackPanel>
         </Grid>
         

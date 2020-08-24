@@ -17,35 +17,5 @@ namespace OctoPatch.DesktopClient.Views
             InitializeComponent();
             DataContext = _viewModel = new RuntimeViewModel();
         }
-
-        private void UIElement_OnDragEnter(object sender, DragEventArgs e)
-        {
-            e.Effects = DragDropEffects.Copy;
-        }
-
-        private void UIElement_OnDrop(object sender, DragEventArgs e)
-        {
-            
-        }
-
-        private void UIElement_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragDrop.DoDragDrop((ListBox) sender, "test", DragDropEffects.Copy);
-        }
-
-        private void UIElement_OnPreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            
-        }
-
-        private void Control_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var list = (ListBox)sender;
-
-            if (list.SelectedItem != null)
-            {
-                _viewModel.AddNode((NodeDescription)list.SelectedItem);
-            }
-        }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using OctoPatch.Core;
+﻿using OctoPatch.Core;
 
 namespace OctoPatch.DesktopClient.Models
 {

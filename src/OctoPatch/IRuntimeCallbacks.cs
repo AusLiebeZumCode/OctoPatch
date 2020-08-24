@@ -14,6 +14,12 @@ namespace OctoPatch
         void NodeAdded(NodeInstance instance);
 
         /// <summary>
+        /// Gets a call when something changes within the node instance.
+        /// </summary>
+        /// <param name="instance">related node instance</param>
+        void NodeUpdated(NodeInstance instance);
+
+        /// <summary>
         /// Gets a call when a node gets lost
         /// </summary>
         /// <param name="instanceGuid">node guid</param>

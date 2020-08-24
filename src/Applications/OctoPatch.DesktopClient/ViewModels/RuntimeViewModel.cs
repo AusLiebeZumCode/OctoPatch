@@ -4,11 +4,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using OctoPatch.Server;
 
 namespace OctoPatch.DesktopClient.ViewModels
 {
-    public sealed class RuntimeViewModel : INotifyPropertyChanged
+    public sealed class RuntimeViewModel : IRuntimeViewModel
     {
         private readonly IRuntime _runtime;
 
@@ -23,10 +24,28 @@ namespace OctoPatch.DesktopClient.ViewModels
             {
                 _selectedNodeDescription = value;
                 OnPropertyChanged();
+
+                _addSelectedNodeDescription.Enabled = value != null;
             }
         }
 
+        private readonly ActionCommand _addSelectedNodeDescription;
+
+        public ICommand AddSelectedNodeDescription => _addSelectedNodeDescription;
+        
         public ObservableCollection<NodeInstance> Nodes { get; }
+        
+        private readonly ActionCommand _removeSelectedNode;
+
+        public ICommand RemoveSelectedNode => _removeSelectedNode;
+        
+        private readonly ActionCommand _startSelectedNode;
+
+        public ICommand StartSelectedNode => _startSelectedNode;
+        
+        private readonly ActionCommand _stopSelectedNode;
+
+        public ICommand StopSelectedNode => _stopSelectedNode;
 
         private NodeInstance _selectedNode;
 
@@ -37,6 +56,10 @@ namespace OctoPatch.DesktopClient.ViewModels
             {
                 _selectedNode = value;
                 OnPropertyChanged();
+
+                _removeSelectedNode.Enabled = value != null;
+                _startSelectedNode.Enabled = value != null;
+                _stopSelectedNode.Enabled = value != null;
             }
         }
 
@@ -48,6 +71,11 @@ namespace OctoPatch.DesktopClient.ViewModels
             Nodes = new ObservableCollection<NodeInstance>();
             Wires = new ObservableCollection<WireInstance>();
 
+            _addSelectedNodeDescription = new ActionCommand(AddNodeDescriptionCallback, false);
+            _removeSelectedNode = new ActionCommand(RemoveSelectedNodeCallback, false);
+            _startSelectedNode = new ActionCommand(StartSelectedNodeCallback, false);
+            _stopSelectedNode = new ActionCommand(StopSelectedNodeCallback, false);
+
             var repository = new Repository();
             _runtime = new Runtime(repository);
 
@@ -57,6 +85,30 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.OnWireRemoved += RuntimeOnOnWireRemoved;
 
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private void StopSelectedNodeCallback(object obj)
+        {
+            
+        }
+
+        private void StartSelectedNodeCallback(object obj)
+        {
+            
+        }
+
+        private void RemoveSelectedNodeCallback(object obj)
+        {
+            
+        }
+
+        private async void AddNodeDescriptionCallback(object obj)
+        {
+            var description = SelectedNodeDescription;
+            if (description != null)
+            {
+                await _runtime.AddNode(description.Guid, CancellationToken.None);
+            }
         }
 
         private void RuntimeOnOnWireRemoved(Guid obj)
@@ -86,11 +138,6 @@ namespace OctoPatch.DesktopClient.ViewModels
             {
                 NodeDescriptions.Add(description);    
             }
-        }
-
-        public async void AddNode(NodeDescription description)
-        {
-            await _runtime.AddNode(description.Guid, CancellationToken.None);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
