@@ -19,6 +19,6 @@ namespace OctoPatch
         /// </summary>
         /// <param name="handler">delegate to handle messages</param>
         /// <returns>reference to connector handler</returns>
-        IInputConnectorHandler Handle<T>(Action<T> handler);
+        IInputConnectorHandler Handle<T>(Action<T> handler) where T : struct;
     }
 }

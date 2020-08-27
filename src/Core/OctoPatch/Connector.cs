@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Base class for all kind of connectors
     /// </summary>
-    public abstract class Connector : IConnector
+    internal abstract class Connector : IConnector
     {
         /// <summary>
         /// <inheritdoc />

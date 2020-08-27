@@ -15,6 +15,6 @@
         /// </summary>
         /// <typeparam name="T">message type</typeparam>
         /// <param name="value">message content</param>
-        void Send<T>(T value);
+        void Send<T>(T value) where T : struct;
     }
 }

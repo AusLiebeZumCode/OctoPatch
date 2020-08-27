@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Connector implementation for incoming messages
     /// </summary>
-    public sealed class InputConnector : Connector, IInputConnector, IInputConnectorHandler
+    internal sealed class InputConnector : Connector, IInputConnector, IInputConnectorHandler
     {
         /// <summary>
         /// Returns the description for this input
@@ -21,6 +21,22 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
+        public void AttachWire(IWire wire)
+        {
+
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void DetachWire(IWire wire)
+        {
+
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public IInputConnectorHandler Handle(Action handler)
         {
             return this;
@@ -29,7 +45,7 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IInputConnectorHandler Handle<T>(Action<T> handler)
+        public IInputConnectorHandler Handle<T>(Action<T> handler) where T : struct
         {
             return this;
         }

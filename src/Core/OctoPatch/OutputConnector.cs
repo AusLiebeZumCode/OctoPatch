@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Connector implementation for outgoing messages
     /// </summary>
-    public sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
+    internal sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
     {
         /// <summary>
         /// <inheritdoc />
@@ -21,15 +21,33 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void Send()
+        public void AttachWire(IWire wire)
         {
+
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void Send<T>(T value)
+        public void DetachWire(IWire wire)
         {
+
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void Send()
+        {
+            var message = Message.Create();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void Send<T>(T value) where T : struct
+        {
+            var message = Message.Create(value);
         }
     }
 }
