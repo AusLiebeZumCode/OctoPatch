@@ -18,6 +18,18 @@
         /// <summary>
         /// Description of the type
         /// </summary>
-        public MessageDescription Type { get; set; }
+        public ContentType ContentType { get; set; }
+
+        public PropertyDescription()
+        {
+
+        }
+
+        public PropertyDescription(string name, string description, ContentType contentType)
+        {
+            Name = name;
+            Description = description;
+            ContentType = contentType;
+        }
     }
 }

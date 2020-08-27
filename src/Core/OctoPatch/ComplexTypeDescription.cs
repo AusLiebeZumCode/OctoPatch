@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace OctoPatch
 {
@@ -21,5 +22,17 @@ namespace OctoPatch
         /// List of containing properties
         /// </summary>
         public List<PropertyDescription> PropertyDescriptions { get; set; }
+
+        public ComplexTypeDescription()
+        {
+
+        }
+
+        public ComplexTypeDescription(string name, string description, params PropertyDescription[] propertyDescriptions)
+        {
+            Name = name;
+            Description = description;
+            PropertyDescriptions = propertyDescriptions?.ToList() ?? new List<PropertyDescription>();
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace OctoPatch
 {
@@ -24,9 +23,16 @@ namespace OctoPatch
         public string Description { get; set; }
 
         /// <summary>
-        /// Optional list of supported types. If this is null
-        /// the connector supports all kind of types
+        /// connector content type
         /// </summary>
-        public List<MessageDescription> SupportedTypes { get; set; }
+        public ContentType ContentType { get; set; }
+
+        protected ConnectorDescription(Guid guid, string name, ContentType contentType, string description = null)
+        {
+            Guid = guid;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            ContentType = contentType ?? throw new ArgumentNullException(nameof(contentType));
+            Description = description;
+        }
     }
 }

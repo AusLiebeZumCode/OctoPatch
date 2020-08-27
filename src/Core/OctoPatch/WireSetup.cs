@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Represents a wire between an input- and an output-connector
     /// </summary>
-    public sealed class WireInstance
+    public sealed class WireSetup
     {
         /// <summary>
         /// Instance id of the node with the output connector

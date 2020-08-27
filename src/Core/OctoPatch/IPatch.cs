@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OctoPatch.Core
+namespace OctoPatch
 {
     /// <summary>
     /// Interface for the central patch

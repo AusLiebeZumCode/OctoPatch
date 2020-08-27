@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch.Core
+namespace OctoPatch
 {
     /// <summary>
     /// Common connector interface

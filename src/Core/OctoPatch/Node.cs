@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace OctoPatch.Core
+namespace OctoPatch
 {
     /// <summary>
     /// Base class for all kind of node implementations
@@ -60,16 +60,26 @@ namespace OctoPatch.Core
 
         #region Connector configuration
 
-        protected IOutputConnector RegisterOutputConnector(Guid guid)
+        /// <summary>
+        /// Registers a new output connector to the node
+        /// </summary>
+        /// <param name="outputDescription">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IOutputConnector RegisterOutputConnector(OutputDescription outputDescription)
         {
-            var outputConnector = new OutputConnector(guid);
+            var outputConnector = new OutputConnector(outputDescription);
             _outputs.Add(outputConnector);
             return outputConnector;
         }
 
-        protected IInputConnector RegisterInputConnector(Guid guid)
+        /// <summary>
+        /// Registers a new input connector to the node
+        /// </summary>
+        /// <param name="inputDescription">input connector description</param>
+        /// <returns>new connector</returns>
+        protected IInputConnector RegisterInputConnector(InputDescription inputDescription)
         {
-            var inputConnector = new InputConnector(guid);
+            var inputConnector = new InputConnector(inputDescription);
             _inputs.Add(inputConnector);
             return inputConnector;
         }

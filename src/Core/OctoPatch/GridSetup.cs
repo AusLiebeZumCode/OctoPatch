@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Represents a single grid setup
     /// </summary>
-    public sealed class Grid
+    public sealed class GridSetup
     {
         /// <summary>
         /// Name of the grid
@@ -20,11 +20,11 @@ namespace OctoPatch
         /// <summary>
         /// List of node instances
         /// </summary>
-        public List<NodeInstance> NodeInstances { get; set; }
+        public List<NodeSetup> NodeInstances { get; set; }
 
         /// <summary>
         /// List of wire instances
         /// </summary>
-        public List<WireInstance> WireInstances { get; set; }
+        public List<WireSetup> WireInstances { get; set; }
     }
 }

@@ -1,14 +1,21 @@
 ﻿using System;
 
-namespace OctoPatch.Core
+namespace OctoPatch
 {
-    public sealed class InputConnector : IInputConnector
+    /// <summary>
+    /// Connector implementation for incoming messages
+    /// </summary>
+    public sealed class InputConnector : Connector, IInputConnector
     {
-        public Guid Guid { get; }
+        /// <summary>
+        /// Returns the description for this input
+        /// </summary>
+        public InputDescription InputDescription { get; }
 
-        public InputConnector(Guid guid)
+        public InputConnector(InputDescription inputDescription) 
+            : base(inputDescription?.Guid ?? throw new ArgumentNullException(nameof(inputDescription)))
         {
-            Guid = guid;
+            InputDescription = inputDescription;
         }
 
         public IInputConnector HandleEmpty(Action handler)

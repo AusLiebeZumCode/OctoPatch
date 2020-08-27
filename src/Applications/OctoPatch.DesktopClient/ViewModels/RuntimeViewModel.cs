@@ -11,15 +11,15 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ObservableCollection<NodeDescription> NodeDescriptions { get; }
 
-        public ObservableCollection<NodeInstance> Nodes { get; }
+        public ObservableCollection<NodeSetup> Nodes { get; }
 
-        public ObservableCollection<WireInstance> Wires { get; }
+        public ObservableCollection<WireSetup> Wires { get; }
 
         public RuntimeViewModel()
         {
             NodeDescriptions = new ObservableCollection<NodeDescription>();
-            Nodes = new ObservableCollection<NodeInstance>();
-            Wires = new ObservableCollection<WireInstance>();
+            Nodes = new ObservableCollection<NodeSetup>();
+            Wires = new ObservableCollection<WireSetup>();
 
             var repository = new Repository();
             _runtime = new Runtime(repository);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Core;
 
 namespace OctoPatch.Server
 {
@@ -24,9 +23,9 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly NodeDescription[] _descriptions;
 
-        private Dictionary<Guid, (INode node, NodeInstance instance)> _instanceMapping;
+        private Dictionary<Guid, (INode node, NodeSetup instance)> _instanceMapping;
 
-        private Dictionary<IWire, WireInstance> _wireMapping;
+        private Dictionary<IWire, WireSetup> _wireMapping;
 
         public Runtime(IRepository repository)
         {
@@ -35,17 +34,17 @@ namespace OctoPatch.Server
             _repository = repository;
             _descriptions = repository.GetNodeDescriptions().ToArray();
 
-            _instanceMapping = new Dictionary<Guid, (INode node, NodeInstance instance)>();
-            _wireMapping = new Dictionary<IWire, WireInstance>();
+            _instanceMapping = new Dictionary<Guid, (INode node, NodeSetup instance)>();
+            _wireMapping = new Dictionary<IWire, WireSetup>();
         }
 
-        public async Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        public async Task<NodeSetup> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
         {
             var description = _descriptions.First(d => d.Guid == nodeDescriptionGuid);
             var node = await _repository.CreateNode(description.Guid, Guid.NewGuid(), cancellationToken);
             await _patch.AddNode(node, cancellationToken);
 
-            var instance = new NodeInstance
+            var instance = new NodeSetup
             {
                 Guid = node.NodeId,
                 NodeDescription = nodeDescriptionGuid,
@@ -63,7 +62,7 @@ namespace OctoPatch.Server
             throw new NotImplementedException();
         }
 
-        public Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,
             Guid intputConnectorId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -84,22 +83,22 @@ namespace OctoPatch.Server
             return Task.FromResult(_repository.GetMessageDescriptions());
         }
 
-        public Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken)
+        public Task<IEnumerable<NodeSetup>> GetNodes(CancellationToken cancellationToken)
         {
             return Task.FromResult(_instanceMapping.Values.Select(i => i.instance).AsEnumerable());
         }
 
-        public Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken)
+        public Task<IEnumerable<WireSetup>> GetWires(CancellationToken cancellationToken)
         {
             return Task.FromResult(_wireMapping.Values.AsEnumerable());
         }
 
-        public Task<Grid> GetConfiguration(CancellationToken cancellationToken)
+        public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task SetConfiguration(Grid grid, CancellationToken cancellationToken)
+        public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
         {
             //var description = _descriptions.First(d => d.Guid == nodeInstance.NodeDescription);
             //var node = await _repository.CreateNode(description.Guid, nodeInstance.Guid, cancellationToken);
@@ -129,9 +128,9 @@ namespace OctoPatch.Server
             node.instance.Configuration = configuration;
         }
 
-        public event Action<NodeInstance> OnNodeAdded;
+        public event Action<NodeSetup> OnNodeAdded;
         public event Action<Guid> OnNodeRemoved;
-        public event Action<WireInstance> OnWireAdded;
+        public event Action<WireSetup> OnWireAdded;
         public event Action<Guid> OnWireRemoved;
     }
 }

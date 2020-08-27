@@ -1,12 +1,17 @@
 ﻿using System;
 
-namespace OctoPatch.Core
+namespace OctoPatch
 {
     /// <summary>
     /// Interface for an input connector
     /// </summary>
     public interface IInputConnector : IConnector
     {
+        /// <summary>
+        /// Returns the description for this input
+        /// </summary>
+        InputDescription InputDescription { get; }
+
         IInputConnector HandleEmpty(Action handler);
         IInputConnector HandleBool(Action<bool> handler);
         IInputConnector HandleInteger(Action<int> handler);

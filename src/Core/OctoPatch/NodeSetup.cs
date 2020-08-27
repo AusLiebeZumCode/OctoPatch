@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Represents an instance of a node within a grid
     /// </summary>
-    public sealed class NodeInstance
+    public sealed class NodeSetup
     {
         /// <summary>
         /// Unique id for this instance

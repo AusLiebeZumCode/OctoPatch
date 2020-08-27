@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a integer based message
     /// </summary>
-    public sealed class FloatMessageDescription : MessageDescription
+    public sealed class FloatContentType : ContentType
     {
         /// <summary>
         /// Optional lowest value for this message

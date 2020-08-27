@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Core;
 using RtMidi.Core;
 using RtMidi.Core.Devices;
 using RtMidi.Core.Messages;
@@ -15,13 +14,44 @@ namespace OctoPatch.Plugin.Midi
     /// </summary>
     public sealed class MidiDevice : Node<DeviceConfiguration>
     {
-        private IOutputConnector _output;
+        #region Type description
+
+        /// <summary>
+        /// Description of the node
+        /// </summary>
+        public static NodeDescription NodeDescription => NodeDescription.Create<MidiDevice>(
+                Guid.Parse("{8AA1AB11-DB28-4098-9999-13A3A47E8A83}"),
+                "MIDI Device",
+                new Version(1, 0, 0), 
+                "This is our first plugin to see how it works")
+            .AddInputDescription(MidiInputDescription)
+            .AddOutputDescription(MidiOutputDescription);
+
+        /// <summary>
+        /// Description of the MIDI input connector
+        /// </summary>
+        public static InputDescription MidiInputDescription => new InputDescription(
+            Guid.Parse("{55FF3128-EF2E-4FE3-881A-285993E57A7D}"),
+            "MIDI input",
+            ComplexContentType.Create<MidiMessage>());
+
+        /// <summary>
+        /// Description of the MIDI output connector
+        /// </summary>
+        public static OutputDescription MidiOutputDescription => new OutputDescription(
+            Guid.Parse("{3148D6F6-48CC-42D6-8A69-49536BDB2F8E}"),
+            "MIDI Output",
+            ComplexContentType.Create<MidiMessage>());
+
+        #endregion
+
+        private readonly IOutputConnector _output;
 
         private IMidiInputDevice _device;
 
         public MidiDevice(Guid nodeId) : base(nodeId)
         {
-            _output = RegisterOutputConnector(Guid.Parse("{3148D6F6-48CC-42D6-8A69-49536BDB2F8E}"));
+            _output = RegisterOutputConnector(MidiOutputDescription);
         }
 
         protected override Task OnInitialize(DeviceConfiguration configuration, CancellationToken cancellationToken)
@@ -76,35 +106,17 @@ namespace OctoPatch.Plugin.Midi
 
         private void DeviceOnControlChange(IMidiInputDevice sender, in ControlChangeMessage msg)
         {
-            _output.SendComplex(new MidiMessage
-            {
-                MessageType = 3,
-                Channel = (int)msg.Channel,
-                Key = msg.Control,
-                Value = msg.Value,
-            });
+            _output.SendComplex(new MidiMessage(3, (int)msg.Channel, msg.Control, msg.Value));
         }
 
         private void DeviceOnNoteOff(IMidiInputDevice sender, in NoteOffMessage msg)
         {
-            _output.SendComplex(new MidiMessage
-            {
-                MessageType = 1,
-                Channel = (int)msg.Channel,
-                Key = (int)msg.Key,
-                Value = msg.Velocity,
-            });
+            _output.SendComplex(new MidiMessage(1, (int)msg.Channel, (int)msg.Key, msg.Velocity));
         }
 
         private void DeviceOnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
         {
-            _output.SendComplex(new MidiMessage
-            {
-                MessageType = 2,
-                Channel = (int)msg.Channel,
-                Key = (int)msg.Key,
-                Value = msg.Velocity
-            });
+            _output.SendComplex(new MidiMessage(2, (int)msg.Channel, (int)msg.Key, msg.Velocity));
         }
 
         #region static helper methods

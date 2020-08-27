@@ -1,4 +1,4 @@
-﻿namespace OctoPatch.Core
+﻿namespace OctoPatch
 {
     /// <summary>
     /// Interface for a node wire

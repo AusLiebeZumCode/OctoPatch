@@ -1,4 +1,4 @@
-﻿namespace OctoPatch.Core
+﻿namespace OctoPatch
 {
     /// <summary>
     /// Represents a single message

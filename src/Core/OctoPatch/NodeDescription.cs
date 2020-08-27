@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace OctoPatch
 {
@@ -42,5 +43,45 @@ namespace OctoPatch
         /// List of output connectors
         /// </summary>
         public List<OutputDescription> OutputDescriptions { get; set; }
+
+        private NodeDescription(Guid guid, string name, Version version, string description = null)
+        {
+            Guid = guid;
+            Version = version.ToString();
+            Name = name;
+            Description = description;
+            InputDescriptions = new List<InputDescription>();
+            OutputDescriptions = new List<OutputDescription>();
+        }
+
+        /// <summary>
+        /// Adds an output description to the node
+        /// </summary>
+        /// <param name="description">description</param>
+        /// <returns>current instance to chain adds</returns>
+        public NodeDescription AddOutputDescription(OutputDescription description)
+        {
+            OutputDescriptions.Add(description);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds an input description to the node
+        /// </summary>
+        /// <param name="description">description</param>
+        /// <returns>current instance to chain adds</returns>
+        public NodeDescription AddInputDescription(InputDescription description)
+        {
+            InputDescriptions.Add(description);
+            return this;
+        }
+
+        public static NodeDescription Create<T>(Guid guid, string name, Version version, string description)
+        {
+            return new NodeDescription(guid, name, version, description)
+            {
+                TypeName = typeof(T).FullName,
+            };
+        }
     }
 }
