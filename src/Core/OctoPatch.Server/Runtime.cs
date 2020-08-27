@@ -128,9 +128,9 @@ namespace OctoPatch.Server
             node.instance.Configuration = configuration;
         }
 
-        public event Action<NodeSetup> OnNodeAdded;
-        public event Action<Guid> OnNodeRemoved;
-        public event Action<WireSetup> OnWireAdded;
-        public event Action<Guid> OnWireRemoved;
+        public event Action<NodeSetup> OnNodeAdded = delegate { };
+        public event Action<Guid> OnNodeRemoved = delegate { };
+        public event Action<WireSetup> OnWireAdded = delegate { };
+        public event Action<Guid> OnWireRemoved = delegate { };
     }
 }
