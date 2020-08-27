@@ -19,7 +19,7 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => NodeDescription.Create<MidiDevice>(
+        public static NodeDescription NodeDescription => CommonNodeDescription.Create<MidiDevice>(
                 Guid.Parse("{8AA1AB11-DB28-4098-9999-13A3A47E8A83}"),
                 "MIDI Device",
                 new Version(1, 0, 0), 

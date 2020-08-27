@@ -11,7 +11,7 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => NodeDescription.Create<MidiMessageFilter>(
+        public static NodeDescription NodeDescription => CommonNodeDescription.Create<MidiMessageFilter>(
                 Guid.Parse("{01F4AF51-E88D-401E-B02D-4D8B1164039C}"),
                 "MIDI message filter",
                 new Version(1, 0, 0), 

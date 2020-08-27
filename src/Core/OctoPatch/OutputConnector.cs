@@ -21,7 +21,7 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void AttachWire(IWire wire)
+        public override void AttachWire(IWire wire)
         {
 
         }
@@ -29,7 +29,7 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void DetachWire(IWire wire)
+        public override void DetachWire(IWire wire)
         {
 
         }

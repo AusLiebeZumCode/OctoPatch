@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 
 namespace OctoPatch
 {
     /// <summary>
     /// Meta description of a node
     /// </summary>
-    public sealed class NodeDescription
+    public abstract class NodeDescription
     {
         /// <summary>
         /// Id of a node type
@@ -44,7 +43,7 @@ namespace OctoPatch
         /// </summary>
         public List<OutputDescription> OutputDescriptions { get; set; }
 
-        private NodeDescription(Guid guid, string name, Version version, string description = null)
+        protected NodeDescription(Guid guid, string name, Version version, string description = null)
         {
             Guid = guid;
             Version = version.ToString();
@@ -74,14 +73,6 @@ namespace OctoPatch
         {
             InputDescriptions.Add(description);
             return this;
-        }
-
-        public static NodeDescription Create<T>(Guid guid, string name, Version version, string description)
-        {
-            return new NodeDescription(guid, name, version, description)
-            {
-                TypeName = typeof(T).FullName,
-            };
         }
     }
 }
