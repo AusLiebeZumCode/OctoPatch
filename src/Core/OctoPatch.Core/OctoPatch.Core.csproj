@@ -11,16 +11,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Wires\**" />
+    <EmbeddedResource Remove="Wires\**" />
+    <None Remove="Wires\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OctoPatch.Server\OctoPatch.Server.csproj" />
     <ProjectReference Include="..\OctoPatch\OctoPatch.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Wires\" />
   </ItemGroup>
 
 </Project>

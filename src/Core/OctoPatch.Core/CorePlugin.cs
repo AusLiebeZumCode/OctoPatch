@@ -27,7 +27,7 @@ namespace OctoPatch.Core
 
         public Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<INode>(null);
         }
     }
 }
