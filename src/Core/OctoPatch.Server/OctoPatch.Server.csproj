@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OctoPatch.Core\OctoPatch.Core.csproj" />
     <ProjectReference Include="..\OctoPatch\OctoPatch.csproj" />
   </ItemGroup>
 
