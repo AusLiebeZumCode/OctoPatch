@@ -1,4 +1,6 @@
-﻿namespace OctoPatch
+﻿using System;
+
+namespace OctoPatch
 {
     /// <summary>
     /// Represents a single message
@@ -8,11 +10,11 @@
         /// <summary>
         /// Gets or sets the type of the serialized message
         /// </summary>
-        public string Type { get; set; }
+        public Type Type { get; set; }
 
         /// <summary>
-        /// Gets or sets the serialized content
+        /// Gets or sets the content
         /// </summary>
-        public string Content { get; set; }
+        public ValueType Content { get; set; }
     }
 }
