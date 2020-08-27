@@ -97,7 +97,9 @@ namespace OctoPatch.Server
         public Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken)
         {
             if (!_nodeToPluginMapping.TryGetValue(nodeDescriptionGuid, out var plugin))
-                return null;
+            {
+                return Task.FromResult<INode>(null);
+            }
 
             return plugin.CreateNode(nodeDescriptionGuid, nodeId, cancellationToken);
         }
