@@ -7,9 +7,9 @@ namespace OctoPatch
     /// <summary>
     /// Special node to be attached directly to a specified node
     /// </summary>
-    public sealed class AttachedNode : Node<INodeConfiguration>
+    public abstract class AttachedNode<T> : Node<INodeConfiguration> where T : INode
     {
-        public AttachedNode(Guid nodeId) : base(nodeId)
+        protected AttachedNode(Guid nodeId) : base(nodeId)
         {
         }
 

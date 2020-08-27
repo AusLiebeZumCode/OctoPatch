@@ -7,9 +7,9 @@ namespace OctoPatch
     /// <summary>
     /// Special node to split up complex types
     /// </summary>
-    public sealed class SplitterNode : Node<INodeConfiguration>
+    public abstract class SplitterNode : Node<INodeConfiguration>
     {
-        public SplitterNode(Guid nodeId, ComplexTypeDescription typeDescription) : base(nodeId)
+        protected SplitterNode(Guid nodeId, ComplexTypeDescription typeDescription) : base(nodeId)
         {
         }
 

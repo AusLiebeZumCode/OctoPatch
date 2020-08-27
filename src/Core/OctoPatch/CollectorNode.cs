@@ -7,9 +7,9 @@ namespace OctoPatch
     /// <summary>
     /// Special node to collect different values to combine them into a complex type
     /// </summary>
-    public sealed class CollectorNode : Node<INodeConfiguration>
+    public abstract class CollectorNode : Node<INodeConfiguration>
     {
-        public CollectorNode(Guid nodeId, ComplexTypeDescription typeDescription) : base(nodeId)
+        protected CollectorNode(Guid nodeId, ComplexTypeDescription typeDescription) : base(nodeId)
         {
         }
 
