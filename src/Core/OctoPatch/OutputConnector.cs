@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Connector implementation for outgoing messages
     /// </summary>
-    public sealed class OutputConnector : Connector, IOutputConnector
+    public sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
     {
         /// <summary>
         /// <inheritdoc />
@@ -18,39 +18,18 @@ namespace OctoPatch
             OutputDescription = outputDescription;
         }
 
-        public void SendEmpty()
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void Send()
         {
-
         }
 
-        public void SendInteger(int value)
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void Send<T>(T value)
         {
-
-        }
-
-        public void SendFloat(float value)
-        {
-
-        }
-
-        public void SendBool(bool value)
-        {
-
-        }
-
-        public void SendString(string value)
-        {
-
-        }
-
-        public void SendBinary(byte[] value)
-        {
-
-        }
-
-        public void SendComplex<T>(T value)
-        {
-
         }
     }
 }

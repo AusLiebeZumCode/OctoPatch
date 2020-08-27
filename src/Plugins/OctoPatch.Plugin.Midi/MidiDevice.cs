@@ -45,7 +45,7 @@ namespace OctoPatch.Plugin.Midi
 
         #endregion
 
-        private readonly IOutputConnector _output;
+        private readonly IOutputConnectorHandler _output;
 
         private IMidiInputDevice _device;
 
@@ -106,17 +106,17 @@ namespace OctoPatch.Plugin.Midi
 
         private void DeviceOnControlChange(IMidiInputDevice sender, in ControlChangeMessage msg)
         {
-            _output.SendComplex(new MidiMessage(3, (int)msg.Channel, msg.Control, msg.Value));
+            _output.Send(new MidiMessage(3, (int)msg.Channel, msg.Control, msg.Value));
         }
 
         private void DeviceOnNoteOff(IMidiInputDevice sender, in NoteOffMessage msg)
         {
-            _output.SendComplex(new MidiMessage(1, (int)msg.Channel, (int)msg.Key, msg.Velocity));
+            _output.Send(new MidiMessage(1, (int)msg.Channel, (int)msg.Key, msg.Velocity));
         }
 
         private void DeviceOnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
         {
-            _output.SendComplex(new MidiMessage(2, (int)msg.Channel, (int)msg.Key, msg.Velocity));
+            _output.Send(new MidiMessage(2, (int)msg.Channel, (int)msg.Key, msg.Velocity));
         }
 
         #region static helper methods

@@ -39,7 +39,7 @@ namespace OctoPatch.Plugin.Midi
 
         private FilterConfiguration _configuration;
 
-        private readonly IOutputConnector _output;
+        private readonly IOutputConnectorHandler _output;
 
         public MidiMessageFilter(Guid nodeId) : base(nodeId)
         {
@@ -49,14 +49,14 @@ namespace OctoPatch.Plugin.Midi
             // StreamNote: m4cx: "Da war ich auch dran ;)" (2020-06-30 22:26)
 
             RegisterInputConnector(MidiInputDescription)
-                .HandleComplex<MidiMessage>(Handle);
+                .Handle<MidiMessage>(Handle);
         }
 
         private void Handle(MidiMessage message)
         {
             if (Valid(message))
             {
-                _output.SendComplex(message);
+                _output.Send(message);
             }
         }
 
