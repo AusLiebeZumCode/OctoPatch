@@ -23,8 +23,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch", "src\Core\OctoP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Client", "src\Core\OctoPatch.Client\OctoPatch.Client.csproj", "{7E0C6630-AB2F-4F94-A93E-395D62BADF52}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Core", "src\Core\OctoPatch.Core\OctoPatch.Core.csproj", "{DAC461F3-D9AF-4145-B402-952502D4900E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Server", "src\Core\OctoPatch.Server\OctoPatch.Server.csproj", "{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}"
 EndProject
 Global
@@ -61,10 +59,6 @@ Global
 		{7E0C6630-AB2F-4F94-A93E-395D62BADF52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E0C6630-AB2F-4F94-A93E-395D62BADF52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E0C6630-AB2F-4F94-A93E-395D62BADF52}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAC461F3-D9AF-4145-B402-952502D4900E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAC461F3-D9AF-4145-B402-952502D4900E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAC461F3-D9AF-4145-B402-952502D4900E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAC461F3-D9AF-4145-B402-952502D4900E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}.Release|Any CPU.ActiveCfg = Release|Any CPU

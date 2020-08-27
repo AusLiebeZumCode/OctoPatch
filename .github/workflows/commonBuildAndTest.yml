@@ -96,9 +96,6 @@ jobs:
       - name: Create NuGet Package (OctoPatch)
         run: dotnet pack src/Core/OctoPatch/OctoPatch.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
-      - name: Create NuGet Package (OctoPatch.Core)
-        run: dotnet pack src/Core/OctoPatch.Core/OctoPatch.Core.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
-
       - name: Create NuGet Package (OctoPatch.Server)
         run: dotnet pack src/Core/OctoPatch.Server/OctoPatch.Server.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
