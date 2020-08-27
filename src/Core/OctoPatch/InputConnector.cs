@@ -21,22 +21,6 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public override void AttachWire(IWire wire)
-        {
-
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public override void DetachWire(IWire wire)
-        {
-
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
         public IInputConnectorHandler Handle(Action handler)
         {
             return this;
@@ -48,6 +32,18 @@ namespace OctoPatch
         public IInputConnectorHandler Handle<T>(Action<T> handler) where T : struct
         {
             return this;
+        }
+
+        public void OnCompleted()
+        {
+        }
+
+        public void OnError(Exception error)
+        {
+        }
+
+        public void OnNext(Message value)
+        {
         }
     }
 }

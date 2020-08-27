@@ -16,15 +16,5 @@ namespace OctoPatch
         {
             Guid = guid;
         }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public abstract void AttachWire(IWire wire);
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public abstract void DetachWire(IWire wire);
     }
 }

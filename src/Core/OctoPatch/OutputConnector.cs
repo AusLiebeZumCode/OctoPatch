@@ -21,22 +21,6 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public override void AttachWire(IWire wire)
-        {
-
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public override void DetachWire(IWire wire)
-        {
-
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
         public void Send()
         {
             var message = Message.Create();
@@ -48,6 +32,11 @@ namespace OctoPatch
         public void Send<T>(T value) where T : struct
         {
             var message = Message.Create(value);
+        }
+
+        public IDisposable Subscribe(IObserver<Message> observer)
+        {
+            throw new NotImplementedException();
         }
     }
 }
