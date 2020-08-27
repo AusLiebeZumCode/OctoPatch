@@ -3,8 +3,10 @@
     /// <summary>
     /// Represents a single wire between two connectors
     /// </summary>
-    public sealed class Wire : IWire
+    internal sealed class Wire : IWire
     {
+        private IAdapter _adapter;
+
         /// <summary>
         /// <inheritdoc />
         /// </summary>
