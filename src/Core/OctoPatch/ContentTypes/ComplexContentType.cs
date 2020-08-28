@@ -1,4 +1,6 @@
-﻿namespace OctoPatch.ContentTypes
+﻿using System;
+
+namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Represents a message description based on a complex type
@@ -6,15 +8,15 @@
     public sealed class ComplexContentType : ContentType
     {
         /// <summary>
-        /// Gets or sets the name of the complex type
+        /// Gets or sets the key of the complex type
         /// </summary>
-        public string Type { get; set; }
+        public string Key { get; set; }
 
-        public static ComplexContentType Create<T>()
+        public static ComplexContentType Create<T>(Guid pluginId)
         {
-            return new ComplexContentType()
+            return new ComplexContentType
             {
-                Type = typeof(T).FullName
+                Key = $"{pluginId}:{typeof(T).Name}"
             };
         }
     }
