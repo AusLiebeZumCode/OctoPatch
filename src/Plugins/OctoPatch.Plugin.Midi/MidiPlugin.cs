@@ -14,6 +14,16 @@ namespace OctoPatch.Plugin.Midi
     public sealed class MidiPlugin : IPlugin
     {
         /// <summary>
+        ///  Plugin id
+        /// </summary>
+        internal const string PluginId = "{12EA0035-45AF-4DA8-8B5D-E1B9D9484BA4}";
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Guid Id => Guid.Parse(PluginId);
+
+        /// <summary>
         /// <inheritdoc />
         /// </summary>
         public string Name => "MIDI";
@@ -28,25 +38,24 @@ namespace OctoPatch.Plugin.Midi
         /// </summary>
         public Version Version => new Version(1, 0, 0);
 
-        private readonly NodeDescription[] _nodeDescriptions;
+        private readonly Dictionary<NodeDescription, Type> _nodeDescriptions;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<NodeDescription> GetNodeDescriptions() => _nodeDescriptions;
+        public IEnumerable<NodeDescription> GetNodeDescriptions() => _nodeDescriptions.Keys;
 
         public MidiPlugin()
         {
-            _nodeDescriptions = new[]
-            {
-                MidiDevice.NodeDescription
-            };
+            _nodeDescriptions = new Dictionary<NodeDescription, Type>();
+            _nodeDescriptions.Add(MidiDevice.NodeDescription, typeof(MidiDevice));
+            _nodeDescriptions.Add(MidiMessageFilter.NodeDescription, typeof(MidiMessageFilter));
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<ComplexTypeDescription> GetTypeDescriptions()
+        public IEnumerable<TypeDescription> GetTypeDescriptions()
         {
             return new[]
             {
@@ -57,14 +66,13 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken)
+        public Task<INode> CreateNode(string key, Guid nodeId, CancellationToken cancellationToken)
         {
-            var local = _nodeDescriptions.FirstOrDefault(d => d.Guid == nodeDescriptionGuid);
+            var local = _nodeDescriptions.Keys.FirstOrDefault(d => d.Key == key);
             if (local == null)
-                throw new ArgumentException("Node with the given GUID does not exist", nameof(nodeDescriptionGuid));
+                throw new ArgumentException("Node with the given key does not exist", nameof(key));
 
-            var type = Type.GetType(local.TypeName);
-            return Task.FromResult((INode)Activator.CreateInstance(type, nodeId));
+            return Task.FromResult((INode)Activator.CreateInstance(_nodeDescriptions[local], nodeId));
         }
     }
 }

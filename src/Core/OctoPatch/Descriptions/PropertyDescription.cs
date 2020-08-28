@@ -5,20 +5,15 @@ namespace OctoPatch.Descriptions
     /// <summary>
     /// Description for a single property of a custom message
     /// </summary>
-    public sealed class PropertyDescription
+    public sealed class PropertyDescription : Description
     {
         /// <summary>
-        /// Property Name
+        /// Gets or sets the key for this property. Must be unique within the property type
         /// </summary>
-        public string Name { get; set; }
+        public string Key { get; set; }
 
         /// <summary>
-        /// Description for this property
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Description of the type
+        /// Gets or sets the type information
         /// </summary>
         public ContentType ContentType { get; set; }
 
@@ -27,10 +22,9 @@ namespace OctoPatch.Descriptions
 
         }
 
-        public PropertyDescription(string name, string description, ContentType contentType)
+        public PropertyDescription(string displayName, string displayDescription, ContentType contentType) 
+            : base(displayName, displayDescription)
         {
-            Name = name;
-            Description = description;
             ContentType = contentType;
         }
     }

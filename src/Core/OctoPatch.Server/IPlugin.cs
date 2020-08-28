@@ -12,6 +12,11 @@ namespace OctoPatch.Server
     public interface IPlugin
     {
         /// <summary>
+        /// Gets the unique plugin id
+        /// </summary>
+        Guid Id { get; }
+
+        /// <summary>
         /// Gets the name of the plugin.
         /// </summary>
         string Name { get; }
@@ -36,16 +41,16 @@ namespace OctoPatch.Server
         /// Lists up all containing type descriptions.
         /// </summary>
         /// <returns>List of type descriptions</returns>
-        IEnumerable<ComplexTypeDescription> GetTypeDescriptions();
+        IEnumerable<TypeDescription> GetTypeDescriptions();
 
         /// <summary>
         /// Method to generate a new instance of the node with the given node guid.
         /// </summary>
-        /// <param name="nodeDescriptionGuid">node description guid</param>
+        /// <param name="key">node description key</param>
         /// <param name="nodeId">id of the new node</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new instance of a node with the given guid</returns>
-        Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken);
+        Task<INode> CreateNode(string key, Guid nodeId, CancellationToken cancellationToken);
 
     }
 }

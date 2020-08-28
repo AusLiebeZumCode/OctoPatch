@@ -10,12 +10,17 @@ namespace OctoPatch.Setup
         /// <summary>
         /// Unique id for this instance
         /// </summary>
-        public Guid Guid { get; set; }
+        public Guid NodeId { get; set; }
 
         /// <summary>
-        /// Id of the node definition
+        /// Id of the plugin
         /// </summary>
-        public Guid NodeDescription { get; set; }
+        public Guid PluginId { get; set; }
+
+        /// <summary>
+        /// Unique key of the node description
+        /// </summary>
+        public string Key { get; set; }
 
         /// <summary>
         /// Name of this instance

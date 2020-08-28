@@ -4,36 +4,25 @@ using OctoPatch.ContentTypes;
 namespace OctoPatch.Descriptions
 {
     /// <summary>
-    /// Basic description for node connectors
+    /// description for node connectors
     /// </summary>
-    public abstract class ConnectorDescription
+    public sealed class ConnectorDescription : Description
     {
         /// <summary>
-        /// Unique id of this connector
+        /// Unique key of this connector
         /// </summary>
-        public Guid Guid { get; set; }
-
-        /// <summary>
-        /// Name of this connector
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Description for this connector
-        /// </summary>
-        public string Description { get; set; }
+        public string Key { get; set; }
 
         /// <summary>
         /// connector content type
         /// </summary>
         public ContentType ContentType { get; set; }
 
-        protected ConnectorDescription(Guid guid, string name, ContentType contentType, string description = null)
+        public ConnectorDescription(string key, string displayName, string displayDescription, ContentType contentType) 
+            : base(displayName, displayDescription)
         {
-            Guid = guid;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Key = key;
             ContentType = contentType ?? throw new ArgumentNullException(nameof(contentType));
-            Description = description;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace OctoPatch
     /// </summary>
     public abstract class CollectorNode : Node<IConfiguration, IEnvironment>
     {
-        protected CollectorNode(Guid nodeId, ComplexTypeDescription typeDescription) : base(nodeId)
+        protected CollectorNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
         {
         }
 

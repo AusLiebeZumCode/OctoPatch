@@ -14,7 +14,7 @@ namespace OctoPatch
         /// <summary>
         /// Gets the node id. This is only set when initialized.
         /// </summary>
-        Guid NodeId { get; }
+        Guid Id { get; }
 
         /// <summary>
         /// Returns the current state of the node

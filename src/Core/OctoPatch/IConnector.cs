@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch
 {
@@ -10,6 +11,11 @@ namespace OctoPatch
         /// <summary>
         /// Gets the unique id of the current connector
         /// </summary>
-        Guid Guid { get; }
+        string Key { get; }
+
+        /// <summary>
+        /// Returns the description
+        /// </summary>
+        ConnectorDescription Description { get; }
     }
 }

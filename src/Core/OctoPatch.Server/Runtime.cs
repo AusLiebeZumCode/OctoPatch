@@ -40,21 +40,27 @@ namespace OctoPatch.Server
             _wireMapping = new Dictionary<IWire, WireSetup>();
         }
 
-        public async Task<NodeSetup> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        public async Task<NodeSetup> AddNode(Guid pluginId, string key, CancellationToken cancellationToken)
         {
-            var description = _descriptions.First(d => d.Guid == nodeDescriptionGuid);
-            var node = await _repository.CreateNode(description.Guid, Guid.NewGuid(), cancellationToken);
+            var description = _descriptions.First(d => d.PluginId == pluginId && d.Key == key);
+            var node = await _repository.CreateNode(pluginId, key, Guid.NewGuid(), cancellationToken);
+            if (node == null)
+            {
+                return null;
+            }
+
             await _patch.AddNode(node, cancellationToken);
 
             var instance = new NodeSetup
             {
-                Guid = node.NodeId,
-                NodeDescription = nodeDescriptionGuid,
-                Name = description.Name,
-                Description = description.Description
+                NodeId = node.Id,
+                Key = key,
+                PluginId = pluginId,
+                Name = description.DisplayName,
+                Description = description.DisplayDescription
             };
 
-            _instanceMapping.Add(node.NodeId, (node, instance));
+            _instanceMapping.Add(node.Id, (node, instance));
 
             return instance;
         }
@@ -80,7 +86,7 @@ namespace OctoPatch.Server
             return Task.FromResult(_repository.GetNodeDescriptions());
         }
 
-        public Task<IEnumerable<ComplexTypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
             return Task.FromResult(_repository.GetMessageDescriptions());
         }

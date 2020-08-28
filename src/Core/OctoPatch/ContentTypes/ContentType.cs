@@ -5,5 +5,6 @@
     /// </summary>
     public abstract class ContentType
     {
+        public string Type => GetType().Name;
     }
 }

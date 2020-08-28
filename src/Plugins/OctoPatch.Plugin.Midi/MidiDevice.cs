@@ -21,10 +21,9 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => CommonNodeDescription.Create<MidiDevice>(
-                Guid.Parse("{8AA1AB11-DB28-4098-9999-13A3A47E8A83}"),
+        public static NodeDescription NodeDescription => NodeDescription.Create<MidiDevice>(
+                Guid.Parse(MidiPlugin.PluginId),
                 "MIDI Device",
-                new Version(1, 0, 0), 
                 "This is our first plugin to see how it works")
             .AddInputDescription(MidiInputDescription)
             .AddOutputDescription(MidiOutputDescription);
@@ -32,18 +31,14 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Description of the MIDI input connector
         /// </summary>
-        public static InputDescription MidiInputDescription => new InputDescription(
-            Guid.Parse("{55FF3128-EF2E-4FE3-881A-285993E57A7D}"),
-            "MIDI input",
-            ComplexContentType.Create<MidiMessage>());
+        public static ConnectorDescription MidiInputDescription => new ConnectorDescription(
+            "MidiInput", "MIDI Input", "MIDI input signal", ComplexContentType.Create<MidiMessage>());
 
         /// <summary>
         /// Description of the MIDI output connector
         /// </summary>
-        public static OutputDescription MidiOutputDescription => new OutputDescription(
-            Guid.Parse("{3148D6F6-48CC-42D6-8A69-49536BDB2F8E}"),
-            "MIDI Output",
-            ComplexContentType.Create<MidiMessage>());
+        public static ConnectorDescription MidiOutputDescription => new ConnectorDescription(
+            "MidiOutput", "MIDI Output", "MIDI output signal", ComplexContentType.Create<MidiMessage>());
 
         #endregion
 

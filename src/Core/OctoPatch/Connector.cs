@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch
 {
@@ -10,11 +11,22 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Guid Guid { get; }
+        public string Key { get; }
 
-        protected Connector(Guid guid)
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public ConnectorDescription Description { get; }
+
+        protected Connector(ConnectorDescription description)
         {
-            Guid = guid;
+            if (description == null)
+            {
+                throw new ArgumentNullException(nameof(description));
+            }
+
+            Key = description.Key;
+            Description = description;
         }
     }
 }

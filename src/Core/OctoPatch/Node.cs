@@ -28,7 +28,7 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Guid NodeId { get; }
+        public Guid Id { get; }
 
         /// <summary>
         /// Internal reference to the current configuration
@@ -50,11 +50,11 @@ namespace OctoPatch
         /// </summary>
         public IEnumerable<IOutputConnector> Outputs => _outputs;
 
-        protected Node(Guid nodeId)
+        protected Node(Guid id)
         {
             _localLock = new SemaphoreSlim(1);
 
-            NodeId = nodeId;
+            Id = id;
             State = NodeState.Uninitialized;
 
             _inputs = new List<IInputConnector>();
@@ -466,11 +466,11 @@ namespace OctoPatch
         /// <summary>
         /// Registers a new output connector to the node
         /// </summary>
-        /// <param name="outputDescription">output connector description</param>
+        /// <param name="description">output connector description</param>
         /// <returns>new connector</returns>
-        protected IOutputConnectorHandler RegisterOutputConnector(OutputDescription outputDescription)
+        protected IOutputConnectorHandler RegisterOutputConnector(ConnectorDescription description)
         {
-            var outputConnector = new OutputConnector(outputDescription);
+            var outputConnector = new OutputConnector(description);
             _outputs.Add(outputConnector);
             return outputConnector;
         }
@@ -478,11 +478,11 @@ namespace OctoPatch
         /// <summary>
         /// Registers a new input connector to the node
         /// </summary>
-        /// <param name="inputDescription">input connector description</param>
+        /// <param name="description">input connector description</param>
         /// <returns>new connector</returns>
-        protected IInputConnectorHandler RegisterInputConnector(InputDescription inputDescription)
+        protected IInputConnectorHandler RegisterInputConnector(ConnectorDescription description)
         {
-            var inputConnector = new InputConnector(inputDescription);
+            var inputConnector = new InputConnector(description);
             _inputs.Add(inputConnector);
             return inputConnector;
         }

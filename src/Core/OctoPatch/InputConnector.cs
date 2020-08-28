@@ -8,15 +8,8 @@ namespace OctoPatch
     /// </summary>
     internal sealed class InputConnector : Connector, IInputConnector, IInputConnectorHandler
     {
-        /// <summary>
-        /// Returns the description for this input
-        /// </summary>
-        public InputDescription InputDescription { get; }
-
-        public InputConnector(InputDescription inputDescription) 
-            : base(inputDescription?.Guid ?? throw new ArgumentNullException(nameof(inputDescription)))
+        public InputConnector(ConnectorDescription description) : base(description)
         {
-            InputDescription = inputDescription;
         }
 
         /// <summary>

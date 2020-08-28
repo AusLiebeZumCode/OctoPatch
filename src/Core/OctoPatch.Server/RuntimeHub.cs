@@ -37,7 +37,7 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<ComplexTypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
             return Task.FromResult(_repository.GetMessageDescriptions());
         }
@@ -83,7 +83,7 @@ namespace OctoPatch.Server
             //return Task.CompletedTask;
         }
 
-        public Task<NodeSetup> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(Guid pluginId, string key, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

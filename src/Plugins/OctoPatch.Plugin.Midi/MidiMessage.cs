@@ -1,4 +1,5 @@
-﻿using OctoPatch.ContentTypes;
+﻿using System;
+using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch.Plugin.Midi
@@ -11,9 +12,11 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Returns the type description
         /// </summary>
-        public static ComplexTypeDescription TypeDescription => 
-            new ComplexTypeDescription(
+        public static TypeDescription TypeDescription => 
+            new TypeDescription(
+                Guid.Parse(MidiPlugin.PluginId),
                 nameof(MidiMessage), 
+                "MIDI Message",
                 "Represents a single MIDI message", 
                 new PropertyDescription(nameof(MessageType), "Contains the message type", new IntegerContentType()), 
                 new PropertyDescription(nameof(Channel), "Contains the channel", new IntegerContentType()),

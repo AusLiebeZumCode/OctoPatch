@@ -26,7 +26,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>all message descriptions</returns>
-        Task<IEnumerable<ComplexTypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
+        Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
 
         #endregion
 
@@ -63,10 +63,11 @@ namespace OctoPatch
         /// <summary>
         /// Adds a new node to the patch
         /// </summary>
-        /// <param name="nodeDescriptionGuid">node description id</param>
+        /// <param name="key">unique key for the node description</param>
         /// <param name="cancellationToken">cancellation token</param>
+        /// <param name="pluginId">plugin id</param>
         /// <returns>new node instance</returns>
-        Task<NodeSetup> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken);
+        Task<NodeSetup> AddNode(Guid pluginId, string key, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id from the patch

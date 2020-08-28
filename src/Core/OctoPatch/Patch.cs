@@ -72,9 +72,9 @@ namespace OctoPatch
         private async Task InternalAddNode(INode node, CancellationToken cancellationToken, string configuration = null)
         {
             // Double check for node id collisions
-            if (_nodes.ToArray().Any(n => n.NodeId == node.NodeId))
+            if (_nodes.ToArray().Any(n => n.Id == node.Id))
             {
-                throw new ArgumentException("node with this id already exists", nameof(node.NodeId));
+                throw new ArgumentException("node with this id already exists", nameof(node.Id));
             }
 
             _nodes.Add(node);
@@ -114,7 +114,7 @@ namespace OctoPatch
             await _localLock.WaitAsync(cancellationToken);
             try
             {
-                var node = _nodes.ToArray().FirstOrDefault(n => n.NodeId == nodeId);
+                var node = _nodes.ToArray().FirstOrDefault(n => n.Id == nodeId);
                 if (node == null)
                 {
                     throw new ArgumentException("node does not exist", nameof(nodeId));

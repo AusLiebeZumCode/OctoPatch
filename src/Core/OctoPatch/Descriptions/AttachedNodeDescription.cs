@@ -8,32 +8,28 @@ namespace OctoPatch.Descriptions
     public sealed class AttachedNodeDescription : NodeDescription
     {
         /// <summary>
-        /// Gets the id of the parent node to attach to
+        /// Gets or sets the key of the parent node to attach to
         /// </summary>
-        public Guid ParentNode { get; set; }
+        public string ParentKey { get; set; }
 
-        private AttachedNodeDescription(Guid guid, Guid parentNode, string name, Version version, string description = null) 
-            : base(guid, name, version, description)
+        private AttachedNodeDescription(Guid pluginId, string key, string displayName, string displayDescription, string parentKey)
+            : base(pluginId, key, displayName, displayDescription)
         {
-            ParentNode = parentNode;
+            ParentKey = parentKey;
         }
 
         /// <summary>
         /// Creates a new description
         /// </summary>
         /// <typeparam name="T">node type</typeparam>
-        /// <param name="guid">node description id</param>
-        /// <param name="parentNode">id of the node to attach to</param>
-        /// <param name="name">name of the node</param>
-        /// <param name="version">version</param>
-        /// <param name="description">optional description</param>
+        /// <param name="pluginId">plugin id</param>
+        /// <param name="parentKey">id of the node to attach to</param>
+        /// <param name="displayName">name of the node</param>
+        /// <param name="displayDescription">optional description</param>
         /// <returns>node description</returns>
-        public static NodeDescription Create<T>(Guid guid, Guid parentNode, string name, Version version, string description)
+        public static AttachedNodeDescription Create<T>(Guid pluginId, string displayName, string displayDescription, string parentKey)
         {
-            return new AttachedNodeDescription(guid, parentNode, name, version, description)
-            {
-                TypeName = typeof(T).FullName,
-            };
+            return new AttachedNodeDescription(pluginId, typeof(T).Name, displayName, displayDescription, parentKey);
         }
     }
 }

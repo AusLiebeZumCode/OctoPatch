@@ -8,15 +8,8 @@ namespace OctoPatch
     /// </summary>
     internal sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
     {
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public OutputDescription OutputDescription { get; }
-
-        public OutputConnector(OutputDescription outputDescription) 
-            : base(outputDescription?.Guid ?? throw new ArgumentNullException(nameof(outputDescription)))
+        public OutputConnector(ConnectorDescription description) : base(description)
         {
-            OutputDescription = outputDescription;
         }
 
         /// <summary>

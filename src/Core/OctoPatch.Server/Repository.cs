@@ -19,15 +19,9 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly List<IPlugin> _plugins;
 
-        /// <summary>
-        /// Mapping from node guid to responsible plugin
-        /// </summary>
-        private readonly Dictionary<Guid, IPlugin> _nodeToPluginMapping;
-
         public Repository()
         {
             _plugins = new List<IPlugin>();
-            _nodeToPluginMapping = new Dictionary<Guid, IPlugin>();
 
             var executablePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             DirectoryInfo directoryInfo = new DirectoryInfo(executablePath);
@@ -57,12 +51,7 @@ namespace OctoPatch.Server
                     if (typeof(IPlugin).IsAssignableFrom(type))
                     {
                         var plugin = (IPlugin) Activator.CreateInstance(type);
-
                         _plugins.Add(plugin);
-                        foreach (var nodeDescription in plugin.GetNodeDescriptions())
-                        {
-                            _nodeToPluginMapping.Add(nodeDescription.Guid, plugin);
-                        }
                     }
                 }
             }
@@ -79,7 +68,7 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<ComplexTypeDescription> GetMessageDescriptions()
+        public IEnumerable<TypeDescription> GetMessageDescriptions()
         {
             return _plugins.SelectMany(p => p.GetTypeDescriptions());
         }
@@ -95,14 +84,15 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken)
+        public Task<INode> CreateNode(Guid pluginId, string key, Guid nodeId, CancellationToken cancellationToken)
         {
-            if (!_nodeToPluginMapping.TryGetValue(nodeDescriptionGuid, out var plugin))
+            var plugin = _plugins.FirstOrDefault(p => p.Id == pluginId);
+            if (plugin == null)
             {
                 return Task.FromResult<INode>(null);
             }
 
-            return plugin.CreateNode(nodeDescriptionGuid, nodeId, cancellationToken);
+            return plugin.CreateNode(key, nodeId, cancellationToken);
         }
     }
 }

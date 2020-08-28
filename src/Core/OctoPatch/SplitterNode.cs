@@ -10,9 +10,8 @@ namespace OctoPatch
     /// </summary>
     public abstract class SplitterNode : Node<IConfiguration, IEnvironment>
     {
-        protected SplitterNode(Guid nodeId, ComplexTypeDescription typeDescription) : base(nodeId)
+        protected SplitterNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
         {
-            
         }
 
         protected override Task OnInitialize(IConfiguration configuration, CancellationToken cancellationToken)

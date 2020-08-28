@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OctoPatch.Descriptions
 {
     /// <summary>
-    /// Description for a single adapter
+    /// Description of a complex message type
     /// </summary>
-    public sealed class AdapterDescription : Description
+    public sealed class TypeDescription : Description
     {
         /// <summary>
         /// Gets or sets the id of the related plugin
@@ -19,16 +20,18 @@ namespace OctoPatch.Descriptions
         public string Key { get; set; }
 
         /// <summary>
-        /// Gets a list of supported input/output combinations
+        /// List of containing properties
         /// </summary>
-        public List<(string input, string output)> SupportedTypeCombinations { get; }
+        public List<PropertyDescription> PropertyDescriptions { get; set; }
 
-        public AdapterDescription(Guid pluginId, string key, string displayName, string displayDescription) 
+        public TypeDescription() { }
+
+        public TypeDescription(Guid pluginId, string key, string displayName, string displayDescription, params PropertyDescription[] propertyDescriptions) 
             : base(displayName, displayDescription)
         {
             PluginId = pluginId;
             Key = key;
-            SupportedTypeCombinations = new List<(string input, string output)>();
+            PropertyDescriptions = propertyDescriptions?.ToList() ?? new List<PropertyDescription>();
         }
     }
 }

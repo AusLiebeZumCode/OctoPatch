@@ -54,9 +54,9 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<ComplexTypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync<IEnumerable<ComplexTypeDescription>>(nameof(GetMessageDescriptions), cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync<IEnumerable<TypeDescription>>(nameof(GetMessageDescriptions), cancellationToken, cancellationToken);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace OctoPatch.Client
             return _hubConnection.InvokeAsync(nameof(SetNodeConfiguration), nodeGuid, configuration, cancellationToken, cancellationToken);
         }
 
-        public Task<NodeSetup> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(Guid pluginId, string key, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

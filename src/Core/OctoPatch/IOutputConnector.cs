@@ -1,5 +1,4 @@
 ﻿using System;
-using OctoPatch.Descriptions;
 
 namespace OctoPatch
 {
@@ -8,9 +7,5 @@ namespace OctoPatch
     /// </summary>
     public interface IOutputConnector : IConnector, IObservable<Message>
     {
-        /// <summary>
-        /// Returns the description for this output
-        /// </summary>
-        OutputDescription OutputDescription { get; }
     }
 }
