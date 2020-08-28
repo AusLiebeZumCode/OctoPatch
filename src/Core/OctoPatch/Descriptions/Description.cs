@@ -15,8 +15,6 @@
         /// </summary>
         public string DisplayDescription { get; set; }
 
-        protected Description() { }
-
         protected Description(string displayName, string displayDescription)
         {
             DisplayName = displayName;

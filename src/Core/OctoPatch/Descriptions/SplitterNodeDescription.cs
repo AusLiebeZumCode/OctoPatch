@@ -12,22 +12,22 @@ namespace OctoPatch.Descriptions
         /// </summary>
         public string ComplexTypeName { get; set; }
 
-        private SplitterNodeDescription(Guid pluginId, string key, string displayName, string displayDescription) 
-            : base(pluginId, key, displayName, displayDescription)
+        private SplitterNodeDescription(string key, string displayName, string displayDescription) 
+            : base(key, displayName, displayDescription)
         {
         }
 
         /// <summary>
-        /// Creates a new description
+        /// Creates a new description for splitter nodes
         /// </summary>
         /// <typeparam name="T">node type</typeparam>
         /// <param name="pluginId">plugin id</param>
         /// <param name="displayName">name of the node</param>
         /// <param name="displayDescription">optional description</param>
         /// <returns>node description</returns>
-        public static SplitterNodeDescription Create<T>(Guid pluginId, string displayName, string displayDescription)
+        public static SplitterNodeDescription CreateSplitter<T>(Guid pluginId, string displayName, string displayDescription)
         {
-            return new SplitterNodeDescription(pluginId, typeof(T).Name, displayName, displayDescription);
+            return new SplitterNodeDescription($"{pluginId}:{typeof(T).Name}", displayName, displayDescription);
         }
     }
 }

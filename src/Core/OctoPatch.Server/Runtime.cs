@@ -42,7 +42,8 @@ namespace OctoPatch.Server
 
         public async Task<NodeSetup> AddNode(Guid pluginId, string key, CancellationToken cancellationToken)
         {
-            var description = _descriptions.First(d => d.PluginId == pluginId && d.Key == key);
+            var fullKey = $"{pluginId}:{key}";
+            var description = _descriptions.First(d => d.Key == fullKey);
             var node = await _repository.CreateNode(pluginId, key, Guid.NewGuid(), cancellationToken);
             if (node == null)
             {

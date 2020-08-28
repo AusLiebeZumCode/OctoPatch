@@ -6,22 +6,12 @@ namespace OctoPatch.Descriptions
     /// <summary>
     /// Meta description of a node
     /// </summary>
-    public class NodeDescription : Description
+    public class NodeDescription : KeyDescription
     {
         /// <summary>
         /// Returns the actual type of the node description
         /// </summary>
         public string NodeType => GetType().Name;
-
-        /// <summary>
-        /// Gets or sets the id of the related plugin
-        /// </summary>
-        public Guid PluginId { get; set; }
-
-        /// <summary>
-        /// Key for this type. Usually the type name (without namespace)
-        /// </summary>
-        public string Key { get; set; }
 
         /// <summary>
         /// List of input connectors
@@ -33,13 +23,9 @@ namespace OctoPatch.Descriptions
         /// </summary>
         public List<ConnectorDescription> OutputDescriptions { get; set; }
 
-        protected NodeDescription() { }
-
-        protected NodeDescription(Guid pluginId, string key, string displayName, string displayDescription) 
-            : base(displayName, displayDescription)
+        protected NodeDescription(string key, string displayName, string displayDescription) 
+            : base(key, displayName, displayDescription)
         {
-            PluginId = pluginId;
-            Key = key;
             InputDescriptions = new List<ConnectorDescription>();
             OutputDescriptions = new List<ConnectorDescription>();
         }
@@ -76,7 +62,7 @@ namespace OctoPatch.Descriptions
         /// <returns>node description</returns>
         public static NodeDescription Create<T>(Guid pluginId, string displayName, string displayDescription)
         {
-            return new NodeDescription(pluginId, typeof(T).Name, displayName, displayDescription);
+            return new NodeDescription($"{pluginId}:{typeof(T).Name}", displayName, displayDescription);
         }
     }
 }

@@ -7,31 +7,23 @@ namespace OctoPatch.Descriptions
     /// <summary>
     /// Description of a complex message type
     /// </summary>
-    public sealed class TypeDescription : Description
+    public sealed class TypeDescription : KeyDescription
     {
-        /// <summary>
-        /// Gets or sets the id of the related plugin
-        /// </summary>
-        public Guid PluginId { get; set; }
-
-        /// <summary>
-        /// Key for this type. Usually the type name (without namespace)
-        /// </summary>
-        public string Key { get; set; }
-
         /// <summary>
         /// List of containing properties
         /// </summary>
         public List<PropertyDescription> PropertyDescriptions { get; set; }
 
-        public TypeDescription() { }
-
-        public TypeDescription(Guid pluginId, string key, string displayName, string displayDescription, params PropertyDescription[] propertyDescriptions) 
-            : base(displayName, displayDescription)
+        public TypeDescription(string key, string displayName, string displayDescription, params PropertyDescription[] propertyDescriptions) 
+            : base(key, displayName, displayDescription)
         {
-            PluginId = pluginId;
-            Key = key;
             PropertyDescriptions = propertyDescriptions?.ToList() ?? new List<PropertyDescription>();
+        }
+
+        public static TypeDescription Create<T>(Guid pluginId, string displayName, string displayDescription,
+            params PropertyDescription[] propertyDescriptions)
+        {
+            return new TypeDescription($"{pluginId}:{typeof(T).Name}", displayName, displayDescription, propertyDescriptions);
         }
     }
 }

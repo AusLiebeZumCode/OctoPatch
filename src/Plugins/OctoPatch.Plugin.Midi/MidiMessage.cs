@@ -12,16 +12,14 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Returns the type description
         /// </summary>
-        public static TypeDescription TypeDescription => 
-            new TypeDescription(
-                Guid.Parse(MidiPlugin.PluginId),
-                nameof(MidiMessage), 
+        public static TypeDescription TypeDescription =>
+            TypeDescription.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId),
                 "MIDI Message",
-                "Represents a single MIDI message", 
-                new PropertyDescription(nameof(MessageType), "Contains the message type", new IntegerContentType()), 
-                new PropertyDescription(nameof(Channel), "Contains the channel", new IntegerContentType()),
-                new PropertyDescription(nameof(Key), "Contains the key", new IntegerContentType()),
-                new PropertyDescription(nameof(Value), "Contains the value", new IntegerContentType()));
+                "Represents a single MIDI message",
+                new PropertyDescription(nameof(MessageType), nameof(MessageType), "Contains the message type", new IntegerContentType()),
+                new PropertyDescription(nameof(Channel), nameof(Channel), "Contains the channel", new IntegerContentType()),
+                new PropertyDescription(nameof(Key), nameof(Key), "Contains the key", new IntegerContentType()),
+                new PropertyDescription(nameof(Value), nameof(Value), "Contains the value", new IntegerContentType()));
 
         /// <summary>
         /// message type
