@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using OctoPatch.Descriptions;
+using OctoPatch.Setup;
 
 namespace OctoPatch.Server
 {

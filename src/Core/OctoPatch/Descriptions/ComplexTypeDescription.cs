@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace OctoPatch
+namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Description of a complex message type

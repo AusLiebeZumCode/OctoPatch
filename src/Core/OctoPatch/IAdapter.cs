@@ -1,18 +1,11 @@
-﻿namespace OctoPatch
+﻿using System;
+
+namespace OctoPatch
 {
     /// <summary>
-    /// Interface for a wire adapter
+    /// Interface for wire adapters
     /// </summary>
-    public interface IAdapter
+    public interface IAdapter : IDisposable
     {
-        /// <summary>
-        /// Single input connector
-        /// </summary>
-        IInputConnector Input { get; }
-
-        /// <summary>
-        /// Single output connector
-        /// </summary>
-        IOutputConnector Output { get; }
     }
 }

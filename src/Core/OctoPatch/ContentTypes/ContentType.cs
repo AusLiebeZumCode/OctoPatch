@@ -1,4 +1,4 @@
-﻿namespace OctoPatch
+﻿namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Describes the type of content within a connector or complex type

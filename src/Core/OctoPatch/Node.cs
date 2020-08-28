@@ -3,19 +3,27 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch
 {
     /// <summary>
     /// Base class for all kind of node implementations
     /// </summary>
-    /// <typeparam name="T">configuration type</typeparam>
-    public abstract class Node<T> : INode where T : INodeConfiguration
+    /// <typeparam name="TConfiguration">configuration type</typeparam>
+    /// <typeparam name="TEnvironment">environment type</typeparam>
+    public abstract class Node<TConfiguration, TEnvironment> : INode
+        where TConfiguration : IConfiguration
+        where TEnvironment : IEnvironment
     {
         /// <summary>
         /// Local lock to synchronize the node lifecycle
         /// </summary>
         private readonly SemaphoreSlim _localLock;
+
+        private readonly List<IInputConnector> _inputs;
+
+        private readonly List<IOutputConnector> _outputs;
 
         /// <summary>
         /// <inheritdoc />
@@ -25,17 +33,12 @@ namespace OctoPatch
         /// <summary>
         /// Internal reference to the current configuration
         /// </summary>
-        protected T Configuration { get; private set; }
+        protected TConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
         public NodeState State { get; private set; }
-
-        private readonly List<IInputConnector> _inputs;
-
-        private readonly List<IOutputConnector> _outputs;
-
 
         /// <summary>
         /// <inheritdoc />
@@ -57,34 +60,6 @@ namespace OctoPatch
             _inputs = new List<IInputConnector>();
             _outputs = new List<IOutputConnector>();
         }
-
-        #region Connector configuration
-
-        /// <summary>
-        /// Registers a new output connector to the node
-        /// </summary>
-        /// <param name="outputDescription">output connector description</param>
-        /// <returns>new connector</returns>
-        protected IOutputConnectorHandler RegisterOutputConnector(OutputDescription outputDescription)
-        {
-            var outputConnector = new OutputConnector(outputDescription);
-            _outputs.Add(outputConnector);
-            return outputConnector;
-        }
-
-        /// <summary>
-        /// Registers a new input connector to the node
-        /// </summary>
-        /// <param name="inputDescription">input connector description</param>
-        /// <returns>new connector</returns>
-        protected IInputConnectorHandler RegisterInputConnector(InputDescription inputDescription)
-        {
-            var inputConnector = new InputConnector(inputDescription);
-            _inputs.Add(inputConnector);
-            return inputConnector;
-        }
-
-        #endregion
 
         #region Lifecycle methods
 
@@ -148,10 +123,10 @@ namespace OctoPatch
                 }
 
                 // Deserialization of configuration
-                T config;
+                TConfiguration config;
                 try
                 {
-                    config = JsonConvert.DeserializeObject<T>(configuration);
+                    config = JsonConvert.DeserializeObject<TConfiguration>(configuration);
                 }
                 catch (JsonSerializationException ex)
                 {
@@ -189,7 +164,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="configuration">configuration</param>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnInitialize(T configuration, CancellationToken cancellationToken);
+        protected abstract Task OnInitialize(TConfiguration configuration, CancellationToken cancellationToken);
 
         /// <summary>
         /// <inheritdoc />
@@ -482,6 +457,34 @@ namespace OctoPatch
         private void InternalFail(bool initialized)
         {
             State = initialized ? NodeState.Failed : NodeState.InitializationFailed;
+        }
+
+        #endregion
+
+        #region Connector Management
+
+        /// <summary>
+        /// Registers a new output connector to the node
+        /// </summary>
+        /// <param name="outputDescription">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IOutputConnectorHandler RegisterOutputConnector(OutputDescription outputDescription)
+        {
+            var outputConnector = new OutputConnector(outputDescription);
+            _outputs.Add(outputConnector);
+            return outputConnector;
+        }
+
+        /// <summary>
+        /// Registers a new input connector to the node
+        /// </summary>
+        /// <param name="inputDescription">input connector description</param>
+        /// <returns>new connector</returns>
+        protected IInputConnectorHandler RegisterInputConnector(InputDescription inputDescription)
+        {
+            var inputConnector = new InputConnector(inputDescription);
+            _inputs.Add(inputConnector);
+            return inputConnector;
         }
 
         #endregion

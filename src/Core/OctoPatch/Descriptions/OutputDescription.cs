@@ -1,6 +1,7 @@
 ﻿using System;
+using OctoPatch.ContentTypes;
 
-namespace OctoPatch
+namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Representation of a single output connector

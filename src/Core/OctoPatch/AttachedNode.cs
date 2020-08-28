@@ -1,46 +1,20 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OctoPatch
 {
     /// <summary>
     /// Special node to be attached directly to a specified node
     /// </summary>
-    public abstract class AttachedNode<T> : Node<INodeConfiguration> where T : INode
+    public abstract class AttachedNode<T> : Node<IConfiguration, IEnvironment> where T : INode
     {
-        protected AttachedNode(Guid nodeId) : base(nodeId)
-        {
-        }
+        /// <summary>
+        /// Reference to the parent node
+        /// </summary>
+        protected T ParentNode { get; }
 
-        protected override Task OnInitialize(INodeConfiguration configuration, CancellationToken cancellationToken)
+        protected AttachedNode(Guid nodeId, T parentNode) : base(nodeId)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnStart(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnStop(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnDeinitialize(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnInitializeReset(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnReset(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+            ParentNode = parentNode;
         }
     }
 }

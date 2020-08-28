@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch
+namespace OctoPatch.Setup
 {
     /// <summary>
     /// Represents a wire between an input- and an output-connector

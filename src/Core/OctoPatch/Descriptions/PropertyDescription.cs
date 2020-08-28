@@ -1,4 +1,6 @@
-﻿namespace OctoPatch
+﻿using OctoPatch.ContentTypes;
+
+namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Description for a single property of a custom message

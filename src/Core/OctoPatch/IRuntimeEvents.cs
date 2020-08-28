@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.Setup;
 
 namespace OctoPatch
 {

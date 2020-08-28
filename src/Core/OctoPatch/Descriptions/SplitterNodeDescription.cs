@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch
+namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Node to split up complex types into its properties

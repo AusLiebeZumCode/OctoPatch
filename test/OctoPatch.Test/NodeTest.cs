@@ -474,7 +474,7 @@ namespace OctoPatch.Test
         /// <summary>
         /// Mock implementation based on the node class
         /// </summary>
-        public sealed class NodeMock : Node<NodeConfigurationMock>
+        public sealed class NodeMock : Node<NodeConfigurationMock, IEnvironment>
         {
             /// <summary>
             /// Gets or sets the behavior of the initialize calls
@@ -661,7 +661,7 @@ namespace OctoPatch.Test
         /// Mock configuration
         /// </summary>
         [DataContract]
-        public sealed class NodeConfigurationMock : INodeConfiguration
+        public sealed class NodeConfigurationMock : IConfiguration
         {
             /// <summary>
             /// Dummy property to double check

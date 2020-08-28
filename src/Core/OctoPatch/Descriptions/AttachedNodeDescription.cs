@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OctoPatch
+namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Node description for attached nodes

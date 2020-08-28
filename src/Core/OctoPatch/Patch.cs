@@ -152,16 +152,16 @@ namespace OctoPatch
             // Shut down and dispose it
             await node.Deinitialize(cancellationToken);
 
-            var connectors = node.Inputs.Cast<IConnector>()
-                .Union(node.Outputs.Cast<IConnector>()).ToArray();
+            //var connectors = node.Inputs.Cast<IConnector>()
+            //    .Union(node.Outputs.Cast<IConnector>()).ToArray();
 
-            // Remove all wires
-            foreach (var wire in _wires.ToArray()
-                .Where(w => connectors.Contains(w.InputConnector) ||
-                            connectors.Contains(w.OutputConnector)))
-            {
-                await InternalRemoveWire(wire, cancellationToken);
-            }
+            //// Remove all wires
+            //foreach (var wire in _wires.ToArray()
+            //    .Where(w => connectors.Contains(w.InputConnector) ||
+            //                connectors.Contains(w.OutputConnector)))
+            //{
+            //    await InternalRemoveWire(wire, cancellationToken);
+            //}
 
             _nodes.Remove(node);
         }

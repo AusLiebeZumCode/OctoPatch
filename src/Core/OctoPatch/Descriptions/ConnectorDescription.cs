@@ -1,6 +1,7 @@
 ﻿using System;
+using OctoPatch.ContentTypes;
 
-namespace OctoPatch
+namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Basic description for node connectors

@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.Descriptions;
 using OctoPatch.Server;
+using OctoPatch.Setup;
 
 namespace OctoPatch.DesktopClient.ViewModels
 {

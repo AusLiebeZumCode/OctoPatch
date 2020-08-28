@@ -3,7 +3,7 @@
     /// <summary>
     /// Base interface for all kind of node configuration
     /// </summary>
-    public interface INodeConfiguration
+    public interface IConfiguration
     {
     }
 }

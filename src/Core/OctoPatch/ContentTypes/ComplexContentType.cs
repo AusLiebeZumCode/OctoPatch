@@ -1,4 +1,4 @@
-﻿namespace OctoPatch
+﻿namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Represents a message description based on a complex type

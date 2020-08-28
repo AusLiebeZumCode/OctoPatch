@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.Descriptions;
 using OctoPatch.Server;
 
 namespace OctoPatch.Plugin.Midi

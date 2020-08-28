@@ -1,27 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OctoPatch
+namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Meta description of a node
     /// </summary>
-    public abstract class NodeDescription
+    public abstract class NodeDescription : CommonDescription
     {
+        /// <summary>
+        /// Returns the actual type of the node description
+        /// </summary>
+        public string NodeType => GetType().Name;
+
         /// <summary>
         /// Id of a node type
         /// </summary>
         public Guid Guid { get; set; }
-
-        /// <summary>
-        /// Name of the node
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Description of the node
-        /// </summary>
-        public string Description { get; set; }
 
         /// <summary>
         /// full type name of the node
@@ -43,12 +38,11 @@ namespace OctoPatch
         /// </summary>
         public List<OutputDescription> OutputDescriptions { get; set; }
 
-        protected NodeDescription(Guid guid, string name, Version version, string description = null)
+        protected NodeDescription(Guid guid, string name, Version version, string description = null) 
+            : base(name, description)
         {
             Guid = guid;
             Version = version.ToString();
-            Name = name;
-            Description = description;
             InputDescriptions = new List<InputDescription>();
             OutputDescriptions = new List<OutputDescription>();
         }

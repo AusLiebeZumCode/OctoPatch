@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OctoPatch
+namespace OctoPatch.Setup
 {
     /// <summary>
     /// Represents a single grid setup

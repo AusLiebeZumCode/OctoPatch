@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.ContentTypes;
+using OctoPatch.Descriptions;
 using RtMidi.Core;
 using RtMidi.Core.Devices;
 using RtMidi.Core.Messages;
@@ -12,7 +14,7 @@ namespace OctoPatch.Plugin.Midi
     /// <summary>
     /// Represents a single midi device
     /// </summary>
-    public sealed class MidiDevice : Node<DeviceConfiguration>
+    public sealed class MidiDevice : Node<DeviceConfiguration, IEnvironment>
     {
         #region Type description
 

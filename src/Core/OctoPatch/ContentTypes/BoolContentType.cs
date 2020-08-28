@@ -1,4 +1,4 @@
-﻿namespace OctoPatch
+﻿namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Represents a bool based message description

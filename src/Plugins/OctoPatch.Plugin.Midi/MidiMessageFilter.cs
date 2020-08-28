@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.ContentTypes;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch.Plugin.Midi
 {
-    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration>
+    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration, IEnvironment>
     {
         #region Type description
 
@@ -80,7 +82,7 @@ namespace OctoPatch.Plugin.Midi
             return true;
         }
 
-        public sealed class FilterConfiguration : INodeConfiguration
+        public sealed class FilterConfiguration : IConfiguration
         {
             public int? MessageType { get; set; }
 

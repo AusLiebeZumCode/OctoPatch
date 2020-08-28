@@ -1,8 +1,21 @@
 ﻿namespace OctoPatch
 {
-    public abstract class Adapter : IAdapter
+    /// <summary>
+    /// Base class for all kind of adapters
+    /// </summary>
+    /// <typeparam name="TConfiguration">type of configuration</typeparam>
+    /// <typeparam name="TEnvironment">type of environment</typeparam>
+    public abstract class Adapter<TConfiguration, TEnvironment> : IAdapter
+        where TConfiguration : IConfiguration
+        where TEnvironment : IEnvironment
     {
-        public IInputConnector Input { get; }
-        public IOutputConnector Output { get; }
+        protected Adapter(IInputConnector input, IOutputConnector output)
+        {
+        }
+
+        public void Dispose()
+        {
+
+        }
     }
 }
