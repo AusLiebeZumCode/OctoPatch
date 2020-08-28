@@ -66,6 +66,14 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// <inheritdoc />
         /// </summary>
+        public IEnumerable<AdapterDescription> GetAdapterDescriptions()
+        {
+            return Enumerable.Empty<AdapterDescription>();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public Task<INode> CreateNode(string key, Guid nodeId, CancellationToken cancellationToken)
         {
             var local = _nodeDescriptions.Keys.FirstOrDefault(d => d.Key == key);

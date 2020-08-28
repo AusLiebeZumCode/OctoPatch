@@ -14,17 +14,35 @@ namespace OctoPatch.Core
     public sealed class CorePlugin : IPlugin
     {
         public Guid Id => Guid.Parse("{598D58EB-756D-4BF7-B04B-AC9603315B6D}");
+
         public string Name => "Core components";
+        
         public string Description => "Plugin contains all basic types required for octo patch";
+        
         public Version Version => new Version(1, 0, 0);
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public IEnumerable<NodeDescription> GetNodeDescriptions()
         {
             return Enumerable.Empty<NodeDescription>();
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public IEnumerable<TypeDescription> GetTypeDescriptions()
         {
             return Enumerable.Empty<TypeDescription>();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public IEnumerable<AdapterDescription> GetAdapterDescriptions()
+        {
+            return Enumerable.Empty<AdapterDescription>();
         }
 
         public Task<INode> CreateNode(string key, Guid nodeId, CancellationToken cancellationToken)

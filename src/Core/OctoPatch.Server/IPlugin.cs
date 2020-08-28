@@ -44,6 +44,12 @@ namespace OctoPatch.Server
         IEnumerable<TypeDescription> GetTypeDescriptions();
 
         /// <summary>
+        /// Lists up all containing adapter descriptions.
+        /// </summary>
+        /// <returns>List of adapter descriptions</returns>
+        IEnumerable<AdapterDescription> GetAdapterDescriptions();
+
+        /// <summary>
         /// Method to generate a new instance of the node with the given node guid.
         /// </summary>
         /// <param name="key">node description key</param>
