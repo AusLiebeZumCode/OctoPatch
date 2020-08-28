@@ -1,53 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using OctoPatch.Descriptions;
-using OctoPatch.Server;
 
 namespace OctoPatch.Core
 {
     /// <summary>
     /// Plugin for all basic types delivered with octo patch
     /// </summary>
-    public sealed class CorePlugin : IPlugin
+    public sealed class CorePlugin : Server.Plugin
     {
-        public Guid Id => Guid.Parse("{598D58EB-756D-4BF7-B04B-AC9603315B6D}");
+        private const string PluginId = "{598D58EB-756D-4BF7-B04B-AC9603315B6D}";
 
-        public string Name => "Core components";
+        public override Guid Id => Guid.Parse(PluginId);
+
+        public override string Name => "Core components";
         
-        public string Description => "Plugin contains all basic types required for octo patch";
+        public override string Description => "Plugin contains all basic types required for octo patch";
         
-        public Version Version => new Version(1, 0, 0);
-        
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public IEnumerable<NodeDescription> GetNodeDescriptions()
+        public override Version Version => new Version(1, 0, 0);
+
+        protected override INode OnCreateNode(Type type, Guid nodeId)
         {
-            return Enumerable.Empty<NodeDescription>();
+            return null;
         }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public IEnumerable<TypeDescription> GetTypeDescriptions()
+        protected override IAdapter OnCreateAdapter(Type type)
         {
-            return Enumerable.Empty<TypeDescription>();
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public IEnumerable<AdapterDescription> GetAdapterDescriptions()
-        {
-            return Enumerable.Empty<AdapterDescription>();
-        }
-
-        public Task<INode> CreateNode(string key, Guid nodeId, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<INode>(null);
+            return null;
         }
     }
 }

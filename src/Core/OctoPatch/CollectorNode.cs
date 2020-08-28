@@ -8,9 +8,9 @@ namespace OctoPatch
     /// <summary>
     /// Special node to collect different values to combine them into a complex type
     /// </summary>
-    public abstract class CollectorNode : Node<IConfiguration, IEnvironment>
+    public sealed class CollectorNode : Node<IConfiguration, IEnvironment>
     {
-        protected CollectorNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
+        public CollectorNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
         {
         }
 

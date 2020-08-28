@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch.Server
@@ -19,9 +17,15 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly List<IPlugin> _plugins;
 
+        private readonly Dictionary<string, IPlugin> _nodeMapping;
+
+        private readonly Dictionary<string, IPlugin> _adapterMapping;
+
         public Repository()
         {
             _plugins = new List<IPlugin>();
+            _adapterMapping = new Dictionary<string, IPlugin>();
+            _nodeMapping = new Dictionary<string, IPlugin>();
 
             var executablePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             DirectoryInfo directoryInfo = new DirectoryInfo(executablePath);
@@ -52,6 +56,16 @@ namespace OctoPatch.Server
                     {
                         var plugin = (IPlugin) Activator.CreateInstance(type);
                         _plugins.Add(plugin);
+
+                        foreach (var nodeDescription in plugin.GetNodeDescriptions())
+                        {
+                            _nodeMapping.Add(nodeDescription.Key, plugin);
+                        }
+
+                        foreach (var adapterDescription in plugin.GetAdapterDescriptions())
+                        {
+                            _adapterMapping.Add(adapterDescription.Key, plugin);
+                        }
                     }
                 }
             }
@@ -68,7 +82,7 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<TypeDescription> GetMessageDescriptions()
+        public IEnumerable<TypeDescription> GetTypeDescriptions()
         {
             return _plugins.SelectMany(p => p.GetTypeDescriptions());
         }
@@ -84,15 +98,35 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<INode> CreateNode(Guid pluginId, string key, Guid nodeId, CancellationToken cancellationToken)
+        public IEnumerable<AdapterDescription> GetAdapterDescriptions()
         {
-            var plugin = _plugins.FirstOrDefault(p => p.Id == pluginId);
-            if (plugin == null)
+            return _plugins.SelectMany(p => p.GetAdapterDescriptions());
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public INode CreateNode(string key, Guid nodeId)
+        {
+            if (!_nodeMapping.TryGetValue(key, out var plugin))
             {
-                return Task.FromResult<INode>(null);
+                return null;
             }
 
-            return plugin.CreateNode(key, nodeId, cancellationToken);
+            return plugin.CreateNode(key, nodeId);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public IAdapter CreateAdapter(string key)
+        {
+            if (!_adapterMapping.TryGetValue(key, out var plugin))
+            {
+                return null;
+            }
+
+            return plugin.CreateAdapter(key);
         }
     }
 }

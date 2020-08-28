@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch.Server
@@ -14,9 +12,9 @@ namespace OctoPatch.Server
         public abstract Guid Id { get; }
 
         public abstract string Name { get; }
-        
+
         public abstract string Description { get; }
-        
+
         public abstract Version Version { get; }
 
         private readonly List<NodeDescription> _nodeDescriptions;
@@ -25,7 +23,13 @@ namespace OctoPatch.Server
 
         private readonly List<AdapterDescription> _adapterDescriptions;
 
+        private readonly Dictionary<string, TypeDescription> _splitterMapping;
+
+        private readonly Dictionary<string, TypeDescription> _collectorMapping;
+
         private readonly Dictionary<string, Type> _nodeTypeMapping;
+
+        private readonly Dictionary<string, Type> _adapterTypeMapping;
 
         protected Plugin()
         {
@@ -33,6 +37,9 @@ namespace OctoPatch.Server
             _typeDescriptions = new List<TypeDescription>();
             _adapterDescriptions = new List<AdapterDescription>();
             _nodeTypeMapping = new Dictionary<string, Type>();
+            _adapterTypeMapping = new Dictionary<string, Type>();
+            _splitterMapping = new Dictionary<string, TypeDescription>();
+            _collectorMapping = new Dictionary<string, TypeDescription>();
         }
 
         /// <summary>
@@ -49,18 +56,29 @@ namespace OctoPatch.Server
         /// Registers the given type at the plugin
         /// </summary>
         /// <param name="description">type description</param>
-        protected void RegisterType(TypeDescription description)
+        protected void RegisterType<T>(TypeDescription description) where T : struct
         {
             _typeDescriptions.Add(description);
+
+            // Auto generate splitter
+            var splitter = SplitterNodeDescription.CreateFromComplexType(description);
+            _nodeDescriptions.Add(splitter);
+            _splitterMapping.Add(splitter.Key, description);
+
+            // Auto generate collector
+            var collector = CollectorNodeDescription.CreateFromComplexType(description);
+            _nodeDescriptions.Add(collector);
+            _collectorMapping.Add(collector.Key, description);
         }
 
         /// <summary>
         /// Registers the given adapter at the plugin
         /// </summary>
         /// <param name="description">adapter description</param>
-        protected void RegisterAdapter(AdapterDescription description)
+        protected void RegisterAdapter<T>(AdapterDescription description) where T : IAdapter
         {
             _adapterDescriptions.Add(description);
+            _adapterTypeMapping.Add(description.Key, typeof(T));
         }
 
         /// <summary>
@@ -78,23 +96,52 @@ namespace OctoPatch.Server
         /// </summary>
         public IEnumerable<AdapterDescription> GetAdapterDescriptions() => _adapterDescriptions;
 
-        public Task<INode> CreateNode(string key, Guid nodeId, CancellationToken cancellationToken)
+        public INode CreateNode(string key, Guid nodeId)
         {
-            if (!_nodeTypeMapping.TryGetValue(key, out var type))
+            // Special case of splitter
+            if (_splitterMapping.TryGetValue(key, out var splitterTypeDescription))
             {
-                return Task.FromResult<INode>(null);
+                return new SplitterNode(nodeId, splitterTypeDescription);
             }
 
-            return OnCreateNode(type, nodeId, cancellationToken);
+            // Special case of collector
+            if (_collectorMapping.TryGetValue(key, out var collectorTypeDescription))
+            {
+                return new CollectorNode(nodeId, collectorTypeDescription);
+            }
+
+            // Common nodes
+            if (!_nodeTypeMapping.TryGetValue(key, out var type))
+            {
+                return null;
+            }
+
+            return OnCreateNode(type, nodeId);
         }
 
         /// <summary>
-        /// Gets a call when the given type was requested
+        /// Gets a call when the given node was requested
         /// </summary>
         /// <param name="type">requested node type</param>
         /// <param name="nodeId">node id</param>
-        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new instance</returns>
-        protected abstract Task<INode> OnCreateNode(Type type, Guid nodeId, CancellationToken cancellationToken);
+        protected abstract INode OnCreateNode(Type type, Guid nodeId);
+
+        public IAdapter CreateAdapter(string key)
+        {
+            if (!_adapterTypeMapping.TryGetValue(key, out var type))
+            {
+                return null;
+            }
+
+            return OnCreateAdapter(type);
+        }
+
+        /// <summary>
+        /// Gets a call when the given adapter was requested
+        /// </summary>
+        /// <param name="type">requested adapter type</param>
+        /// <returns>new instance</returns>
+        protected abstract IAdapter OnCreateAdapter(Type type);
     }
 }

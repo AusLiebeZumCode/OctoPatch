@@ -8,9 +8,9 @@ namespace OctoPatch
     /// <summary>
     /// Special node to split up complex types
     /// </summary>
-    public abstract class SplitterNode : Node<IConfiguration, IEnvironment>
+    public sealed class SplitterNode : Node<IConfiguration, IEnvironment>
     {
-        protected SplitterNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
+        public SplitterNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
         {
         }
 

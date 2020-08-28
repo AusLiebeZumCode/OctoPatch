@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Descriptions;
@@ -31,7 +32,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public async Task Setup(CancellationToken cancellationToken)
         {
-            var descriptions = await _runtime.GetNodeDescriptions(cancellationToken);
+            var descriptions = (await _runtime.GetNodeDescriptions(cancellationToken)).ToArray();
             foreach (var description in descriptions)
             {
                 NodeDescriptions.Add(description);    

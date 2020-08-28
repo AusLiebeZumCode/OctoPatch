@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch.Server
@@ -50,13 +48,18 @@ namespace OctoPatch.Server
         IEnumerable<AdapterDescription> GetAdapterDescriptions();
 
         /// <summary>
-        /// Method to generate a new instance of the node with the given node guid.
+        /// Method to generate a new instance of the node with the given key.
         /// </summary>
         /// <param name="key">node description key</param>
         /// <param name="nodeId">id of the new node</param>
-        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new instance of a node with the given guid</returns>
-        Task<INode> CreateNode(string key, Guid nodeId, CancellationToken cancellationToken);
+        INode CreateNode(string key, Guid nodeId);
 
+        /// <summary>
+        /// Method to generate a new instance of the adapter with the given key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        IAdapter CreateAdapter(string key);
     }
 }

@@ -65,9 +65,8 @@ namespace OctoPatch
         /// </summary>
         /// <param name="key">unique key for the node description</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="pluginId">plugin id</param>
         /// <returns>new node instance</returns>
-        Task<NodeSetup> AddNode(Guid pluginId, string key, CancellationToken cancellationToken);
+        Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id from the patch

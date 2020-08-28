@@ -39,7 +39,7 @@ namespace OctoPatch.Server
         /// </summary>
         public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_repository.GetMessageDescriptions());
+            return Task.FromResult(_repository.GetTypeDescriptions());
         }
 
         #endregion
@@ -83,7 +83,7 @@ namespace OctoPatch.Server
             //return Task.CompletedTask;
         }
 
-        public Task<NodeSetup> AddNode(Guid pluginId, string key, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

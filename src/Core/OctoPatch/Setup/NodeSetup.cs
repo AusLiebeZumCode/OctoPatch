@@ -13,11 +13,6 @@ namespace OctoPatch.Setup
         public Guid NodeId { get; set; }
 
         /// <summary>
-        /// Id of the plugin
-        /// </summary>
-        public Guid PluginId { get; set; }
-
-        /// <summary>
         /// Unique key of the node description
         /// </summary>
         public string Key { get; set; }
