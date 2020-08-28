@@ -16,10 +16,26 @@ namespace OctoPatch.Plugin.Midi
             TypeDescription.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId),
                 "MIDI Message",
                 "Represents a single MIDI message",
-                new PropertyDescription(nameof(MessageType), nameof(MessageType), "Contains the message type", new IntegerContentType()),
-                new PropertyDescription(nameof(Channel), nameof(Channel), "Contains the channel", new IntegerContentType()),
-                new PropertyDescription(nameof(Key), nameof(Key), "Contains the key", new IntegerContentType()),
-                new PropertyDescription(nameof(Value), nameof(Value), "Contains the value", new IntegerContentType()));
+                new PropertyDescription(
+                    nameof(MessageType), 
+                    nameof(MessageType), 
+                    "Contains the message type", 
+                    new IntegerContentType()),
+                new PropertyDescription(
+                    nameof(Channel), 
+                    nameof(Channel), 
+                    "Contains the channel", 
+                    new IntegerContentType(minimumValue: 0, maximumValue: 15)),
+                new PropertyDescription(
+                    nameof(Key), 
+                    nameof(Key), 
+                    "Contains the key", 
+                    new IntegerContentType(minimumValue: 0, maximumValue: 127)),
+                new PropertyDescription(
+                    nameof(Value), 
+                    nameof(Value), 
+                    "Contains the value",
+                    new IntegerContentType(minimumValue: 0, maximumValue: 127)));
 
         /// <summary>
         /// message type

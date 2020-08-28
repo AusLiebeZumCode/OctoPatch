@@ -24,13 +24,15 @@ namespace OctoPatch.Plugin.Midi
         /// Description of the MIDI input connector
         /// </summary>
         public static ConnectorDescription MidiInputDescription => 
-            new ConnectorDescription("MidiInput", "MIDI Input", "MIDI input signal", ComplexContentType.Create<MidiMessage>());
+            new ConnectorDescription("MidiInput", "MIDI Input", "MIDI input signal", 
+                ComplexContentType.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId)));
 
         /// <summary>
         /// Description of the MIDI output connector
         /// </summary>
         public static ConnectorDescription MidiOutputDescription => 
-            new ConnectorDescription("MidiOutput", "MIDI Output", "MIDI output signal", ComplexContentType.Create<MidiMessage>());
+            new ConnectorDescription("MidiOutput", "MIDI Output", "MIDI output signal", 
+                ComplexContentType.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId)));
 
         #endregion
 
