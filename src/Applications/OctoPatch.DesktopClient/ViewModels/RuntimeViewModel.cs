@@ -104,9 +104,15 @@ namespace OctoPatch.DesktopClient.ViewModels
             
         }
 
-        private void RemoveSelectedNodeCallback(object obj)
+        private async void RemoveSelectedNodeCallback(object obj)
         {
-            
+            var node = SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
+
+            await _runtime.RemoveNode(node.NodeId, CancellationToken.None);
         }
 
         private async void AddNodeDescriptionCallback(object obj)
@@ -130,7 +136,13 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnOnNodeRemoved(Guid obj)
         {
-            throw new NotImplementedException();
+            var node = Nodes.ToArray().FirstOrDefault(n => n.NodeId == obj);
+            if (node == null)
+            {
+                return;
+            }
+
+            Nodes.Remove(node);
         }
 
         private void RuntimeOnOnNodeAdded(NodeSetup obj)

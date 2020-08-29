@@ -70,9 +70,11 @@ namespace OctoPatch.Server
             return setup;
         }
 
-        public Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
+        public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _patch.RemoveNode(nodeId, cancellationToken);
+
+            OnNodeRemoved?.Invoke(nodeId);
         }
 
         public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,

@@ -144,7 +144,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(node));
             }
 
-            if (_nodes.ToArray().Contains(node))
+            if (!_nodes.ToArray().Contains(node))
             {
                 throw new ArgumentException("node does not exist", nameof(node));
             }
