@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using OctoPatch.Core;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch.Server
 {
@@ -11,6 +9,11 @@ namespace OctoPatch.Server
     /// </summary>
     public interface IPlugin
     {
+        /// <summary>
+        /// Gets the unique plugin id
+        /// </summary>
+        Guid Id { get; }
+
         /// <summary>
         /// Gets the name of the plugin.
         /// </summary>
@@ -33,19 +36,30 @@ namespace OctoPatch.Server
         IEnumerable<NodeDescription> GetNodeDescriptions();
 
         /// <summary>
-        /// Lists up all containing message descriptions.
+        /// Lists up all containing type descriptions.
         /// </summary>
-        /// <returns>List of message descriptions</returns>
-        IEnumerable<MessageDescription> GetMessageDescriptions();
+        /// <returns>List of type descriptions</returns>
+        IEnumerable<TypeDescription> GetTypeDescriptions();
 
         /// <summary>
-        /// Method to generate a new instance of the node with the given node guid.
+        /// Lists up all containing adapter descriptions.
         /// </summary>
-        /// <param name="nodeDescriptionGuid">node description guid</param>
-        /// <param name="nodeId">id of the new node</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new instance of a node with the given guid</returns>
-        Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken);
+        /// <returns>List of adapter descriptions</returns>
+        IEnumerable<AdapterDescription> GetAdapterDescriptions();
 
+        /// <summary>
+        /// Method to generate a new instance of the node with the given key.
+        /// </summary>
+        /// <param name="key">node description key</param>
+        /// <param name="nodeId">id of the new node</param>
+        /// <returns>new instance of a node with the given guid</returns>
+        INode CreateNode(string key, Guid nodeId);
+
+        /// <summary>
+        /// Method to generate a new instance of the adapter with the given key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        IAdapter CreateAdapter(string key);
     }
 }

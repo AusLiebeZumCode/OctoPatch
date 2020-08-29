@@ -1,74 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using OctoPatch.Core;
-using OctoPatch.Server;
 
 namespace OctoPatch.Plugin.Midi
 {
     /// <summary>
     /// Implementation for the MIDI Plugin
     /// </summary>
-    public sealed class MidiPlugin : IPlugin
+    public sealed class MidiPlugin : Server.Plugin
     {
         /// <summary>
-        /// <inheritdoc />
+        ///  Plugin id
         /// </summary>
-        public string Name => "MIDI";
+        internal const string PluginId = "{12EA0035-45AF-4DA8-8B5D-E1B9D9484BA4}";
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public string Description => "Adds MIDI functionality";
-        
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public Version Version => new Version(1, 0, 0);
+        public override Guid Id => Guid.Parse(PluginId);
 
-        private readonly NodeDescription[] _nodeDescriptions;
-        
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IEnumerable<NodeDescription> GetNodeDescriptions() => _nodeDescriptions;
+        public override string Name => "MIDI";
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public override string Description => "Adds MIDI functionality";
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public override Version Version => new Version(1, 0, 0);
 
         public MidiPlugin()
         {
-            _nodeDescriptions = new []
-            {
-                new NodeDescription
-                {
-                    Guid = Guid.Parse("{8AA1AB11-DB28-4098-9999-13A3A47E8A83}"),
-                    Name = "MIDI Device",
-                    Description = "This is our first plugin to see how it works",
-                    Version = Version.ToString(),
-                    TypeName = typeof(MidiDevice).FullName,
-                }
-            };
+            RegisterNode<MidiDevice>(MidiDevice.NodeDescription);
+            RegisterNode<MidiMessageFilter>(MidiMessageFilter.NodeDescription);
+
+            RegisterType<MidiMessage>(MidiMessage.TypeDescription);
         }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public IEnumerable<MessageDescription> GetMessageDescriptions()
+        protected override INode OnCreateNode(Type type, Guid nodeId)
         {
-            return Enumerable.Empty<MessageDescription>();
+            return (INode)Activator.CreateInstance(type, nodeId);
         }
 
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken)
+        protected override IAdapter OnCreateAdapter(Type type)
         {
-            var local = _nodeDescriptions.FirstOrDefault(d => d.Guid == nodeDescriptionGuid);
-            if (local == null)
-                throw new ArgumentException("Node with the given GUID does not exist", nameof(nodeDescriptionGuid));
-
-            var type = Type.GetType(local.TypeName);
-            return Task.FromResult((INode)Activator.CreateInstance(type, nodeId));
+            return null;
         }
     }
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Core\OctoPatch.Core\OctoPatch.Core.csproj" />
+    <ProjectReference Include="..\..\src\Core\OctoPatch\OctoPatch.csproj" />
   </ItemGroup>
 
 </Project>

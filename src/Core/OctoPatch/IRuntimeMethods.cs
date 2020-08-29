@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using OctoPatch.Descriptions;
+using OctoPatch.Setup;
 
 namespace OctoPatch
 {
@@ -24,7 +26,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>all message descriptions</returns>
-        Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
+        Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
 
         #endregion
 
@@ -35,36 +37,36 @@ namespace OctoPatch
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>list of nodes</returns>
-        Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken);
+        Task<IEnumerable<NodeSetup>> GetNodes(CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns a list of wires
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>list of wires</returns>
-        Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken);
+        Task<IEnumerable<WireSetup>> GetWires(CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns the whole configuration
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>configuration</returns>
-        Task<Grid> GetConfiguration(CancellationToken cancellationToken);
+        Task<GridSetup> GetConfiguration(CancellationToken cancellationToken);
 
         /// <summary>
         /// Applies the given configuration
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
         /// <param name="grid">configuration</param>
-        Task SetConfiguration(Grid grid, CancellationToken cancellationToken);
+        Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds a new node to the patch
         /// </summary>
-        /// <param name="nodeDescriptionGuid">node description id</param>
+        /// <param name="key">unique key for the node description</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new node instance</returns>
-        Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken);
+        Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id from the patch
@@ -82,7 +84,7 @@ namespace OctoPatch
         /// <param name="intputConnectorId">connector id for the input</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new wire instance</returns>
-        Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
             CancellationToken cancellationToken);
 
         /// <summary>

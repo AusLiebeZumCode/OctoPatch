@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using OctoPatch.Descriptions;
+using OctoPatch.Setup;
 
 namespace OctoPatch.Server
 {
@@ -35,9 +37,9 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_repository.GetMessageDescriptions());
+            return Task.FromResult(_repository.GetTypeDescriptions());
         }
 
         #endregion
@@ -47,7 +49,7 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken)
+        public Task<IEnumerable<NodeSetup>> GetNodes(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
 
@@ -57,7 +59,7 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken)
+        public Task<IEnumerable<WireSetup>> GetWires(CancellationToken cancellationToken)
         {
             return _runtime.GetWires(cancellationToken);
         }
@@ -65,7 +67,7 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<Grid> GetConfiguration(CancellationToken cancellationToken)
+        public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
             // return Task.FromResult(_patch.Store());
@@ -74,14 +76,14 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task SetConfiguration(Grid grid, CancellationToken cancellationToken)
+        public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
             //_patch.Load(grid);
             //return Task.CompletedTask;
         }
 
-        public Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -92,7 +94,7 @@ namespace OctoPatch.Server
         }
 
 
-        public Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
             CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

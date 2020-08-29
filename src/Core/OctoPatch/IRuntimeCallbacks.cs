@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.Setup;
 
 namespace OctoPatch
 {
@@ -11,7 +12,7 @@ namespace OctoPatch
         /// Gets a call when there is a new node
         /// </summary>
         /// <param name="instance">node instance</param>
-        void NodeAdded(NodeInstance instance);
+        void NodeAdded(NodeSetup instance);
 
         /// <summary>
         /// Gets a call when something changes within the node instance.
@@ -29,7 +30,7 @@ namespace OctoPatch
         /// Gets a call when there is a new wire
         /// </summary>
         /// <param name="instance">wire instance</param>
-        void WireAdded(WireInstance instance);
+        void WireAdded(WireSetup instance);
 
         /// <summary>
         /// Gets a call when a wire gets lost

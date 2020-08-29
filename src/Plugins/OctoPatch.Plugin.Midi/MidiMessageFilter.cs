@@ -1,29 +1,62 @@
 ﻿using System;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Core;
+using OctoPatch.ContentTypes;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch.Plugin.Midi
 {
-    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration>, IDisposable
+    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration, IEnvironment>
     {
+        #region Type description
+
+        /// <summary>
+        /// Description of the node
+        /// </summary>
+        public static NodeDescription NodeDescription => NodeDescription.Create<MidiMessageFilter>(
+                Guid.Parse(MidiPlugin.PluginId),
+                "MIDI filter",
+                "This block allows to filter the stream of midi messages")
+            .AddInputDescription(MidiInputDescription)
+            .AddOutputDescription(MidiOutputDescription);
+
+        /// <summary>
+        /// Description of the MIDI input connector
+        /// </summary>
+        public static ConnectorDescription MidiInputDescription => 
+            new ConnectorDescription("MidiInput", "MIDI Input", "MIDI input signal", 
+                ComplexContentType.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId)));
+
+        /// <summary>
+        /// Description of the MIDI output connector
+        /// </summary>
+        public static ConnectorDescription MidiOutputDescription => 
+            new ConnectorDescription("MidiOutput", "MIDI Output", "MIDI output signal", 
+                ComplexContentType.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId)));
+
+        #endregion
+
         private FilterConfiguration _configuration;
 
-        private readonly Subject<MidiMessage> _subject;
+        private readonly IOutputConnectorHandler _output;
 
         public MidiMessageFilter(Guid nodeId) : base(nodeId)
         {
-            _subject = new Subject<MidiMessage>();
-            var output = new OutputConnector<MidiMessage>(_subject.Where(Valid), Guid.Parse("{B7B1B419-1AEC-444F-8554-67415AB8F4F4}"));
-            _outputs.Add(output);
+            _output = RegisterOutputConnector(MidiOutputDescription);
 
             // StreamNote: PatteKi "und auch hier war ich :D" (2020-06-30 22:25)
             // StreamNote: m4cx: "Da war ich auch dran ;)" (2020-06-30 22:26)
 
-            var input = new InputConnector<MidiMessage>(_subject, Guid.Parse("{482E6ABA-F11E-44CB-B945-D5DC6AE50286}"));
-            _inputs.Add(input);
+            RegisterInputConnector(MidiInputDescription)
+                .Handle<MidiMessage>(Handle);
+        }
+
+        private void Handle(MidiMessage message)
+        {
+            if (Valid(message))
+            {
+                _output.Send(message);
+            }
         }
 
         private bool Valid(MidiMessage message)
@@ -46,12 +79,7 @@ namespace OctoPatch.Plugin.Midi
             return true;
         }
 
-        public void Dispose()
-        {
-            _subject.Dispose();
-        }
-
-        public sealed class FilterConfiguration : INodeConfiguration
+        public sealed class FilterConfiguration : IConfiguration
         {
             public int? MessageType { get; set; }
 
