@@ -5,7 +5,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using OctoPatch.Descriptions;
+using OctoPatch.DesktopClient.Models;
 using OctoPatch.Server;
+using OctoPatch.Setup;
 
 namespace OctoPatch.DesktopClient.ViewModels
 {
@@ -33,7 +36,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand AddSelectedNodeDescription => _addSelectedNodeDescription;
         
-        public ObservableCollection<NodeInstance> Nodes { get; }
+        public ObservableCollection<NodeSetup> Nodes { get; }
         
         private readonly ActionCommand _removeSelectedNode;
 
@@ -47,9 +50,9 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand StopSelectedNode => _stopSelectedNode;
 
-        private NodeInstance _selectedNode;
+        private NodeSetup _selectedNode;
 
-        public NodeInstance SelectedNode
+        public NodeSetup SelectedNode
         {
             get => _selectedNode;
             set
@@ -63,13 +66,16 @@ namespace OctoPatch.DesktopClient.ViewModels
             }
         }
 
-        public ObservableCollection<WireInstance> Wires { get; }
+        public NodeDescriptionModel NodeDescription { get; }
+        public ICommand SaveNodeDescription { get; }
+
+        public ObservableCollection<WireSetup> Wires { get; }
 
         public RuntimeViewModel()
         {
             NodeDescriptions = new ObservableCollection<NodeDescription>();
-            Nodes = new ObservableCollection<NodeInstance>();
-            Wires = new ObservableCollection<WireInstance>();
+            Nodes = new ObservableCollection<NodeSetup>();
+            Wires = new ObservableCollection<WireSetup>();
 
             _addSelectedNodeDescription = new ActionCommand(AddNodeDescriptionCallback, false);
             _removeSelectedNode = new ActionCommand(RemoveSelectedNodeCallback, false);
@@ -107,7 +113,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             var description = SelectedNodeDescription;
             if (description != null)
             {
-                await _runtime.AddNode(description.Guid, CancellationToken.None);
+                await _runtime.AddNode(description.Key, CancellationToken.None);
             }
         }
 
@@ -116,7 +122,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             throw new NotImplementedException();
         }
 
-        private void RuntimeOnOnWireAdded(WireInstance obj)
+        private void RuntimeOnOnWireAdded(WireSetup obj)
         {
             throw new NotImplementedException();
         }
@@ -126,7 +132,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             throw new NotImplementedException();
         }
 
-        private void RuntimeOnOnNodeAdded(NodeInstance obj)
+        private void RuntimeOnOnNodeAdded(NodeSetup obj)
         {
             Nodes.Add(obj);
         }

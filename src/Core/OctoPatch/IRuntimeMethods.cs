@@ -104,7 +104,8 @@ namespace OctoPatch
         /// <param name="nodeGuid">guid of node</param>
         /// <param name="name">new name for this node</param>
         /// <param name="description">optional description for the block</param>
-        Task SetNodeDescription(Guid nodeGuid, string name, string description);
+        /// <param name="cancellationToken">cancellation token</param>
+        Task SetNodeDescription(Guid nodeGuid, string name, string description, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the current environment information of the requested node

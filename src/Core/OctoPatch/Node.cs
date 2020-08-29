@@ -36,6 +36,11 @@ namespace OctoPatch
         protected TConfiguration Configuration { get; private set; }
 
         /// <summary>
+        /// Internal reference to the current environment
+        /// </summary>
+        protected TEnvironment Environment { get; private set; }
+
+        /// <summary>
         /// <inheritdoc />
         /// </summary>
         public NodeState State { get; private set; }
@@ -49,6 +54,22 @@ namespace OctoPatch
         /// <inheritdoc />
         /// </summary>
         public IEnumerable<IOutputConnector> Outputs => _outputs;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public string GetEnvironment()
+        {
+            return JsonConvert.SerializeObject(Environment);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public string GetConfiguration()
+        {
+            return JsonConvert.SerializeObject(Configuration);
+        }
 
         protected Node(Guid id)
         {
@@ -488,5 +509,20 @@ namespace OctoPatch
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets a call when the current node state changes.
+        /// </summary>
+        public event EventHandler<NodeState> StateChanged = delegate {};
+
+        /// <summary>
+        /// Gets a call when the current configuration changes.
+        /// </summary>
+        public event EventHandler<string> ConfigurationChanged = delegate {};
+
+        /// <summary>
+        /// Gets a call when the current environment changes.
+        /// </summary>
+        public event EventHandler<string> EnvironmentChanged = delegate {};
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
+using OctoPatch.Setup;
 
 namespace OctoPatch.DesktopClient.ViewModels
 {
@@ -13,7 +15,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         ICommand AddSelectedNodeDescription { get; }
 
-        ObservableCollection<NodeInstance> Nodes { get; }
+        ObservableCollection<NodeSetup> Nodes { get; }
 
         ICommand RemoveSelectedNode { get; }
 
@@ -21,12 +23,12 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         ICommand StopSelectedNode { get; }
 
-        public NodeInstance SelectedNode { get; set; }
+        public NodeSetup SelectedNode { get; set; }
 
         public NodeDescriptionModel NodeDescription { get; }
 
         ICommand SaveNodeDescription { get; }
 
-        public ObservableCollection<WireInstance> Wires { get; }
+        public ObservableCollection<WireSetup> Wires { get; }
     }
 }

@@ -109,6 +109,11 @@ namespace OctoPatch.Server
             throw new NotImplementedException();
         }
 
+        public Task SetNodeDescription(Guid nodeGuid, string name, string description, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
         {
             //var description = _descriptions.First(d => d.Guid == nodeInstance.NodeDescription);

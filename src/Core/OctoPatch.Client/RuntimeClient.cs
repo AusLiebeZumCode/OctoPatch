@@ -30,6 +30,7 @@ namespace OctoPatch.Client
 
             _hubConnection.On<NodeSetup>(nameof(NodeAdded), NodeAdded);
             _hubConnection.On<Guid>(nameof(NodeRemoved), NodeRemoved);
+            _hubConnection.On<NodeSetup>(nameof(NodeUpdated), NodeUpdated);
             _hubConnection.On<WireSetup>(nameof(WireAdded), WireAdded);
             _hubConnection.On<Guid>(nameof(WireRemoved), WireRemoved);
 
@@ -42,6 +43,15 @@ namespace OctoPatch.Client
         }
 
         #region IRuntimeMethods
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task SetNodeDescription(Guid nodeId, string name, string description,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -159,7 +169,10 @@ namespace OctoPatch.Client
             OnNodeRemoved?.Invoke(instanceGuid);
         }
 
+        public void NodeUpdated(NodeSetup nodeSetup)
+        {
 
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -188,6 +201,8 @@ namespace OctoPatch.Client
         /// <inheritdoc />
         /// </summary>
         public event Action<Guid> OnNodeRemoved;
+
+        public event Action<NodeSetup> OnNodeUpdated;
 
         /// <summary>
         /// <inheritdoc />

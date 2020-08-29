@@ -67,6 +67,15 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
+        public Task SetNodeDescription(Guid nodeId, string name, string description,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

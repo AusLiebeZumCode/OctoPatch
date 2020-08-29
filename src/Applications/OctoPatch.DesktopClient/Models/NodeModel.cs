@@ -1,10 +1,10 @@
-﻿using OctoPatch.Core;
+﻿using OctoPatch.Setup;
 
 namespace OctoPatch.DesktopClient.Models
 {
     public sealed class NodeModel
     {
-        public NodeInstance Instance { get; set; }
+        public NodeSetup Setup { get; set; }
 
         public NodeState State { get; set; }
     }
