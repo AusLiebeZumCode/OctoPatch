@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -140,7 +141,7 @@ namespace OctoPatch.DesktopClient.ViewModels
         public async Task Setup(CancellationToken cancellationToken)
         {
             var descriptions = await _runtime.GetNodeDescriptions(cancellationToken);
-            foreach (var description in descriptions)
+            foreach (var description in descriptions.Where(d => d.NodeType == nameof(NodeDescription)))
             {
                 NodeDescriptions.Add(description);    
             }

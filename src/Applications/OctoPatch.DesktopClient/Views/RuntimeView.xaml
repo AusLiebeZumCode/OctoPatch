@@ -9,12 +9,12 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Column 1 -->
+        <!-- Toolbox column -->
         <Grid>
 
             <Grid.RowDefinitions>
@@ -24,22 +24,13 @@
             </Grid.RowDefinitions>
 
             <!-- Toolbox -->
-            <ListBox 
-                Grid.Column="0"
-                ItemsSource="{Binding NodeDescriptions}"
-                SelectedItem="{Binding SelectedNodeDescription}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                            <Label Content="{Binding Name}" FontWeight="Bold" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <views:ToolboxView />
 
             <!-- Block infos -->
             <views:NodeDescriptionView Grid.Row="1" DataContext="{Binding SelectedNodeDescription}" />
 
             <!-- buttons -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
                 <Button Content="Add" Command="{Binding AddSelectedNodeDescription}" />
             </StackPanel>
         </Grid>
