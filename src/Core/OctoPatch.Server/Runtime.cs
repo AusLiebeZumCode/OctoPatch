@@ -53,6 +53,8 @@ namespace OctoPatch.Server
                 return null;
             }
 
+            node.StateChanged += NodeOnStateChanged;
+
             await _patch.AddNode(node, cancellationToken);
 
             var setup = new NodeSetup
@@ -65,14 +67,28 @@ namespace OctoPatch.Server
 
             _nodeMapping.Add(node.Id, (node, setup));
 
-            OnNodeAdded?.Invoke(setup);
+            OnNodeAdded?.Invoke(setup, node.State);
 
             return setup;
         }
 
+        private void NodeOnStateChanged(object sender, NodeState e)
+        {
+            var node = (INode) sender;
+            OnNodeStateChanged?.Invoke(node.Id, e);
+        }
+
         public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
+            if (!_nodeMapping.TryGetValue(nodeId, out var x))
+            {
+                return;
+            }
+
+            x.node.StateChanged += NodeOnStateChanged;
+
             await _patch.RemoveNode(nodeId, cancellationToken);
+            _nodeMapping.Remove(nodeId);
 
             OnNodeRemoved?.Invoke(nodeId);
         }
@@ -148,9 +164,13 @@ namespace OctoPatch.Server
             node.setup.Configuration = configuration;
         }
 
-        public event Action<NodeSetup> OnNodeAdded = delegate { };
+        public event Action<NodeSetup, NodeState> OnNodeAdded = delegate { };
         public event Action<Guid> OnNodeRemoved = delegate { };
         public event Action<WireSetup> OnWireAdded = delegate { };
         public event Action<Guid> OnWireRemoved = delegate { };
+
+        public event Action<NodeSetup> OnNodeUpdated = delegate {};
+
+        public event Action<Guid, NodeState> OnNodeStateChanged = delegate {};
     }
 }

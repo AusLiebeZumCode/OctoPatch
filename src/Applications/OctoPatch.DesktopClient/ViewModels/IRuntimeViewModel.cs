@@ -15,7 +15,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         ICommand AddSelectedNodeDescription { get; }
 
-        ObservableCollection<NodeSetup> Nodes { get; }
+        ObservableCollection<NodeModel> Nodes { get; }
 
         ICommand RemoveSelectedNode { get; }
 
@@ -23,7 +23,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         ICommand StopSelectedNode { get; }
 
-        public NodeSetup SelectedNode { get; set; }
+        public NodeModel SelectedNode { get; set; }
 
         public NodeDescriptionModel NodeDescription { get; }
 

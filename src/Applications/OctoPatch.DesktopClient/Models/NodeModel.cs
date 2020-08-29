@@ -2,10 +2,30 @@
 
 namespace OctoPatch.DesktopClient.Models
 {
-    public sealed class NodeModel
+    public sealed class NodeModel : Model
     {
-        public NodeSetup Setup { get; set; }
+        private NodeSetup _setup;
 
-        public NodeState State { get; set; }
+        public NodeSetup Setup
+        {
+            get => _setup;
+            set
+            {
+                _setup = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private NodeState _state;
+
+        public NodeState State
+        {
+            get => _state;
+            set
+            {
+                _state = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

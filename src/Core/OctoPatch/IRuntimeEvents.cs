@@ -11,12 +11,22 @@ namespace OctoPatch
         /// <summary>
         /// Gets a call when a new node instance was added
         /// </summary>
-        event Action<NodeSetup> OnNodeAdded;
+        event Action<NodeSetup, NodeState> OnNodeAdded;
 
         /// <summary>
         /// Gets a call when an existing node instance was removed
         /// </summary>
         event Action<Guid> OnNodeRemoved;
+
+        /// <summary>
+        /// Gets a call when an existing node was updated
+        /// </summary>
+        event Action<NodeSetup> OnNodeUpdated;
+
+        /// <summary>
+        /// Gets a call when a node state changed
+        /// </summary>
+        event Action<Guid, NodeState> OnNodeStateChanged;
 
         /// <summary>
         /// Gets a call when a new wire instance was added

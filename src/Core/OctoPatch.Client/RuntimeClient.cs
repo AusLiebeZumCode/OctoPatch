@@ -161,12 +161,22 @@ namespace OctoPatch.Client
             OnNodeAdded?.Invoke(instance);
         }
 
+        public void NodeStateChanged(Guid nodeId, NodeState state)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// <inheritdoc />
         /// </summary>
         public void NodeRemoved(Guid instanceGuid)
         {
             OnNodeRemoved?.Invoke(instanceGuid);
+        }
+
+        public void NodeAdded(NodeSetup setup, NodeState state)
+        {
+            throw new NotImplementedException();
         }
 
         public void NodeUpdated(NodeSetup nodeSetup)
@@ -197,12 +207,19 @@ namespace OctoPatch.Client
         /// </summary>
         public event Action<NodeSetup> OnNodeAdded;
 
+        event Action<NodeSetup, NodeState> IRuntimeEvents.OnNodeAdded
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
         /// <summary>
         /// <inheritdoc />
         /// </summary>
         public event Action<Guid> OnNodeRemoved;
 
         public event Action<NodeSetup> OnNodeUpdated;
+        public event Action<Guid, NodeState> OnNodeStateChanged;
 
         /// <summary>
         /// <inheritdoc />

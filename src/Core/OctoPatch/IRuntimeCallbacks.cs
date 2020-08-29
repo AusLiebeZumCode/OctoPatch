@@ -11,14 +11,22 @@ namespace OctoPatch
         /// <summary>
         /// Gets a call when there is a new node
         /// </summary>
-        /// <param name="instance">node instance</param>
-        void NodeAdded(NodeSetup instance);
+        /// <param name="setup">node setup</param>
+        /// <param name="state">current state of the new node</param>
+        void NodeAdded(NodeSetup setup, NodeState state);
 
         /// <summary>
-        /// Gets a call when something changes within the node instance.
+        /// Gets a call when something changes within the node instance
         /// </summary>
         /// <param name="instance">related node instance</param>
         void NodeUpdated(NodeSetup instance);
+
+        /// <summary>
+        /// Gets a call when a node state changed during runtime
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="state">new state</param>
+        void NodeStateChanged(Guid nodeId, NodeState state);
 
         /// <summary>
         /// Gets a call when a node gets lost
