@@ -13,11 +13,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="RtMidi.Core" Version="1.0.50" />
-		<PackageReference Include="System.Reactive" Version="4.4.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Core\OctoPatch.Core\OctoPatch.Core.csproj" />
 		<ProjectReference Include="..\..\Core\OctoPatch.Server\OctoPatch.Server.csproj" />
 	</ItemGroup>
 

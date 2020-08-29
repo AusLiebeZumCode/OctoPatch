@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OctoPatch.Core;
+using OctoPatch.Descriptions;
+using OctoPatch.Setup;
 
 namespace OctoPatch.Server
 {
@@ -24,36 +25,45 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly NodeDescription[] _descriptions;
 
-        private Dictionary<Guid, (INode node, NodeInstance instance)> _instanceMapping;
+        private Dictionary<Guid, (INode node, NodeSetup instance)> _instanceMapping;
 
-        private Dictionary<IWire, WireInstance> _wireMapping;
+        private Dictionary<IWire, WireSetup> _wireMapping;
 
         public Runtime(IRepository repository)
         {
             _patch = new Patch();
 
             _repository = repository;
-            _descriptions = repository.GetNodeDescriptions().ToArray();
 
-            _instanceMapping = new Dictionary<Guid, (INode node, NodeInstance instance)>();
-            _wireMapping = new Dictionary<IWire, WireInstance>();
+            var nodes = new List<NodeDescription>();
+            nodes.AddRange(repository.GetNodeDescriptions());
+
+            _descriptions = nodes.ToArray();
+
+            _instanceMapping = new Dictionary<Guid, (INode node, NodeSetup instance)>();
+            _wireMapping = new Dictionary<IWire, WireSetup>();
         }
 
-        public async Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        public async Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
         {
-            var description = _descriptions.First(d => d.Guid == nodeDescriptionGuid);
-            var node = await _repository.CreateNode(description.Guid, Guid.NewGuid(), cancellationToken);
+            var description = _descriptions.First(d => d.Key == key);
+            var node = _repository.CreateNode(key, Guid.NewGuid());
+            if (node == null)
+            {
+                return null;
+            }
+
             await _patch.AddNode(node, cancellationToken);
 
-            var instance = new NodeInstance
+            var instance = new NodeSetup
             {
-                Guid = node.NodeId,
-                NodeDescription = nodeDescriptionGuid,
-                Name = description.Name,
-                Description = description.Description
+                NodeId = node.Id,
+                Key = key,
+                Name = description.DisplayName,
+                Description = description.DisplayDescription
             };
 
-            _instanceMapping.Add(node.NodeId, (node, instance));
+            _instanceMapping.Add(node.Id, (node, instance));
 
             return instance;
         }
@@ -63,7 +73,7 @@ namespace OctoPatch.Server
             throw new NotImplementedException();
         }
 
-        public Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,
             Guid intputConnectorId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -79,27 +89,27 @@ namespace OctoPatch.Server
             return Task.FromResult(_repository.GetNodeDescriptions());
         }
 
-        public Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_repository.GetMessageDescriptions());
+            return Task.FromResult(_repository.GetTypeDescriptions());
         }
 
-        public Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken)
+        public Task<IEnumerable<NodeSetup>> GetNodes(CancellationToken cancellationToken)
         {
             return Task.FromResult(_instanceMapping.Values.Select(i => i.instance).AsEnumerable());
         }
 
-        public Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken)
+        public Task<IEnumerable<WireSetup>> GetWires(CancellationToken cancellationToken)
         {
             return Task.FromResult(_wireMapping.Values.AsEnumerable());
         }
 
-        public Task<Grid> GetConfiguration(CancellationToken cancellationToken)
+        public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task SetConfiguration(Grid grid, CancellationToken cancellationToken)
+        public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
         {
             //var description = _descriptions.First(d => d.Guid == nodeInstance.NodeDescription);
             //var node = await _repository.CreateNode(description.Guid, nodeInstance.Guid, cancellationToken);
@@ -129,9 +139,9 @@ namespace OctoPatch.Server
             node.instance.Configuration = configuration;
         }
 
-        public event Action<NodeInstance> OnNodeAdded;
-        public event Action<Guid> OnNodeRemoved;
-        public event Action<WireInstance> OnWireAdded;
-        public event Action<Guid> OnWireRemoved;
+        public event Action<NodeSetup> OnNodeAdded = delegate { };
+        public event Action<Guid> OnNodeRemoved = delegate { };
+        public event Action<WireSetup> OnWireAdded = delegate { };
+        public event Action<Guid> OnWireRemoved = delegate { };
     }
 }

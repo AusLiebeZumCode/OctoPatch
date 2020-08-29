@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using OctoPatch.Core;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch.Server
 {
@@ -15,7 +13,7 @@ namespace OctoPatch.Server
         /// Returns all discovered messages
         /// </summary>
         /// <returns>all messages</returns>
-        IEnumerable<MessageDescription> GetMessageDescriptions();
+        IEnumerable<TypeDescription> GetTypeDescriptions();
 
         /// <summary>
         /// Returns all discovered nodes
@@ -24,12 +22,24 @@ namespace OctoPatch.Server
         IEnumerable<NodeDescription> GetNodeDescriptions();
 
         /// <summary>
-        /// Generates a new node for the given node guid
+        /// Returns all discovered adapters
         /// </summary>
-        /// <param name="nodeDescriptionGuid">guid of node to generate an instance of</param>
+        /// <returns></returns>
+        IEnumerable<AdapterDescription> GetAdapterDescriptions();
+
+        /// <summary>
+        /// Generates a new node for the given key
+        /// </summary>
+        /// <param name="key">unique key of the node description</param>
         /// <param name="nodeId">id of the new node</param>
-        /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new node instance</returns>
-        Task<INode> CreateNode(Guid nodeDescriptionGuid, Guid nodeId, CancellationToken cancellationToken);
+        INode CreateNode(string key, Guid nodeId);
+
+        /// <summary>
+        /// Generates a new adapter for the given key
+        /// </summary>
+        /// <param name="key">adapter key</param>
+        /// <returns>new instance</returns>
+        IAdapter CreateAdapter(string key);
     }
 }

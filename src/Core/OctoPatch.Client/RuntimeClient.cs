@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+using OctoPatch.Descriptions;
+using OctoPatch.Setup;
 
 namespace OctoPatch.Client
 {
@@ -26,9 +28,9 @@ namespace OctoPatch.Client
 
             _hubConnection.Closed += Connection_Closed;
 
-            _hubConnection.On<NodeInstance>(nameof(NodeAdded), NodeAdded);
+            _hubConnection.On<NodeSetup>(nameof(NodeAdded), NodeAdded);
             _hubConnection.On<Guid>(nameof(NodeRemoved), NodeRemoved);
-            _hubConnection.On<WireInstance>(nameof(WireAdded), WireAdded);
+            _hubConnection.On<WireSetup>(nameof(WireAdded), WireAdded);
             _hubConnection.On<Guid>(nameof(WireRemoved), WireRemoved);
 
             await _hubConnection.StartAsync(cancellationToken);
@@ -44,17 +46,17 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<Grid> GetConfiguration(CancellationToken cancellationToken)
+        public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync<Grid>(nameof(GetConfiguration), cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync<GridSetup>(nameof(GetConfiguration), cancellationToken, cancellationToken);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<MessageDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
+        public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync<IEnumerable<MessageDescription>>(nameof(GetMessageDescriptions), cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync<IEnumerable<TypeDescription>>(nameof(GetMessageDescriptions), cancellationToken, cancellationToken);
         }
 
         /// <summary>
@@ -84,23 +86,23 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<NodeInstance>> GetNodes(CancellationToken cancellationToken)
+        public Task<IEnumerable<NodeSetup>> GetNodes(CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync<IEnumerable<NodeInstance>>(nameof(GetNodes), cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync<IEnumerable<NodeSetup>>(nameof(GetNodes), cancellationToken, cancellationToken);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task<IEnumerable<WireInstance>> GetWires(CancellationToken cancellationToken)
+        public Task<IEnumerable<WireSetup>> GetWires(CancellationToken cancellationToken)
         {
-            return _hubConnection.InvokeAsync<IEnumerable<WireInstance>>(nameof(GetWires), cancellationToken, cancellationToken);
+            return _hubConnection.InvokeAsync<IEnumerable<WireSetup>>(nameof(GetWires), cancellationToken, cancellationToken);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task SetConfiguration(Grid grid, CancellationToken cancellationToken)
+        public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
         {
             return _hubConnection.InvokeAsync(nameof(SetConfiguration), grid, cancellationToken, cancellationToken);
         }
@@ -113,7 +115,7 @@ namespace OctoPatch.Client
             return _hubConnection.InvokeAsync(nameof(SetNodeConfiguration), nodeGuid, configuration, cancellationToken, cancellationToken);
         }
 
-        public Task<NodeInstance> AddNode(Guid nodeDescriptionGuid, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -125,7 +127,7 @@ namespace OctoPatch.Client
         }
 
 
-        public Task<WireInstance> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
             CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -144,7 +146,7 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void NodeAdded(NodeInstance instance)
+        public void NodeAdded(NodeSetup instance)
         {
             OnNodeAdded?.Invoke(instance);
         }
@@ -162,7 +164,7 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void WireAdded(WireInstance instance)
+        public void WireAdded(WireSetup instance)
         {
             OnWireAdded?.Invoke(instance);
         }
@@ -180,7 +182,7 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<NodeInstance> OnNodeAdded;
+        public event Action<NodeSetup> OnNodeAdded;
 
         /// <summary>
         /// <inheritdoc />
@@ -190,7 +192,7 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<WireInstance> OnWireAdded;
+        public event Action<WireSetup> OnWireAdded;
 
         /// <summary>
         /// <inheritdoc />
