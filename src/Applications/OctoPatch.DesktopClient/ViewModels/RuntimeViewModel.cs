@@ -77,6 +77,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _removeSelectedNode.Enabled = value != null;
                 _startSelectedNode.Enabled = value != null;
                 _stopSelectedNode.Enabled = value != null;
+                _saveNodeDescription.Enabled = value != null;
             }
         }
 
@@ -91,7 +92,10 @@ namespace OctoPatch.DesktopClient.ViewModels
                 OnPropertyChanged();
             }
         }
-        public ICommand SaveNodeDescription { get; }
+
+        private readonly ActionCommand _saveNodeDescription;
+
+        public ICommand SaveNodeDescription => _saveNodeDescription;
 
         public ObservableCollection<WireSetup> Wires { get; }
 
@@ -105,6 +109,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             _removeSelectedNode = new ActionCommand(RemoveSelectedNodeCallback, false);
             _startSelectedNode = new ActionCommand(StartSelectedNodeCallback, false);
             _stopSelectedNode = new ActionCommand(StopSelectedNodeCallback, false);
+            _saveNodeDescription = new ActionCommand(SaveNodeDescriptionCallback, false);
 
             var repository = new Repository();
             _runtime = new Runtime(repository);
@@ -117,6 +122,18 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.OnWireRemoved += RuntimeOnOnWireRemoved;
 
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private async void SaveNodeDescriptionCallback(object parameter)
+        {
+            var node = SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
+
+            await _runtime.SetNodeDescription(node.Setup.NodeId, NodeDescription.Name, NodeDescription.Description,
+                CancellationToken.None);
         }
 
         private void RuntimeOnOnNodeUpdated(NodeSetup setup)

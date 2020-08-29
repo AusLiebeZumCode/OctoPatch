@@ -129,9 +129,18 @@ namespace OctoPatch.Server
             throw new NotImplementedException();
         }
 
-        public Task SetNodeDescription(Guid nodeGuid, string name, string description, CancellationToken cancellationToken)
+        public Task SetNodeDescription(Guid nodeId, string name, string description, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (!_nodeMapping.TryGetValue(nodeId, out var x))
+            {
+                return Task.CompletedTask;
+            }
+
+            x.setup.Name = name;
+            x.setup.Description = description;
+
+            OnNodeUpdated?.Invoke(x.setup);
+            return Task.CompletedTask;
         }
 
         public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)

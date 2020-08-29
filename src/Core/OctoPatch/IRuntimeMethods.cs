@@ -101,35 +101,35 @@ namespace OctoPatch
         /// <summary>
         /// Sets the name and the description of a single node instance
         /// </summary>
-        /// <param name="nodeGuid">guid of node</param>
+        /// <param name="nodeId">node id</param>
         /// <param name="name">new name for this node</param>
         /// <param name="description">optional description for the block</param>
         /// <param name="cancellationToken">cancellation token</param>
-        Task SetNodeDescription(Guid nodeGuid, string name, string description, CancellationToken cancellationToken);
+        Task SetNodeDescription(Guid nodeId, string name, string description, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the current environment information of the requested node
         /// </summary>
-        /// <param name="nodeGuid">guid of node</param>
+        /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>serialized environment information</returns>
-        Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken);
+        Task<string> GetNodeEnvironment(Guid nodeId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the configuration from the given node
         /// </summary>
-        /// <param name="nodeGuid">node guid</param>
+        /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>serialized configuration for this node</returns>
-        Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken);
+        Task<string> GetNodeConfiguration(Guid nodeId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Applies the given serialized configuration to the node
         /// </summary>
-        /// <param name="nodeGuid">node guid</param>
+        /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <param name="configuration">configuration</param>
-        Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken);
+        Task SetNodeConfiguration(Guid nodeId, string configuration, CancellationToken cancellationToken);
 
         #endregion
     }

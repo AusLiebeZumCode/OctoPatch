@@ -64,7 +64,7 @@
             </Grid.RowDefinitions>
 
             <!-- Common Properties -->
-            <views:CommonNodeSetupView Grid.Row="0" DataContext="{Binding NodeDescription}" />
+            <views:CommonNodeSetupView Grid.Row="0" />
 
             <!-- buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
