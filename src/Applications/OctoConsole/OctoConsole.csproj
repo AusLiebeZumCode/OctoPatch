@@ -10,7 +10,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\OctoPatch.Server\OctoPatch.Server.csproj" />
+	  <ProjectReference Include="..\..\Core\OctoPatch.Server\OctoPatch.Server.csproj" />
 	</ItemGroup>
 
 </Project>
