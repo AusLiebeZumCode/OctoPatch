@@ -25,7 +25,7 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly NodeDescription[] _descriptions;
 
-        private Dictionary<Guid, (INode node, NodeSetup instance)> _instanceMapping;
+        private Dictionary<Guid, (INode node, NodeSetup setup)> _nodeMapping;
 
         private Dictionary<IWire, WireSetup> _wireMapping;
 
@@ -40,7 +40,7 @@ namespace OctoPatch.Server
 
             _descriptions = nodes.ToArray();
 
-            _instanceMapping = new Dictionary<Guid, (INode node, NodeSetup instance)>();
+            _nodeMapping = new Dictionary<Guid, (INode node, NodeSetup setup)>();
             _wireMapping = new Dictionary<IWire, WireSetup>();
         }
 
@@ -55,7 +55,7 @@ namespace OctoPatch.Server
 
             await _patch.AddNode(node, cancellationToken);
 
-            var instance = new NodeSetup
+            var setup = new NodeSetup
             {
                 NodeId = node.Id,
                 Key = key,
@@ -63,9 +63,11 @@ namespace OctoPatch.Server
                 Description = description.DisplayDescription
             };
 
-            _instanceMapping.Add(node.Id, (node, instance));
+            _nodeMapping.Add(node.Id, (node, setup));
 
-            return instance;
+            OnNodeAdded?.Invoke(setup);
+
+            return setup;
         }
 
         public Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
@@ -96,7 +98,7 @@ namespace OctoPatch.Server
 
         public Task<IEnumerable<NodeSetup>> GetNodes(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_instanceMapping.Values.Select(i => i.instance).AsEnumerable());
+            return Task.FromResult(_nodeMapping.Values.Select(i => i.setup).AsEnumerable());
         }
 
         public Task<IEnumerable<WireSetup>> GetWires(CancellationToken cancellationToken)
@@ -127,21 +129,21 @@ namespace OctoPatch.Server
 
         public Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken)
         {
-            _instanceMapping.TryGetValue(nodeGuid, out var node);
+            _nodeMapping.TryGetValue(nodeGuid, out var node);
             throw new NotImplementedException();
         }
 
         public Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken)
         {
-            _instanceMapping.TryGetValue(nodeGuid, out var node);
-            return Task.FromResult(node.instance.Configuration);
+            _nodeMapping.TryGetValue(nodeGuid, out var node);
+            return Task.FromResult(node.setup.Configuration);
         }
 
         public async Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken)
         {
-            _instanceMapping.TryGetValue(nodeGuid, out var node);
+            _nodeMapping.TryGetValue(nodeGuid, out var node);
             await node.node.Initialize(configuration, cancellationToken);
-            node.instance.Configuration = configuration;
+            node.setup.Configuration = configuration;
         }
 
         public event Action<NodeSetup> OnNodeAdded = delegate { };
