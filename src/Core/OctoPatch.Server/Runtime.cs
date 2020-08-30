@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OctoPatch.Descriptions;
+using OctoPatch.Logging;
 using OctoPatch.Setup;
 
 namespace OctoPatch.Server
 {
     public sealed class Runtime : IRuntime
     {
+        private static readonly ILogger<Runtime> logger = LogManager.GetLogger<Runtime>();
+
         /// <summary>
         /// patch instance
         /// </summary>
@@ -34,7 +38,6 @@ namespace OctoPatch.Server
             _patch = new Patch();
 
             _repository = repository;
-
             var nodes = new List<NodeDescription>();
             nodes.AddRange(repository.GetNodeDescriptions());
 

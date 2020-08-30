@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using OctoPatch.Descriptions;
+using OctoPatch.Logging;
 
 namespace OctoPatch.Server
 {
@@ -12,6 +14,8 @@ namespace OctoPatch.Server
     /// </summary>
     public sealed class Repository : IRepository
     {
+        private static readonly ILogger<Repository> logger = LogManager.GetLogger<Repository>();
+
         /// <summary>
         /// List of all known plugins
         /// </summary>
@@ -43,6 +47,8 @@ namespace OctoPatch.Server
         {
             try
             {
+                logger?.LogInformation("Checking assembly {FilePath} for Plugins", filename);
+
                 var assembly = Assembly.LoadFrom(filename);
 
                 foreach (var type in assembly.GetTypes())
@@ -54,7 +60,8 @@ namespace OctoPatch.Server
 
                     if (typeof(IPlugin).IsAssignableFrom(type))
                     {
-                        var plugin = (IPlugin) Activator.CreateInstance(type);
+                        logger?.LogDebug("Add Plugin '{PluginType}'", type);
+                        var plugin = (IPlugin)Activator.CreateInstance(type);
                         _plugins.Add(plugin);
 
                         foreach (var nodeDescription in plugin.GetNodeDescriptions())
