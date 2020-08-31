@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using OctoPatch.Logging;
+using System;
 using System.Collections.Generic;
 
 namespace OctoPatch.Descriptions
@@ -8,6 +10,8 @@ namespace OctoPatch.Descriptions
     /// </summary>
     public class NodeDescription : KeyDescription
     {
+        private static readonly ILogger<NodeDescription> logger = LogManager.GetLogger<NodeDescription>();
+
         /// <summary>
         /// Returns the actual type of the node description
         /// </summary>
@@ -23,7 +27,7 @@ namespace OctoPatch.Descriptions
         /// </summary>
         public List<ConnectorDescription> OutputDescriptions { get; set; }
 
-        protected NodeDescription(string key, string displayName, string displayDescription) 
+        protected NodeDescription(string key, string displayName, string displayDescription)
             : base(key, displayName, displayDescription)
         {
             InputDescriptions = new List<ConnectorDescription>();
@@ -37,6 +41,7 @@ namespace OctoPatch.Descriptions
         /// <returns>current instance to chain adds</returns>
         public NodeDescription AddOutputDescription(ConnectorDescription description)
         {
+            logger.LogDebug("Add new output description '{Key} - {DisplayName}'", description.Key, description.DisplayName, description);
             OutputDescriptions.Add(description);
             return this;
         }
@@ -48,6 +53,7 @@ namespace OctoPatch.Descriptions
         /// <returns>current instance to chain adds</returns>
         public NodeDescription AddInputDescription(ConnectorDescription description)
         {
+            logger.LogDebug("Add new input description '{Key} - {DisplayName}'", description.Key, description.DisplayName, description);
             InputDescriptions.Add(description);
             return this;
         }
@@ -62,6 +68,7 @@ namespace OctoPatch.Descriptions
         /// <returns>node description</returns>
         public static NodeDescription Create<T>(Guid pluginId, string displayName, string displayDescription)
         {
+            logger.LogDebug("Create new node description for type {Type} in plugin {PluginId}", typeof(T), pluginId);
             return new NodeDescription($"{pluginId}:{typeof(T).Name}", displayName, displayDescription);
         }
     }
