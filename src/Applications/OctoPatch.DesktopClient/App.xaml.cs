@@ -15,7 +15,7 @@ namespace OctoPatch.DesktopClient
             Log.Logger = new LoggerConfiguration()
               .Enrich.FromLogContext()
               .WriteTo.Console()
-              .WriteTo.RollingFile("./logs/")
+              .WriteTo.File("./logs/.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
               .WriteTo.Seq("http://localhost:5341")
               .MinimumLevel.Debug()
               .CreateLogger();
