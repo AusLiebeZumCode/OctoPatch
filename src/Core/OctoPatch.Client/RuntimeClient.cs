@@ -125,6 +125,16 @@ namespace OctoPatch.Client
             return _hubConnection.InvokeAsync(nameof(SetNodeConfiguration), nodeGuid, configuration, cancellationToken, cancellationToken);
         }
 
+        public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StopNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

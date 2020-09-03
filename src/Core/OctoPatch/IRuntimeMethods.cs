@@ -131,6 +131,20 @@ namespace OctoPatch
         /// <param name="configuration">configuration</param>
         Task SetNodeConfiguration(Guid nodeId, string configuration, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Starts the given node
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task StartNode(Guid nodeId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Stops the given node
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task StopNode(Guid nodeId, CancellationToken cancellationToken);
+
         #endregion
     }
 }

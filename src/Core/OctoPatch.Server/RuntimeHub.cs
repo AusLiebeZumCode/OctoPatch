@@ -167,5 +167,15 @@ namespace OctoPatch.Server
             //return Task.CompletedTask;
             //// TODO: Apply configuration to the node
         }
+
+        public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StopNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

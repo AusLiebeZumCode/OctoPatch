@@ -180,6 +180,18 @@ namespace OctoPatch.Server
             node.setup.Configuration = configuration;
         }
 
+        public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            _nodeMapping.TryGetValue(nodeId, out var node);
+            return node.node.Start(cancellationToken);
+        }
+
+        public Task StopNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            _nodeMapping.TryGetValue(nodeId, out var node);
+            return node.node.Stop(cancellationToken);
+        }
+
         public event Action<NodeSetup, NodeState, string> OnNodeAdded = delegate { };
         public event Action<Guid> OnNodeRemoved = delegate { };
         public event Action<WireSetup> OnWireAdded = delegate { };

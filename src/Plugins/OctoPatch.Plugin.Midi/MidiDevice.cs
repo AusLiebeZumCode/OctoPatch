@@ -82,19 +82,20 @@ namespace OctoPatch.Plugin.Midi
 
         protected override Task OnStart(CancellationToken cancellationToken)
         {
-            _device.Open();
+            _device?.Open();
             return Task.CompletedTask;
         }
 
         protected override Task OnStop(CancellationToken cancellationToken)
         {
-            _device.Close();
+            _device?.Close();
             return Task.CompletedTask;
         }
 
         protected override Task OnDeinitialize(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _device?.Dispose();
+            return Task.CompletedTask;
         }
 
         protected override Task OnInitializeReset(CancellationToken cancellationToken)

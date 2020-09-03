@@ -221,14 +221,26 @@ namespace OctoPatch.DesktopClient.ViewModels
             node.Environment = environment;
         }
 
-        private void StopSelectedNodeCallback(object obj)
+        private async void StopSelectedNodeCallback(object obj)
         {
+            var node = SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
 
+            await _runtime.StopNode(node.Setup.NodeId, CancellationToken.None);
         }
 
-        private void StartSelectedNodeCallback(object obj)
+        private async void StartSelectedNodeCallback(object obj)
         {
+            var node = SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
 
+            await _runtime.StartNode(node.Setup.NodeId, CancellationToken.None);
         }
 
         private async void RemoveSelectedNodeCallback(object obj)
