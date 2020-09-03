@@ -78,6 +78,21 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _startSelectedNode.Enabled = value != null;
                 _stopSelectedNode.Enabled = value != null;
                 _saveNodeDescription.Enabled = value != null;
+
+                // TODO: Lookup model by Attribute
+                if (value != null && value.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDevice")
+                {
+                    var model = new MidiDeviceModel();
+                    model.Setup(value.Environment);
+                    model.SetConfiguration(value.Setup.Configuration);
+                    NodeConfiguration = model;
+                    _saveNodeConfiguration.Enabled = true;
+                }
+                else
+                {
+                    NodeConfiguration = null;
+                    _saveNodeConfiguration.Enabled = false;
+                }
             }
         }
 
@@ -97,6 +112,22 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand SaveNodeDescription => _saveNodeDescription;
 
+        private NodeConfigurationModel _nodeConfiguration;
+
+        public NodeConfigurationModel NodeConfiguration
+        {
+            get => _nodeConfiguration;
+            private set
+            {
+                _nodeConfiguration = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private readonly ActionCommand _saveNodeConfiguration;
+
+        public ICommand SaveNodeConfiguration => _saveNodeConfiguration;
+
         public ObservableCollection<WireSetup> Wires { get; }
 
         public RuntimeViewModel()
@@ -110,6 +141,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             _startSelectedNode = new ActionCommand(StartSelectedNodeCallback, false);
             _stopSelectedNode = new ActionCommand(StopSelectedNodeCallback, false);
             _saveNodeDescription = new ActionCommand(SaveNodeDescriptionCallback, false);
+            _saveNodeConfiguration = new ActionCommand(SaveNodeConfigurationCallback, false);
 
             var repository = new Repository();
             _runtime = new Runtime(repository);
@@ -118,10 +150,30 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.OnNodeRemoved += RuntimeOnOnNodeRemoved;
             _runtime.OnNodeUpdated += RuntimeOnOnNodeUpdated;
             _runtime.OnNodeStateChanged += RuntimeOnOnNodeStateChanged;
+            _runtime.OnNodeEnvironmentChanged += RuntimeOnOnNodeEnvironmentChanged;
             _runtime.OnWireAdded += RuntimeOnOnWireAdded;
             _runtime.OnWireRemoved += RuntimeOnOnWireRemoved;
 
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private async void SaveNodeConfigurationCallback(object obj)
+        {
+            var node = SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await _runtime.SetNodeConfiguration(node.Setup.NodeId, NodeConfiguration.GetConfiguration(),
+                    CancellationToken.None);
+            }
+            catch (Exception)
+            {
+                // This is just to see what happens
+            }
         }
 
         private async void SaveNodeDescriptionCallback(object parameter)
@@ -156,6 +208,17 @@ namespace OctoPatch.DesktopClient.ViewModels
             }
 
             node.State = state;
+        }
+
+        private void RuntimeOnOnNodeEnvironmentChanged(Guid nodeId, string environment)
+        {
+            var node = Nodes.ToArray().FirstOrDefault(n => n.Setup.NodeId == nodeId);
+            if (node == null)
+            {
+                return;
+            }
+
+            node.Environment = environment;
         }
 
         private void StopSelectedNodeCallback(object obj)
@@ -209,9 +272,9 @@ namespace OctoPatch.DesktopClient.ViewModels
             Nodes.Remove(node);
         }
 
-        private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state)
+        private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
-            Nodes.Add(new NodeModel { Setup = setup, State = state });
+            Nodes.Add(new NodeModel { Setup = setup, State = state, Environment = environment });
         }
 
         public async Task Setup(CancellationToken cancellationToken)

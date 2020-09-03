@@ -29,6 +29,10 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         ICommand SaveNodeDescription { get; }
 
+        public NodeConfigurationModel NodeConfiguration { get; }
+
+        ICommand SaveNodeConfiguration { get; }
+
         public ObservableCollection<WireSetup> Wires { get; }
     }
 }
