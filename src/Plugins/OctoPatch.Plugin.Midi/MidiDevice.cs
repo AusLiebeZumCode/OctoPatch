@@ -51,6 +51,12 @@ namespace OctoPatch.Plugin.Midi
         public MidiDevice(Guid nodeId) : base(nodeId)
         {
             _output = RegisterOutputConnector(MidiOutputDescription);
+
+            // Build environment
+            UpdateEnvironment(new MidiDeviceEnvironment
+            {
+                Devices = MidiDeviceManager.Default.InputDevices.Select(d => d.Name).ToList()
+            });
         }
 
         protected override Task OnInitialize(MidiDeviceConfiguration configuration, CancellationToken cancellationToken)
@@ -59,8 +65,6 @@ namespace OctoPatch.Plugin.Midi
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
-
-            var x = MidiDeviceManager.Default.InputDevices.ToArray();
 
             var deviceInfo = MidiDeviceManager.Default.InputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.DeviceName));
             if (deviceInfo == null)
