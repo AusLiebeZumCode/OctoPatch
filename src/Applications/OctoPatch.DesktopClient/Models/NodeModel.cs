@@ -27,5 +27,17 @@ namespace OctoPatch.DesktopClient.Models
                 OnPropertyChanged();
             }
         }
+
+        private string _environment;
+
+        public string Environment
+        {
+            get => _environment;
+            set
+            {
+                _environment = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }
