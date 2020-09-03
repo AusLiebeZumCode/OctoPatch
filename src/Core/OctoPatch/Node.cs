@@ -35,15 +35,35 @@ namespace OctoPatch
         /// </summary>
         protected TConfiguration Configuration { get; private set; }
 
+        private TEnvironment _environment;
+
         /// <summary>
         /// Internal reference to the current environment
         /// </summary>
-        protected TEnvironment Environment { get; private set; }
+        protected TEnvironment Environment
+        {
+            get => _environment;
+            private set
+            {
+                _environment = value;
+                EnvironmentChanged?.Invoke(this, GetEnvironment());
+            }
+        }
+
+        private NodeState _state;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public NodeState State { get; private set; }
+        public NodeState State
+        {
+            get => _state;
+            private set
+            {
+                _state = value;
+                StateChanged?.Invoke(this, value);
+            }
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -80,6 +100,11 @@ namespace OctoPatch
 
             _inputs = new List<IInputConnector>();
             _outputs = new List<IOutputConnector>();
+        }
+
+        protected void UpdateEnvironment(TEnvironment environment)
+        {
+            Environment = environment;
         }
 
         #region Lifecycle methods
