@@ -42,6 +42,25 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand AddSelectedNodeDescription => _addSelectedNodeDescription;
 
+        public ObservableCollection<NodeDescription> ContextNodeDescriptions { get; }
+
+        private NodeDescription _selectedContextNodeDescription;
+
+        public NodeDescription SelectedContextNodeDescription
+        {
+            get => _selectedContextNodeDescription;
+            set
+            {
+                _selectedContextNodeDescription = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private readonly ActionCommand _addSelectedContextNodeDescription;
+
+        public ICommand AddSelectedContextNodeDescription => _addSelectedNodeDescription;
+
+
         public ObservableCollection<NodeModel> NodeTree { get; }
 
         private readonly ActionCommand _removeSelectedNode;
@@ -65,6 +84,63 @@ namespace OctoPatch.DesktopClient.ViewModels
             {
                 _selectedNode = value;
                 OnPropertyChanged();
+
+                ContextNodeDescriptions.Clear();
+                switch (value)
+                {
+                    case InputNodeModel input:
+
+                        foreach (var description in _descriptions.OfType<SplitterNodeDescription>().Where(d => d.TypeKey == input.TypeKey))
+                        {
+                            ContextNodeDescriptions.Add(description);
+                        }
+
+                        break;
+                    case OutputNodeModel output:
+
+                        foreach (var description in _descriptions.OfType<CollectorNodeDescription>().Where(d => d.TypeKey == output.TypeKey))
+                        {
+                            ContextNodeDescriptions.Add(description);
+                        }
+                        
+                        break;
+
+                    case CommonNodeModel common:
+
+                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == common.Key))
+                        {
+                            ContextNodeDescriptions.Add(description);
+                        }
+
+                        break;
+                    case AttachedNodeModel attached:
+
+                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == attached.Key))
+                        {
+                            ContextNodeDescriptions.Add(description);
+                        }
+
+                        break;
+
+                    case SplitterNodeModel splitter:
+
+                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == splitter.Key))
+                        {
+                            ContextNodeDescriptions.Add(description);
+                        }
+
+                        break;
+
+                    case CollectorNodeModel collector:
+
+                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == collector.Key))
+                        {
+                            ContextNodeDescriptions.Add(description);
+                        }
+
+                        break;
+
+                }
 
                 //if (value == null)
                 //{
@@ -141,10 +217,12 @@ namespace OctoPatch.DesktopClient.ViewModels
             _descriptions = new List<NodeDescription>();
 
             NodeDescriptions = new ObservableCollection<NodeDescription>();
+            ContextNodeDescriptions = new ObservableCollection<NodeDescription>();
             NodeTree = new ObservableCollection<NodeModel>();
             Wires = new ObservableCollection<WireSetup>();
 
             _addSelectedNodeDescription = new ActionCommand(AddNodeDescriptionCallback, false);
+            _addSelectedContextNodeDescription = new ActionCommand(AddContextNodeDescriptionCallback, false);
             _removeSelectedNode = new ActionCommand(RemoveSelectedNodeCallback, false);
             _startSelectedNode = new ActionCommand(StartSelectedNodeCallback, false);
             _stopSelectedNode = new ActionCommand(StopSelectedNodeCallback, false);
@@ -163,6 +241,11 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.OnWireRemoved += RuntimeOnOnWireRemoved;
 
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private void AddContextNodeDescriptionCallback(object obj)
+        {
+            throw new NotImplementedException();
         }
 
         private async void SaveNodeConfigurationCallback(object obj)
