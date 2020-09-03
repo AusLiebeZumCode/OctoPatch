@@ -54,6 +54,7 @@ namespace OctoPatch.Server
             }
 
             node.StateChanged += NodeOnStateChanged;
+            node.EnvironmentChanged += NodeOnEnvironmentChanged;
 
             await _patch.AddNode(node, cancellationToken);
 
@@ -67,7 +68,7 @@ namespace OctoPatch.Server
 
             _nodeMapping.Add(node.Id, (node, setup));
 
-            OnNodeAdded?.Invoke(setup, node.State);
+            OnNodeAdded?.Invoke(setup, node.State, node.GetEnvironment());
 
             return setup;
         }
@@ -78,6 +79,11 @@ namespace OctoPatch.Server
             OnNodeStateChanged?.Invoke(node.Id, e);
         }
 
+        private void NodeOnEnvironmentChanged(object sender, string e)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
             if (!_nodeMapping.TryGetValue(nodeId, out var x))
@@ -85,7 +91,8 @@ namespace OctoPatch.Server
                 return;
             }
 
-            x.node.StateChanged += NodeOnStateChanged;
+            x.node.EnvironmentChanged -= NodeOnEnvironmentChanged;
+            x.node.StateChanged -= NodeOnStateChanged;
 
             await _patch.RemoveNode(nodeId, cancellationToken);
             _nodeMapping.Remove(nodeId);
@@ -173,7 +180,7 @@ namespace OctoPatch.Server
             node.setup.Configuration = configuration;
         }
 
-        public event Action<NodeSetup, NodeState> OnNodeAdded = delegate { };
+        public event Action<NodeSetup, NodeState, string> OnNodeAdded = delegate { };
         public event Action<Guid> OnNodeRemoved = delegate { };
         public event Action<WireSetup> OnWireAdded = delegate { };
         public event Action<Guid> OnWireRemoved = delegate { };
@@ -181,5 +188,6 @@ namespace OctoPatch.Server
         public event Action<NodeSetup> OnNodeUpdated = delegate {};
 
         public event Action<Guid, NodeState> OnNodeStateChanged = delegate {};
+        public event Action<Guid, string> OnNodeEnvironmentChanged = delegate {};
     }
 }

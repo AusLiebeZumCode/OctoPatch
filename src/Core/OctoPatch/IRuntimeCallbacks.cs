@@ -13,7 +13,8 @@ namespace OctoPatch
         /// </summary>
         /// <param name="setup">node setup</param>
         /// <param name="state">current state of the new node</param>
-        void NodeAdded(NodeSetup setup, NodeState state);
+        /// <param name="environment">serialized environment of this node</param>
+        void NodeAdded(NodeSetup setup, NodeState state, string environment);
 
         /// <summary>
         /// Gets a call when something changes within the node instance
@@ -27,6 +28,13 @@ namespace OctoPatch
         /// <param name="nodeId">node id</param>
         /// <param name="state">new state</param>
         void NodeStateChanged(Guid nodeId, NodeState state);
+
+        /// <summary>
+        /// Gets a call when a node environment changed during runtime
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="environment">serialized environment</param>
+        void NodeEnvironmentChanged(Guid nodeId, string environment);
 
         /// <summary>
         /// Gets a call when a node gets lost

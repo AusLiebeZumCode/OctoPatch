@@ -28,7 +28,7 @@ namespace OctoPatch.Client
 
             _hubConnection.Closed += Connection_Closed;
 
-            _hubConnection.On<NodeSetup>(nameof(NodeAdded), NodeAdded);
+            _hubConnection.On<NodeSetup, NodeState, string>(nameof(NodeAdded), NodeAdded);
             _hubConnection.On<Guid>(nameof(NodeRemoved), NodeRemoved);
             _hubConnection.On<NodeSetup>(nameof(NodeUpdated), NodeUpdated);
             _hubConnection.On<WireSetup>(nameof(WireAdded), WireAdded);
@@ -156,12 +156,17 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void NodeAdded(NodeSetup instance)
+        public void NodeAdded(NodeSetup instance, NodeState state, string environment)
         {
-            OnNodeAdded?.Invoke(instance);
+            OnNodeAdded?.Invoke(instance, state, environment);
         }
 
         public void NodeStateChanged(Guid nodeId, NodeState state)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void NodeEnvironmentChanged(Guid nodeId, string environment)
         {
             throw new NotImplementedException();
         }
@@ -205,13 +210,7 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<NodeSetup> OnNodeAdded;
-
-        event Action<NodeSetup, NodeState> IRuntimeEvents.OnNodeAdded
-        {
-            add => throw new NotImplementedException();
-            remove => throw new NotImplementedException();
-        }
+        public event Action<NodeSetup, NodeState, string> OnNodeAdded;
 
         /// <summary>
         /// <inheritdoc />
@@ -220,6 +219,7 @@ namespace OctoPatch.Client
 
         public event Action<NodeSetup> OnNodeUpdated;
         public event Action<Guid, NodeState> OnNodeStateChanged;
+        public event Action<Guid, string> OnNodeEnvironmentChanged;
 
         /// <summary>
         /// <inheritdoc />
