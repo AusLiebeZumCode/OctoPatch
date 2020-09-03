@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using OctoPatch.DesktopClient.Models;
 using OctoPatch.DesktopClient.ViewModels;
 
 namespace OctoPatch.DesktopClient.Views
@@ -16,6 +16,11 @@ namespace OctoPatch.DesktopClient.Views
         {
             InitializeComponent();
             DataContext = _viewModel = new RuntimeViewModel();
+        }
+
+        private void TreeView_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            _viewModel.SelectedNode = e.NewValue as NodeModel;
         }
     }
 }

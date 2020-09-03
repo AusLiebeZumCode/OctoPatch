@@ -15,7 +15,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         ICommand AddSelectedNodeDescription { get; }
 
-        ObservableCollection<NodeModel> Nodes { get; }
+        ObservableCollection<NodeModel> NodeTree { get; }
 
         ICommand RemoveSelectedNode { get; }
 

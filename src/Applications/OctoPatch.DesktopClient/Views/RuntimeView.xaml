@@ -17,6 +17,59 @@
                 </DataTemplate>
             </desktopClient:NodeTemplateSelector.MidiDeviceTemplate>
         </desktopClient:NodeTemplateSelector>
+
+        <desktopClient:TreeTemplateSelector x:Key="TreeTemplateSelector">
+            <desktopClient:TreeTemplateSelector.AttachedNodeTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="✱" Margin="0 0 5 0" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </desktopClient:TreeTemplateSelector.AttachedNodeTemplate>
+            <desktopClient:TreeTemplateSelector.CommonNodeTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📦" Margin="0 0 5 0" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </desktopClient:TreeTemplateSelector.CommonNodeTemplate>
+            <desktopClient:TreeTemplateSelector.CollectorNodeTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⋺" Margin="0 0 5 0" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </desktopClient:TreeTemplateSelector.CollectorNodeTemplate>
+            <desktopClient:TreeTemplateSelector.SplitterNodeTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⋲" Margin="0 0 5 0" />                        
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </desktopClient:TreeTemplateSelector.SplitterNodeTemplate>
+            <desktopClient:TreeTemplateSelector.InputTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="←" Margin="0 0 5 0" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </desktopClient:TreeTemplateSelector.InputTemplate>
+            <desktopClient:TreeTemplateSelector.OutputTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="→" Margin="0 0 5 0" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </desktopClient:TreeTemplateSelector.OutputTemplate>
+
+        </desktopClient:TreeTemplateSelector>
+
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -47,24 +100,10 @@
         </Grid>
 
         <!-- Existing blocks -->
-        <ListBox 
-            Grid.Column="1"
-            ItemsSource="{Binding Nodes}"
-            SelectedItem="{Binding SelectedNode}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{Binding Path=Setup.Name}" FontWeight="Bold" />
-                        <TextBlock Grid.Row="1" Text="{Binding Path=State}" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-
+        <TreeView Grid.Column="1" 
+                  ItemTemplateSelector="{StaticResource TreeTemplateSelector}"
+                  ItemsSource="{Binding NodeTree}" SelectedItemChanged="TreeView_OnSelectedItemChanged">
+        </TreeView>
 
         <Grid Grid.Column="2">
 

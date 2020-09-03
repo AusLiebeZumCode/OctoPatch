@@ -13,7 +13,7 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => NodeDescription.Create<MidiMessageFilter>(
+        public static NodeDescription NodeDescription => CommonNodeDescription.Create<MidiMessageFilter>(
                 Guid.Parse(MidiPlugin.PluginId),
                 "MIDI filter",
                 "This block allows to filter the stream of midi messages")

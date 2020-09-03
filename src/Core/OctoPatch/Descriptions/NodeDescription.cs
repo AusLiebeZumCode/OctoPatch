@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Meta description of a node
     /// </summary>
-    public class NodeDescription : KeyDescription
+    public abstract class NodeDescription : KeyDescription
     {
         /// <summary>
         /// Returns the actual type of the node description
@@ -50,19 +49,6 @@ namespace OctoPatch.Descriptions
         {
             InputDescriptions.Add(description);
             return this;
-        }
-
-        /// <summary>
-        /// Creates a new description for common nodes
-        /// </summary>
-        /// <typeparam name="T">node type</typeparam>
-        /// <param name="pluginId">plugin id</param>
-        /// <param name="displayName">name of the node</param>
-        /// <param name="displayDescription">optional description</param>
-        /// <returns>node description</returns>
-        public static NodeDescription Create<T>(Guid pluginId, string displayName, string displayDescription)
-        {
-            return new NodeDescription($"{pluginId}:{typeof(T).Name}", displayName, displayDescription);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -16,6 +17,10 @@ namespace OctoPatch.DesktopClient.ViewModels
     public sealed class RuntimeViewModel : IRuntimeViewModel
     {
         private readonly IRuntime _runtime;
+
+        private List<NodeItem> _nodes;
+
+        private List<NodeDescription> _descriptions;
 
         public ObservableCollection<NodeDescription> NodeDescriptions { get; }
 
@@ -37,7 +42,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand AddSelectedNodeDescription => _addSelectedNodeDescription;
 
-        public ObservableCollection<NodeModel> Nodes { get; }
+        public ObservableCollection<NodeModel> NodeTree { get; }
 
         private readonly ActionCommand _removeSelectedNode;
 
@@ -61,38 +66,38 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _selectedNode = value;
                 OnPropertyChanged();
 
-                if (value == null)
-                {
-                    NodeDescription = null;
-                }
-                else
-                {
-                    NodeDescription = new NodeDescriptionModel
-                    {
-                        Name = value.Setup.Name,
-                        Description = value.Setup.Description
-                    };
-                }
+                //if (value == null)
+                //{
+                //    NodeDescription = null;
+                //}
+                //else
+                //{
+                //    NodeDescription = new NodeDescriptionModel
+                //    {
+                //        Name = value.Setup.Name,
+                //        Description = value.Setup.Description
+                //    };
+                //}
 
-                _removeSelectedNode.Enabled = value != null;
-                _startSelectedNode.Enabled = value != null;
-                _stopSelectedNode.Enabled = value != null;
-                _saveNodeDescription.Enabled = value != null;
+                //_removeSelectedNode.Enabled = value != null;
+                //_startSelectedNode.Enabled = value != null;
+                //_stopSelectedNode.Enabled = value != null;
+                //_saveNodeDescription.Enabled = value != null;
 
-                // TODO: Lookup model by Attribute
-                if (value != null && value.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDevice")
-                {
-                    var model = new MidiDeviceModel();
-                    model.Setup(value.Environment);
-                    model.SetConfiguration(value.Setup.Configuration);
-                    NodeConfiguration = model;
-                    _saveNodeConfiguration.Enabled = true;
-                }
-                else
-                {
-                    NodeConfiguration = null;
-                    _saveNodeConfiguration.Enabled = false;
-                }
+                //// TODO: Lookup model by Attribute
+                //if (value != null && value.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDevice")
+                //{
+                //    var model = new MidiDeviceModel();
+                //    model.Setup(value.Environment);
+                //    model.SetConfiguration(value.Setup.Configuration);
+                //    NodeConfiguration = model;
+                //    _saveNodeConfiguration.Enabled = true;
+                //}
+                //else
+                //{
+                //    NodeConfiguration = null;
+                //    _saveNodeConfiguration.Enabled = false;
+                //}
             }
         }
 
@@ -132,8 +137,11 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public RuntimeViewModel()
         {
+            _nodes = new List<NodeItem>();
+            _descriptions = new List<NodeDescription>();
+
             NodeDescriptions = new ObservableCollection<NodeDescription>();
-            Nodes = new ObservableCollection<NodeModel>();
+            NodeTree = new ObservableCollection<NodeModel>();
             Wires = new ObservableCollection<WireSetup>();
 
             _addSelectedNodeDescription = new ActionCommand(AddNodeDescriptionCallback, false);
@@ -159,38 +167,38 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private async void SaveNodeConfigurationCallback(object obj)
         {
-            var node = SelectedNode;
-            if (node == null)
-            {
-                return;
-            }
+            //var node = SelectedNode;
+            //if (node == null)
+            //{
+            //    return;
+            //}
 
-            try
-            {
-                await _runtime.SetNodeConfiguration(node.Setup.NodeId, NodeConfiguration.GetConfiguration(),
-                    CancellationToken.None);
-            }
-            catch (Exception)
-            {
-                // This is just to see what happens
-            }
+            //try
+            //{
+            //    await _runtime.SetNodeConfiguration(node.Setup.NodeId, NodeConfiguration.GetConfiguration(),
+            //        CancellationToken.None);
+            //}
+            //catch (Exception)
+            //{
+            //    // This is just to see what happens
+            //}
         }
 
         private async void SaveNodeDescriptionCallback(object parameter)
         {
-            var node = SelectedNode;
-            if (node == null)
-            {
-                return;
-            }
+            //var node = SelectedNode;
+            //if (node == null)
+            //{
+            //    return;
+            //}
 
-            await _runtime.SetNodeDescription(node.Setup.NodeId, NodeDescription.Name, NodeDescription.Description,
-                CancellationToken.None);
+            //await _runtime.SetNodeDescription(node.Setup.NodeId, NodeDescription.Name, NodeDescription.Description,
+            //    CancellationToken.None);
         }
 
         private void RuntimeOnOnNodeUpdated(NodeSetup setup)
         {
-            var node = Nodes.ToArray().FirstOrDefault(n => n.Setup.NodeId == setup.NodeId);
+            var node = _nodes.FirstOrDefault(n => n.Setup.NodeId == setup.NodeId);
             if (node == null)
             {
                 return;
@@ -201,7 +209,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnOnNodeStateChanged(Guid nodeId, NodeState state)
         {
-            var node = Nodes.ToArray().FirstOrDefault(n => n.Setup.NodeId == nodeId);
+            var node = _nodes.FirstOrDefault(n => n.Setup.NodeId == nodeId);
             if (node == null)
             {
                 return;
@@ -212,7 +220,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnOnNodeEnvironmentChanged(Guid nodeId, string environment)
         {
-            var node = Nodes.ToArray().FirstOrDefault(n => n.Setup.NodeId == nodeId);
+            var node = _nodes.FirstOrDefault(n => n.Setup.NodeId == nodeId);
             if (node == null)
             {
                 return;
@@ -223,35 +231,35 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private async void StopSelectedNodeCallback(object obj)
         {
-            var node = SelectedNode;
-            if (node == null)
-            {
-                return;
-            }
+            //var node = SelectedNode;
+            //if (node == null)
+            //{
+            //    return;
+            //}
 
-            await _runtime.StopNode(node.Setup.NodeId, CancellationToken.None);
+            //await _runtime.StopNode(node.Setup.NodeId, CancellationToken.None);
         }
 
         private async void StartSelectedNodeCallback(object obj)
         {
-            var node = SelectedNode;
-            if (node == null)
-            {
-                return;
-            }
+            //var node = SelectedNode;
+            //if (node == null)
+            //{
+            //    return;
+            //}
 
-            await _runtime.StartNode(node.Setup.NodeId, CancellationToken.None);
+            //await _runtime.StartNode(node.Setup.NodeId, CancellationToken.None);
         }
 
         private async void RemoveSelectedNodeCallback(object obj)
         {
-            var node = SelectedNode;
-            if (node == null)
-            {
-                return;
-            }
+            //var node = SelectedNode;
+            //if (node == null)
+            //{
+            //    return;
+            //}
 
-            await _runtime.RemoveNode(node.Setup.NodeId, CancellationToken.None);
+            //await _runtime.RemoveNode(node.Setup.NodeId, CancellationToken.None);
         }
 
         private async void AddNodeDescriptionCallback(object obj)
@@ -275,24 +283,67 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnOnNodeRemoved(Guid obj)
         {
-            var node = Nodes.ToArray().FirstOrDefault(n => n.Setup.NodeId == obj);
+            var node = _nodes.FirstOrDefault(n => n.Setup.NodeId == obj);
             if (node == null)
             {
                 return;
             }
 
-            Nodes.Remove(node);
+            // TODO: Remove node in tree
+
+            _nodes.Remove(node);
         }
 
         private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
-            Nodes.Add(new NodeModel { Setup = setup, State = state, Environment = environment });
+            var node = new NodeItem
+            {
+                Setup = setup,
+                State = state,
+                Environment = environment
+            };
+
+            // identify description
+            var description = _descriptions.FirstOrDefault(d => d.Key == setup.Key);
+
+            NodeModel nodeModel = null;
+            switch (description)
+            {
+                case AttachedNodeDescription attached:
+                    nodeModel = new AttachedNodeModel(attached);
+
+                    // TODO: Find parent
+
+                    break;
+                case CollectorNodeDescription collector:
+                    nodeModel = new CollectorNodeModel(collector);
+
+                    // TODO: Find parent
+
+                    break;
+                case SplitterNodeDescription splitter:
+                    nodeModel = new SplitterNodeModel(splitter);
+
+                    // TODO: Find parent
+
+                    break;
+                case CommonNodeDescription common:
+                    nodeModel = new CommonNodeModel(common);
+                    NodeTree.Add(nodeModel);
+                    break;
+            }
+
+            _nodes.Add(node);
         }
 
         public async Task Setup(CancellationToken cancellationToken)
         {
             var descriptions = await _runtime.GetNodeDescriptions(cancellationToken);
-            foreach (var description in descriptions.Where(d => d.NodeType == nameof(NodeDescription)))
+
+            _descriptions.Clear();
+            _descriptions.AddRange(descriptions);
+
+            foreach (var description in _descriptions.OfType<CommonNodeDescription>())
             {
                 NodeDescriptions.Add(description);
             }
@@ -303,6 +354,15 @@ namespace OctoPatch.DesktopClient.ViewModels
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private sealed class NodeItem
+        {
+            public NodeSetup Setup { get; set; }
+
+            public NodeState State { get; set; }
+
+            public string Environment { get; set; }
         }
     }
 }

@@ -1,20 +1,23 @@
-﻿using OctoPatch.Setup;
+﻿using System.Collections.ObjectModel;
+using OctoPatch.Descriptions;
 
 namespace OctoPatch.DesktopClient.Models
 {
-    public sealed class NodeModel : Model
+    public abstract class NodeModel : Model
     {
-        private NodeSetup _setup;
+        private string _name;
 
-        public NodeSetup Setup
+        public string Name
         {
-            get => _setup;
+            get => _name;
             set
             {
-                _setup = value;
+                _name = value;
                 OnPropertyChanged();
             }
         }
+
+        public ObservableCollection<NodeModel> Items { get; }
 
         private NodeState _state;
 
@@ -28,16 +31,29 @@ namespace OctoPatch.DesktopClient.Models
             }
         }
 
-        private string _environment;
-
-        public string Environment
+        protected NodeModel()
         {
-            get => _environment;
-            set
+            Items = new ObservableCollection<NodeModel>();
+        }
+
+        protected NodeModel(NodeDescription description) : this()
+        {
+            Name = description.DisplayName;
+
+            foreach (var inputDescription in description.InputDescriptions)
             {
-                _environment = value;
-                OnPropertyChanged();
+                Items.Add(new InputNodeModel(inputDescription));
             }
+
+            foreach (var outputDescription in description.OutputDescriptions)
+            {
+                Items.Add(new OutputNodeModel(outputDescription));
+            }
+        }
+
+        protected NodeModel(ConnectorDescription description) : this()
+        {
+            Name = description.DisplayName;
         }
     }
 }
