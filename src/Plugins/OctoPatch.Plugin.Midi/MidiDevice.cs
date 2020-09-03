@@ -14,7 +14,7 @@ namespace OctoPatch.Plugin.Midi
     /// <summary>
     /// Represents a single midi device
     /// </summary>
-    public sealed class MidiDevice : Node<DeviceConfiguration, IEnvironment>
+    public sealed class MidiDevice : Node<MidiDeviceConfiguration, MidiDeviceEnvironment>
     {
         #region Type description
 
@@ -53,7 +53,7 @@ namespace OctoPatch.Plugin.Midi
             _output = RegisterOutputConnector(MidiOutputDescription);
         }
 
-        protected override Task OnInitialize(DeviceConfiguration configuration, CancellationToken cancellationToken)
+        protected override Task OnInitialize(MidiDeviceConfiguration configuration, CancellationToken cancellationToken)
         {
             if (configuration == null)
             {
