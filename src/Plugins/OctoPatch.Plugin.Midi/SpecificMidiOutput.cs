@@ -33,6 +33,7 @@ namespace OctoPatch.Plugin.Midi
 
         public SpecificMidiOutput(Guid nodeId, INode parentNode) : base(nodeId, parentNode)
         {
+            
         }
 
         protected override Task OnInitialize(NodeConfiguration configuration, CancellationToken cancellationToken)

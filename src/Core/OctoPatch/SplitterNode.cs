@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.Descriptions;
@@ -10,8 +11,30 @@ namespace OctoPatch
     /// </summary>
     public sealed class SplitterNode : Node<IConfiguration, IEnvironment>
     {
+        private IDisposable _subscription;
+
+        private readonly IOutputConnector _connector;
+
+        private TypeDescription _description;
+
+        private readonly Dictionary<string, IOutputConnectorHandler> _outputs;
+
         public SplitterNode(Guid nodeId, TypeDescription description, IOutputConnector connector) : base(nodeId)
         {
+            _description = description;
+            _connector = connector;
+
+            _outputs = new Dictionary<string, IOutputConnectorHandler>();
+            foreach (var propertyDescription in description.PropertyDescriptions)
+            {
+                var output = RegisterOutputConnector(new ConnectorDescription(
+                    propertyDescription.Key, 
+                    propertyDescription.DisplayName, 
+                    propertyDescription.DisplayDescription,
+                    propertyDescription.ContentType));
+
+                _outputs.Add(propertyDescription.Key, output);
+            }
         }
 
         protected override Task OnInitialize(IConfiguration configuration, CancellationToken cancellationToken)
@@ -21,11 +44,19 @@ namespace OctoPatch
 
         protected override Task OnStart(CancellationToken cancellationToken)
         {
+            _subscription = _connector.Subscribe((msg) =>
+            {
+                // TODO
+            });
+
             return Task.CompletedTask;
         }
 
         protected override Task OnStop(CancellationToken cancellationToken)
         {
+            _subscription?.Dispose();
+            _subscription = null;
+
             return Task.CompletedTask;
         }
 

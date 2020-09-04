@@ -51,12 +51,18 @@ namespace OctoPatch.Plugin.Midi
         public MidiDevice(Guid nodeId) : base(nodeId)
         {
             _output = RegisterOutputConnector(MidiOutputDescription);
+            RegisterInputConnector(MidiInputDescription).Handle<MidiMessage>(HandleMessage);
 
             // Build environment
             UpdateEnvironment(new MidiDeviceEnvironment
             {
                 Devices = MidiDeviceManager.Default.InputDevices.Select(d => d.Name).ToList()
             });
+        }
+
+        private void HandleMessage(MidiMessage obj)
+        {
+            
         }
 
         protected override Task OnInitialize(MidiDeviceConfiguration configuration, CancellationToken cancellationToken)

@@ -42,11 +42,6 @@ namespace OctoPatch.Descriptions
         {
             var result = new SplitterNodeDescription($"{typeDescription.Key}:Splitter", typeDescription.Key, $"{typeDescription.DisplayName} Splitter", null);
             
-            // Add given type as input
-            result.AddInputDescription(new ConnectorDescription(
-                "Input", null, null,
-                new ComplexContentType {Key = typeDescription.Key}));
-
             // Add all type properties as outputs
             foreach (var propertyDescription in typeDescription.PropertyDescriptions)
             {
