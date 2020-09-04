@@ -10,7 +10,7 @@ namespace OctoPatch
     /// </summary>
     public sealed class CollectorNode : Node<IConfiguration, IEnvironment>
     {
-        public CollectorNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
+        public CollectorNode(Guid nodeId, TypeDescription typeDescription, IInputConnector connector) : base(nodeId)
         {
         }
 

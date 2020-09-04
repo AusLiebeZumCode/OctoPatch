@@ -41,11 +41,6 @@ namespace OctoPatch.Plugin.Midi
             RegisterType<MidiMessage>(MidiMessage.TypeDescription);
         }
 
-        protected override INode OnCreateNode(Type type, Guid nodeId)
-        {
-            return (INode)Activator.CreateInstance(type, nodeId);
-        }
-
         protected override IAdapter OnCreateAdapter(Type type)
         {
             return null;

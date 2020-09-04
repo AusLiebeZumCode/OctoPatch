@@ -8,7 +8,7 @@ namespace OctoPatch
     /// <typeparam name="TConfiguration">configuration type</typeparam>
     /// <typeparam name="TEnvironment">environment type</typeparam>
     /// <typeparam name="TParent">Type of parent node</typeparam>
-    public abstract class AttachedNode<TConfiguration, TEnvironment, TParent> : Node<TConfiguration, TEnvironment>
+    public abstract class AttachedNode<TConfiguration, TEnvironment, TParent> : Node<TConfiguration, TEnvironment>, IAttachedNode
         where TConfiguration : IConfiguration
         where TEnvironment : IEnvironment
         where TParent : INode
@@ -18,9 +18,9 @@ namespace OctoPatch
         /// </summary>
         protected TParent ParentNode { get; }
 
-        protected AttachedNode(Guid nodeId, TParent parentNode) : base(nodeId)
+        protected AttachedNode(Guid nodeId, INode parentNode) : base(nodeId)
         {
-            ParentNode = parentNode;
+            ParentNode = (TParent)parentNode;
         }
     }
 }

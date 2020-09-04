@@ -17,7 +17,7 @@ namespace OctoPatch.Core
         
         public override Version Version => new Version(1, 0, 0);
 
-        protected override INode OnCreateNode(Type type, Guid nodeId)
+        protected override INode OnCreateNode(Type type, Guid nodeId, INode parent = null)
         {
             return null;
         }

@@ -44,10 +44,22 @@ namespace OctoPatch.Server
             _wireMapping = new Dictionary<IWire, WireSetup>();
         }
 
-        public async Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
+        public async Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
         {
             var description = _descriptions.First(d => d.Key == key);
-            var node = _repository.CreateNode(key, Guid.NewGuid());
+
+            INode parent = null;
+            if (parentId.HasValue)
+            {
+                if (!_nodeMapping.TryGetValue(parentId.Value, out var parentSetup))
+                {
+                    throw new ArgumentException("parent does not exist");
+                }
+
+                parent = parentSetup.node;
+            }
+
+            var node = _repository.CreateNode(key, Guid.NewGuid(), parent, connectorKey);
             if (node == null)
             {
                 return null;
@@ -62,6 +74,61 @@ namespace OctoPatch.Server
             {
                 NodeId = node.Id,
                 Key = key,
+                ParentNodeId = parentId,
+                ParentConnector = connectorKey,
+                Name = description.DisplayName,
+                Description = description.DisplayDescription
+            };
+
+            _nodeMapping.Add(node.Id, (node, setup));
+
+            OnNodeAdded?.Invoke(setup, node.State, node.GetEnvironment());
+
+            return setup;
+        }
+
+        public async Task<NodeSetup> AddConnectorNode(string key, Guid parentId, string connectorKey,
+            CancellationToken cancellationToken)
+        {
+            var description = _descriptions.First(d => d.Key == key);
+            if (!_nodeMapping.TryGetValue(parentId, out var parent))
+            {
+                throw new ArgumentException("parent does not exist");
+            }
+
+            INode node;
+            if (description is SplitterNodeDescription splitter)
+            {
+                // TODO: Check if types match (splitter description vs. output vs. type)
+
+                var output = parent.node.Outputs.FirstOrDefault(o => o.Key == connectorKey);
+                var type = _repository.GetTypeDescriptions().FirstOrDefault(t => t.Key == output.Description.Key);
+                node = new SplitterNode(Guid.NewGuid(), type, output);
+            }
+            else if (description is CollectorNodeDescription collector)
+            {
+                // TODO: Check if types match (splitter description vs. output vs. type)
+
+                var input = parent.node.Inputs.FirstOrDefault(o => o.Key == connectorKey);
+                var type = _repository.GetTypeDescriptions().FirstOrDefault(t => t.Key == input.Description.Key);
+                node = new CollectorNode(Guid.NewGuid(), type, input);
+            }
+            else
+            {
+                throw new ArgumentException("description key is not a connector node");
+            }
+
+            node.StateChanged += NodeOnStateChanged;
+            node.EnvironmentChanged += NodeOnEnvironmentChanged;
+
+            await _patch.AddNode(node, cancellationToken);
+
+            var setup = new NodeSetup
+            {
+                NodeId = node.Id,
+                Key = key,
+                ParentNodeId = parentId,
+                ParentConnector = null,
                 Name = description.DisplayName,
                 Description = description.DisplayDescription
             };

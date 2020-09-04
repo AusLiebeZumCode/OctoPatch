@@ -53,12 +53,14 @@ namespace OctoPatch.DesktopClient.ViewModels
             {
                 _selectedContextNodeDescription = value;
                 OnPropertyChanged();
+
+                _addSelectedContextNodeDescription.Enabled = value != null;
             }
         }
 
         private readonly ActionCommand _addSelectedContextNodeDescription;
 
-        public ICommand AddSelectedContextNodeDescription => _addSelectedNodeDescription;
+        public ICommand AddSelectedContextNodeDescription => _addSelectedContextNodeDescription;
 
 
         public ObservableCollection<NodeModel> NodeTree { get; }
@@ -90,7 +92,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 {
                     case InputNodeModel input:
 
-                        foreach (var description in _descriptions.OfType<SplitterNodeDescription>().Where(d => d.TypeKey == input.TypeKey))
+                        foreach (var description in _descriptions.OfType<CollectorNodeDescription>().Where(d => d.TypeKey == input.TypeKey))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -98,11 +100,11 @@ namespace OctoPatch.DesktopClient.ViewModels
                         break;
                     case OutputNodeModel output:
 
-                        foreach (var description in _descriptions.OfType<CollectorNodeDescription>().Where(d => d.TypeKey == output.TypeKey))
+                        foreach (var description in _descriptions.OfType<SplitterNodeDescription>().Where(d => d.TypeKey == output.TypeKey))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
-                        
+
                         break;
 
                     case CommonNodeModel common:
@@ -243,9 +245,66 @@ namespace OctoPatch.DesktopClient.ViewModels
             Task.Run(() => Setup(CancellationToken.None));
         }
 
-        private void AddContextNodeDescriptionCallback(object obj)
+        private async void AddContextNodeDescriptionCallback(object obj)
         {
-            throw new NotImplementedException();
+            var node = SelectedNode;
+            if (node == null)
+            {
+                return;
+            }
+
+            Guid parentId;
+            string connectorKey = null;
+            if (node is CommonNodeModel commonParent)
+            {
+                parentId = commonParent.Id;
+            }
+            else if (node is AttachedNodeModel attachedParent)
+            {
+                parentId = attachedParent.Id;
+            }
+            else if (node is SplitterNodeModel splitterParent)
+            {
+                parentId = splitterParent.Id;
+            }
+            else if (node is CollectorNodeModel collectorParent)
+            {
+                parentId = collectorParent.Id;
+            }
+            else if (node is OutputNodeModel output)
+            {
+                parentId = output.ParentId;
+                connectorKey = output.Key;
+            }
+            else if (node is InputNodeModel input)
+            {
+                parentId = input.ParentId;
+                connectorKey = input.Key;
+            }
+            else
+            {
+                // Not supported type
+                return;
+            }
+
+            var contextNode = SelectedContextNodeDescription;
+            if (contextNode == null)
+            {
+                return;
+            }
+
+            if (contextNode is SplitterNodeDescription splitter)
+            {
+                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
+            }
+            else if (contextNode is CollectorNodeDescription collector)
+            {
+                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
+            }
+            else if (contextNode is AttachedNodeDescription attached)
+            {
+                await _runtime.AddNode(contextNode.Key, parentId, null, CancellationToken.None);
+            }
         }
 
         private async void SaveNodeConfigurationCallback(object obj)
@@ -350,7 +409,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             var description = SelectedNodeDescription;
             if (description != null)
             {
-                await _runtime.AddNode(description.Key, CancellationToken.None);
+                await _runtime.AddNode(description.Key, null, null, CancellationToken.None);
             }
         }
 
@@ -379,13 +438,6 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
-            var node = new NodeItem
-            {
-                Setup = setup,
-                State = state,
-                Environment = environment
-            };
-
             // identify description
             var description = _descriptions.FirstOrDefault(d => d.Key == setup.Key);
 
@@ -393,28 +445,66 @@ namespace OctoPatch.DesktopClient.ViewModels
             switch (description)
             {
                 case AttachedNodeDescription attached:
-                    nodeModel = new AttachedNodeModel(attached);
+                    nodeModel = new AttachedNodeModel(setup.NodeId, attached);
 
-                    // TODO: Find parent
+                    var attachedParent = _nodes.FirstOrDefault(n => n.Setup.NodeId == setup.ParentNodeId);
+                    if (attachedParent == null)
+                    {
+                        return;
+                    }
 
+                    attachedParent.Model.Items.Add(new AttachedNodeModel(setup.NodeId, attached));
                     break;
                 case CollectorNodeDescription collector:
-                    nodeModel = new CollectorNodeModel(collector);
+                    nodeModel = new CollectorNodeModel(setup.NodeId, collector);
 
-                    // TODO: Find parent
+                    var collectorParent = _nodes.FirstOrDefault(n => n.Setup.NodeId == setup.ParentNodeId);
+                    if (collectorParent == null)
+                    {
+                        return;
+                    }
 
+                    var input = collectorParent.Model.Items.OfType<InputNodeModel>()
+                        .FirstOrDefault(i => i.Key == setup.ParentConnector);
+                    if (input == null)
+                    {
+                        return;
+                    }
+
+                    input.Items.Add(new CollectorNodeModel(setup.NodeId, collector));
                     break;
                 case SplitterNodeDescription splitter:
-                    nodeModel = new SplitterNodeModel(splitter);
+                    nodeModel = new SplitterNodeModel(setup.NodeId, splitter);
 
-                    // TODO: Find parent
+                    var splitterParent = _nodes.FirstOrDefault(n => n.Setup.NodeId == setup.ParentNodeId);
+                    if (splitterParent == null)
+                    {
+                        return;
+                    }
+
+                    var output = splitterParent.Model.Items.OfType<OutputNodeModel>()
+                        .FirstOrDefault(i => i.Key == setup.ParentConnector);
+                    if (output == null)
+                    {
+                        return;
+                    }
+
+                    output.Items.Add(new SplitterNodeModel(setup.NodeId, splitter));
 
                     break;
                 case CommonNodeDescription common:
-                    nodeModel = new CommonNodeModel(common);
+                    nodeModel = new CommonNodeModel(setup.NodeId, common);
                     NodeTree.Add(nodeModel);
                     break;
             }
+
+            var node = new NodeItem
+            {
+                Setup = setup,
+                State = state,
+                Environment = environment,
+                Model = nodeModel
+            };
 
             _nodes.Add(node);
         }
@@ -446,6 +536,8 @@ namespace OctoPatch.DesktopClient.ViewModels
             public NodeState State { get; set; }
 
             public string Environment { get; set; }
+
+            public NodeModel Model { get; set; }
         }
     }
 }

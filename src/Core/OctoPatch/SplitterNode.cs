@@ -10,7 +10,7 @@ namespace OctoPatch
     /// </summary>
     public sealed class SplitterNode : Node<IConfiguration, IEnvironment>
     {
-        public SplitterNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
+        public SplitterNode(Guid nodeId, TypeDescription description, IOutputConnector connector) : base(nodeId)
         {
         }
 

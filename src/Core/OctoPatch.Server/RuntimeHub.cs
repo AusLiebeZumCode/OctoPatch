@@ -92,7 +92,7 @@ namespace OctoPatch.Server
             //return Task.CompletedTask;
         }
 
-        public Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

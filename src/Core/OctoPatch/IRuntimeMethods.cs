@@ -61,12 +61,14 @@ namespace OctoPatch
         Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Adds a new node to the patch
+        /// Adds a new common node to the patch
         /// </summary>
         /// <param name="key">unique key for the node description</param>
+        /// <param name="connectorKey">optional connector key. Is used for splitters and collectors only</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new node instance</returns>
-        Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken);
+        /// <param name="parentId">optional parent id. Is used for attached nodes, splitter or collectors</param>
+        /// <returns>new node setup</returns>
+        Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id from the patch

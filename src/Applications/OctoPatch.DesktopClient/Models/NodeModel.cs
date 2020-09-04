@@ -1,10 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch.DesktopClient.Models
 {
     public abstract class NodeModel : Model
     {
+        public string Key { get; }
+
         private string _name;
 
         public string Name
@@ -31,27 +34,28 @@ namespace OctoPatch.DesktopClient.Models
             }
         }
 
-        protected NodeModel()
+        protected NodeModel(string key)
         {
+            Key = key;
             Items = new ObservableCollection<NodeModel>();
         }
 
-        protected NodeModel(NodeDescription description) : this()
+        protected NodeModel(Guid id, NodeDescription description) : this(description.Key)
         {
             Name = description.DisplayName;
 
             foreach (var inputDescription in description.InputDescriptions)
             {
-                Items.Add(new InputNodeModel(inputDescription));
+                Items.Add(new InputNodeModel(id, inputDescription));
             }
 
             foreach (var outputDescription in description.OutputDescriptions)
             {
-                Items.Add(new OutputNodeModel(outputDescription));
+                Items.Add(new OutputNodeModel(id, outputDescription));
             }
         }
 
-        protected NodeModel(ConnectorDescription description) : this()
+        protected NodeModel(ConnectorDescription description) : this(description.Key)
         {
             Name = description.DisplayName;
         }
