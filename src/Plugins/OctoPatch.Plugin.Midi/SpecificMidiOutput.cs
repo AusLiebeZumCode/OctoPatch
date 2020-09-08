@@ -31,7 +31,7 @@ namespace OctoPatch.Plugin.Midi
 
         #endregion
 
-        public SpecificMidiOutput(Guid nodeId, INode parentNode) : base(nodeId, parentNode)
+        public SpecificMidiOutput(Guid nodeId, MidiDevice parentNode) : base(nodeId, parentNode)
         {
             
         }

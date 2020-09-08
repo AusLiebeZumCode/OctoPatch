@@ -18,7 +18,7 @@ namespace OctoPatch
         /// </summary>
         protected TParent ParentNode { get; }
 
-        protected AttachedNode(Guid nodeId, INode parentNode) : base(nodeId)
+        protected AttachedNode(Guid nodeId, TParent parentNode) : base(nodeId)
         {
             ParentNode = (TParent)parentNode;
         }
