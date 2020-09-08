@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Newtonsoft.Json;
 using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
 using OctoPatch.Server;
@@ -173,6 +174,11 @@ namespace OctoPatch.DesktopClient.ViewModels
                     NodeConfiguration = model;
                     _saveNodeConfiguration.Enabled = true;
                 }
+                else if (item != null && item.Setup.Key == "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode")
+                {
+                    NodeConfiguration = null;
+                    _saveNodeConfiguration.Enabled = true;
+                }
                 else
                 {
                     NodeConfiguration = null;
@@ -320,7 +326,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
             try
             {
-                await _runtime.SetNodeConfiguration(item.Setup.NodeId, NodeConfiguration.GetConfiguration(),
+                await _runtime.SetNodeConfiguration(item.Setup.NodeId, NodeConfiguration?.GetConfiguration() ?? "{}",
                     CancellationToken.None);
             }
             catch (Exception)
