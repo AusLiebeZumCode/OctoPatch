@@ -144,38 +144,40 @@ namespace OctoPatch.DesktopClient.ViewModels
 
                 }
 
-                //if (value == null)
-                //{
-                //    NodeDescription = null;
-                //}
-                //else
-                //{
-                //    NodeDescription = new NodeDescriptionModel
-                //    {
-                //        Name = value.Setup.Name,
-                //        Description = value.Setup.Description
-                //    };
-                //}
+                var item = _nodes.FirstOrDefault(n => n.Model == value);
+                
+                if (item == null)
+                {
+                    NodeDescription = null;
+                }
+                else
+                {
+                    NodeDescription = new NodeDescriptionModel
+                    {
+                        Name = item.Setup.Name,
+                        Description = item.Setup.Description
+                    };
+                }
 
-                //_removeSelectedNode.Enabled = value != null;
-                //_startSelectedNode.Enabled = value != null;
-                //_stopSelectedNode.Enabled = value != null;
-                //_saveNodeDescription.Enabled = value != null;
+                _removeSelectedNode.Enabled = item != null;
+                _startSelectedNode.Enabled = item != null;
+                _stopSelectedNode.Enabled = item != null;
+                _saveNodeDescription.Enabled = item != null;
 
                 //// TODO: Lookup model by Attribute
-                //if (value != null && value.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDevice")
-                //{
-                //    var model = new MidiDeviceModel();
-                //    model.Setup(value.Environment);
-                //    model.SetConfiguration(value.Setup.Configuration);
-                //    NodeConfiguration = model;
-                //    _saveNodeConfiguration.Enabled = true;
-                //}
-                //else
-                //{
-                //    NodeConfiguration = null;
-                //    _saveNodeConfiguration.Enabled = false;
-                //}
+                if (item != null && item.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDevice")
+                {
+                    var model = new MidiDeviceModel();
+                    model.Setup(item.Environment);
+                    model.SetConfiguration(item.Setup.Configuration);
+                    NodeConfiguration = model;
+                    _saveNodeConfiguration.Enabled = true;
+                }
+                else
+                {
+                    NodeConfiguration = null;
+                    _saveNodeConfiguration.Enabled = false;
+                }
             }
         }
 
@@ -309,33 +311,35 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private async void SaveNodeConfigurationCallback(object obj)
         {
-            //var node = SelectedNode;
-            //if (node == null)
-            //{
-            //    return;
-            //}
+            var node = SelectedNode;
+            var item = _nodes.FirstOrDefault(n => n.Model == node);
+            if (item == null)
+            {
+                return;
+            }
 
-            //try
-            //{
-            //    await _runtime.SetNodeConfiguration(node.Setup.NodeId, NodeConfiguration.GetConfiguration(),
-            //        CancellationToken.None);
-            //}
-            //catch (Exception)
-            //{
-            //    // This is just to see what happens
-            //}
+            try
+            {
+                await _runtime.SetNodeConfiguration(item.Setup.NodeId, NodeConfiguration.GetConfiguration(),
+                    CancellationToken.None);
+            }
+            catch (Exception)
+            {
+                // This is just to see what happens
+            }
         }
 
         private async void SaveNodeDescriptionCallback(object parameter)
         {
-            //var node = SelectedNode;
-            //if (node == null)
-            //{
-            //    return;
-            //}
+            var node = SelectedNode;
+            var item = _nodes.FirstOrDefault(n => n.Model == node);
+            if (item == null)
+            {
+                return;
+            }
 
-            //await _runtime.SetNodeDescription(node.Setup.NodeId, NodeDescription.Name, NodeDescription.Description,
-            //    CancellationToken.None);
+            await _runtime.SetNodeDescription(item.Setup.NodeId, NodeDescription.Name, NodeDescription.Description,
+                CancellationToken.None);
         }
 
         private void RuntimeOnOnNodeUpdated(NodeSetup setup)
@@ -358,6 +362,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             }
 
             node.State = state;
+            node.Model.State = state;
         }
 
         private void RuntimeOnOnNodeEnvironmentChanged(Guid nodeId, string environment)
@@ -373,35 +378,38 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private async void StopSelectedNodeCallback(object obj)
         {
-            //var node = SelectedNode;
-            //if (node == null)
-            //{
-            //    return;
-            //}
+            var node = SelectedNode;
+            var item = _nodes.FirstOrDefault(n => n.Model == node);
+            if (item == null)
+            {
+                return;
+            }
 
-            //await _runtime.StopNode(node.Setup.NodeId, CancellationToken.None);
+            await _runtime.StopNode(item.Setup.NodeId, CancellationToken.None);
         }
 
         private async void StartSelectedNodeCallback(object obj)
         {
-            //var node = SelectedNode;
-            //if (node == null)
-            //{
-            //    return;
-            //}
+            var node = SelectedNode;
+            var item = _nodes.FirstOrDefault(n => n.Model == node);
+            if (item == null)
+            {
+                return;
+            }
 
-            //await _runtime.StartNode(node.Setup.NodeId, CancellationToken.None);
+            await _runtime.StartNode(item.Setup.NodeId, CancellationToken.None);
         }
 
         private async void RemoveSelectedNodeCallback(object obj)
         {
-            //var node = SelectedNode;
-            //if (node == null)
-            //{
-            //    return;
-            //}
+            var node = SelectedNode;
+            var item = _nodes.FirstOrDefault(n => n.Model == node);
+            if (item == null)
+            {
+                return;
+            }
 
-            //await _runtime.RemoveNode(node.Setup.NodeId, CancellationToken.None);
+            await _runtime.RemoveNode(item.Setup.NodeId, CancellationToken.None);
         }
 
         private async void AddNodeDescriptionCallback(object obj)
