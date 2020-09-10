@@ -20,6 +20,11 @@ namespace OctoPatch
 
         protected AttachedNode(Guid nodeId, TParent parentNode) : base(nodeId)
         {
+            if (parentNode == null)
+            {
+                throw new ArgumentNullException(nameof(parentNode));
+            }
+
             ParentNode = (TParent)parentNode;
         }
     }
