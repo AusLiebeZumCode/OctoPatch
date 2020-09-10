@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:OctoPatch.DesktopClient.ViewModels"
              xmlns:views="clr-namespace:OctoPatch.DesktopClient.Views"
              xmlns:desktopClient="clr-namespace:OctoPatch.DesktopClient"
+             xmlns:converters="clr-namespace:OctoPatch.DesktopClient.Converters"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:RuntimeViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -70,6 +71,8 @@
 
         </desktopClient:TreeTemplateSelector>
 
+        <converters:NodeToVisibilityConverter x:Key="NodeToVisibilityConverter" />
+
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -115,7 +118,7 @@
             <StackPanel Grid.Row="0">
 
                 <!-- Common Properties -->
-                <views:CommonNodeSetupView />
+                <views:CommonNodeSetupView Visibility="{Binding SelectedNode, Converter={StaticResource NodeToVisibilityConverter}}" />
 
                 <!-- Node specific properties -->
                 <Grid>
