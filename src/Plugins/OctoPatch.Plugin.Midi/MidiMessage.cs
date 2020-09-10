@@ -25,17 +25,17 @@ namespace OctoPatch.Plugin.Midi
                     nameof(Channel), 
                     nameof(Channel), 
                     "Contains the channel", 
-                    new IntegerContentType(minimumValue: 0, maximumValue: 15)),
+                    IntegerContentType.Create(minimumValue: 0, maximumValue: 15)),
                 new PropertyDescription(
                     nameof(Key), 
                     nameof(Key), 
                     "Contains the key", 
-                    new IntegerContentType(minimumValue: 0, maximumValue: 127)),
+                    IntegerContentType.Create(minimumValue: 0, maximumValue: 127)),
                 new PropertyDescription(
                     nameof(Value), 
                     nameof(Value), 
                     "Contains the value",
-                    new IntegerContentType(minimumValue: 0, maximumValue: 127)));
+                    IntegerContentType.Create(minimumValue: 0, maximumValue: 127)));
 
         /// <summary>
         /// message type
