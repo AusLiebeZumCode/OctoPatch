@@ -28,9 +28,27 @@ namespace OctoPatch
             var message = Message.Create(value);
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public IDisposable Subscribe(IObserver<Message> observer)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public IDisposable Subscribe<T>(Action<T> messageHandler) where T : struct
+        {
+            return this.Subscribe((m) =>
+            {
+                // Handle message if it's from given type
+                if (m.Content is T specificType)
+                {
+                    messageHandler(specificType);
+                }
+            });
         }
     }
 }
