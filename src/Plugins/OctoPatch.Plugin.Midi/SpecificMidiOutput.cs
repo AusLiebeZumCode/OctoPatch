@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.ContentTypes;
@@ -9,7 +10,7 @@ namespace OctoPatch.Plugin.Midi
     /// <summary>
     /// Attached node for a specific output type
     /// </summary>
-    public sealed class SpecificMidiOutput : AttachedNode<SpecificMidiOutput.NodeConfiguration, IEnvironment, MidiDevice>
+    public sealed class SpecificMidiOutput : AttachedNode<SpecificMidiOutput.NodeConfiguration, EmptyEnvironment, MidiDevice>
     {
         #region Type description
 
@@ -20,57 +21,87 @@ namespace OctoPatch.Plugin.Midi
                 Guid.Parse(MidiPlugin.PluginId),
                 "Specific MIDI Output",
                 "This is our first plugin to see how it works")
-            .AddOutputDescription(MidiOutputDescription);
+            .AddOutputDescription(OutputDescription);
 
         /// <summary>
-        /// Description of the MIDI output connector
+        /// Description of the output connector
         /// </summary>
-        public static ConnectorDescription MidiOutputDescription => new ConnectorDescription(
-            "MidiOutput", "MIDI Output", "MIDI output signal", 
-            ComplexContentType.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId)));
+        public static ConnectorDescription OutputDescription => new ConnectorDescription(
+            "Output", "Output", "output signal", 
+            IntegerContentType.Create(minimumValue: 0, maximumValue: 127));
 
         #endregion
 
-        public SpecificMidiOutput(Guid nodeId, MidiDevice parentNode) : base(nodeId, parentNode)
+        private readonly IOutputConnectorHandler _output;
+
+        private readonly IOutputConnector _input;
+
+        private IDisposable _subscription;
+
+        public SpecificMidiOutput(Guid nodeId, MidiDevice parentNode) 
+            : base(nodeId, parentNode)
         {
-            
+            _input = parentNode.Outputs
+                .First(o => o.Key == MidiDevice.MidiOutputDescription.Key);
+
+            _output = RegisterOutputConnector(OutputDescription);
         }
 
         protected override Task OnInitialize(NodeConfiguration configuration, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         protected override Task OnStart(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _subscription = _input.Subscribe<MidiMessage>(Handle);
+            return Task.CompletedTask;
+        }
+
+        private void Handle(MidiMessage message)
+        {
+            // Send out only configured messages
+            if (message.Channel == Configuration.Channel && 
+                message.MessageType == Configuration.MessageType &&
+                message.Key == Configuration.Key)
+            {
+                _output.Send(message.Value);
+            }
         }
 
         protected override Task OnStop(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _subscription?.Dispose();
+            return Task.CompletedTask;
         }
 
         protected override Task OnDeinitialize(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         protected override Task OnInitializeReset(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         protected override Task OnReset(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         #region Nested configuration
 
+        /// <summary>
+        /// Filter configuration
+        /// </summary>
         public sealed class NodeConfiguration : IConfiguration
         {
+            public int MessageType { get; set; }
 
+            public int Channel { get; set; }
+
+            public int Key { get; set; }
         }
 
         #endregion
