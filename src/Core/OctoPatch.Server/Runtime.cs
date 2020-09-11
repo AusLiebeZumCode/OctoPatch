@@ -8,6 +8,9 @@ using OctoPatch.Setup;
 
 namespace OctoPatch.Server
 {
+    /// <summary>
+    /// Local implementation of the OctoPatch runtime
+    /// </summary>
     public sealed class Runtime : IRuntime
     {
         /// <summary>
@@ -47,8 +50,6 @@ namespace OctoPatch.Server
             _patch.WireAdded += PatchOnWireAdded;
             _patch.WireRemoved += PatchOnWireRemoved;
         }
-
-        
 
         #region Patch events
 
@@ -94,16 +95,31 @@ namespace OctoPatch.Server
 
         #region Node events
 
+        /// <summary>
+        /// Handles a changed node state
+        /// </summary>
+        /// <param name="node">node</param>
+        /// <param name="state">state</param>
         private void NodeOnStateChanged(INode node, NodeState state)
         {
             NodeStateChanged?.Invoke(node.Id, state);
         }
 
+        /// <summary>
+        /// Handles a changed environment of a node
+        /// </summary>
+        /// <param name="node">node</param>
+        /// <param name="environment">new environment</param>
         private void NodeOnEnvironmentChanged(INode node, string environment)
         {
             NodeEnvironmentChanged?.Invoke(node.Id, environment);
         }
 
+        /// <summary>
+        /// Handles a changed configuration of a node
+        /// </summary>
+        /// <param name="node">node</param>
+        /// <param name="configuration">new configuration</param>
         private void NodeOnConfigurationChanged(INode node, string configuration)
         {
         }
@@ -245,15 +261,13 @@ namespace OctoPatch.Server
 
         public Task SetNodeDescription(Guid nodeId, string name, string description, CancellationToken cancellationToken)
         {
-            if (!_nodeMapping.TryGetValue(nodeId, out var x))
+            if (_nodeMapping.TryGetValue(nodeId, out var nodeSetup))
             {
-                return Task.CompletedTask;
+                nodeSetup.setup.Name = name;
+                nodeSetup.setup.Description = description;
+                NodeUpdated?.Invoke(nodeSetup.setup);
             }
 
-            x.setup.Name = name;
-            x.setup.Description = description;
-
-            NodeUpdated?.Invoke(x.setup);
             return Task.CompletedTask;
         }
 
@@ -276,27 +290,38 @@ namespace OctoPatch.Server
 
         public Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken)
         {
-            _nodeMapping.TryGetValue(nodeGuid, out var node);
-            return Task.FromResult(node.setup.Configuration);
+            if (_nodeMapping.TryGetValue(nodeGuid, out var node))
+            {
+                return Task.FromResult(node.setup.Configuration);
+            }
+
+            return Task.FromResult<string>(null);
         }
 
         public async Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken)
         {
-            _nodeMapping.TryGetValue(nodeGuid, out var node);
-            await node.node.Initialize(configuration, cancellationToken);
-            node.setup.Configuration = configuration;
+            if (_nodeMapping.TryGetValue(nodeGuid, out var nodeSetup))
+            {
+                await nodeSetup.node.Initialize(configuration, cancellationToken);
+                nodeSetup.setup.Configuration = configuration;
+                NodeUpdated?.Invoke(nodeSetup.setup);
+            }
         }
 
-        public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
+        public async Task StartNode(Guid nodeId, CancellationToken cancellationToken)
         {
-            _nodeMapping.TryGetValue(nodeId, out var node);
-            return node.node.Start(cancellationToken);
+            if (_nodeMapping.TryGetValue(nodeId, out var nodeSetup))
+            {
+                await nodeSetup.node.Start(cancellationToken);
+            }
         }
 
-        public Task StopNode(Guid nodeId, CancellationToken cancellationToken)
+        public async Task StopNode(Guid nodeId, CancellationToken cancellationToken)
         {
-            _nodeMapping.TryGetValue(nodeId, out var node);
-            return node.node.Stop(cancellationToken);
+            if (_nodeMapping.TryGetValue(nodeId, out var nodeSetup))
+            {
+                await nodeSetup.node.Stop(cancellationToken);
+            }
         }
 
         /// <summary>
