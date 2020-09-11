@@ -7,12 +7,9 @@ namespace OctoPatch.DesktopClient.Models
     {
         public Guid Id { get; }
 
-        public string Key { get; }
-
         public AttachedNodeModel(Guid id, AttachedNodeDescription description) : base(id, description)
         {
             Id = id;
-            Key = description.Key;
         }
     }
 }
