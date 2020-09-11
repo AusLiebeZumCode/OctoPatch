@@ -30,10 +30,20 @@ namespace OctoPatch
         /// </summary>
         public Guid Id { get; }
 
+        private TConfiguration _configuration;
+
         /// <summary>
         /// Internal reference to the current configuration
         /// </summary>
-        protected TConfiguration Configuration { get; private set; }
+        protected TConfiguration Configuration
+        {
+            get => _configuration;
+            private set
+            {
+                _configuration = value;
+                ConfigurationChanged?.Invoke(this, GetEnvironment());
+            }
+        }
 
         private TEnvironment _environment;
 
@@ -538,16 +548,16 @@ namespace OctoPatch
         /// <summary>
         /// Gets a call when the current node state changes.
         /// </summary>
-        public event EventHandler<NodeState> StateChanged = delegate {};
+        public event Action<INode, NodeState> StateChanged;
 
         /// <summary>
         /// Gets a call when the current configuration changes.
         /// </summary>
-        public event EventHandler<string> ConfigurationChanged = delegate {};
+        public event Action<INode, string> ConfigurationChanged;
 
         /// <summary>
         /// Gets a call when the current environment changes.
         /// </summary>
-        public event EventHandler<string> EnvironmentChanged = delegate {};
+        public event Action<INode, string> EnvironmentChanged;
     }
 }

@@ -72,16 +72,16 @@ namespace OctoPatch
         /// <summary>
         /// Gets a call when the current node state changes.
         /// </summary>
-        event EventHandler<NodeState> StateChanged;
+        event Action<INode, NodeState> StateChanged;
 
         /// <summary>
         /// Gets a call when the current configuration changes.
         /// </summary>
-        event EventHandler<string> ConfigurationChanged;
+        event Action<INode, string> ConfigurationChanged;
 
         /// <summary>
         /// Gets a call when the current environment changes.
         /// </summary>
-        event EventHandler<string> EnvironmentChanged;
+        event Action<INode, string> EnvironmentChanged;
     }
 }
