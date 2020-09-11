@@ -12,6 +12,11 @@ namespace OctoPatch
         {
         }
 
+        public IInputConnectorHandler HandleRaw(Action<Message> handler)
+        {
+            return this;
+        }
+
         /// <summary>
         /// <inheritdoc />
         /// </summary>

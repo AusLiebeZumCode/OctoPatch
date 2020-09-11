@@ -18,6 +18,15 @@ namespace OctoPatch
         public void Send()
         {
             var message = Message.Create();
+            Send(message);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void SendRaw(Message message)
+        {
+            Send(message);
         }
 
         /// <summary>
@@ -26,6 +35,12 @@ namespace OctoPatch
         public void Send<T>(T value) where T : struct
         {
             var message = Message.Create(value);
+            Send(message);
+        }
+
+        private void InternalSend(Message message)
+        {
+
         }
 
         /// <summary>
