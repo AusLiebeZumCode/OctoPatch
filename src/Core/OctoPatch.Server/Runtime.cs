@@ -31,8 +31,6 @@ namespace OctoPatch.Server
 
         public Runtime(IRepository repository)
         {
-            _patch = new Patch();
-
             _repository = repository;
 
             var nodes = new List<NodeDescription>();
@@ -42,7 +40,68 @@ namespace OctoPatch.Server
 
             _nodeMapping = new Dictionary<Guid, (INode node, NodeSetup setup)>();
             _wireMapping = new Dictionary<IWire, WireSetup>();
+
+            _patch = new Patch();
+            _patch.NodeAdded += PatchOnNodeAdded;
+            _patch.NodeRemoved += PatchOnNodeRemoved;
+            _patch.WireAdded += PatchOnWireAdded;
+            _patch.WireRemoved += PatchOnWireRemoved;
         }
+
+        
+
+        #region Patch events
+
+        /// <summary>
+        /// Handles a new node
+        /// </summary>
+        /// <param name="node">node</param>
+        private void PatchOnNodeAdded(INode node)
+        {
+            node.ConfigurationChanged += NodeOnConfigurationChanged;
+            node.EnvironmentChanged += NodeOnEnvironmentChanged;
+            node.StateChanged += NodeOnStateChanged;
+        }
+
+        /// <summary>
+        /// Handles removed nodes
+        /// </summary>
+        /// <param name="node">node</param>
+        private void PatchOnNodeRemoved(INode node)
+        {
+            node.ConfigurationChanged -= NodeOnConfigurationChanged;
+            node.EnvironmentChanged -= NodeOnEnvironmentChanged;
+            node.StateChanged -= NodeOnStateChanged;
+        }
+
+        private void PatchOnWireRemoved(IWire wire)
+        {
+        }
+
+        private void PatchOnWireAdded(IWire wire)
+        {
+        }
+
+        #endregion
+
+        #region Node events
+
+        private void NodeOnStateChanged(INode node, NodeState state)
+        {
+            
+        }
+
+        private void NodeOnEnvironmentChanged(INode node, string environment)
+        {
+            
+        }
+
+        private void NodeOnConfigurationChanged(INode node, string configuration)
+        {
+            
+        }
+
+        #endregion
 
         public async Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
         {
@@ -263,9 +322,7 @@ namespace OctoPatch.Server
         public event Action<Guid> OnNodeRemoved = delegate { };
         public event Action<WireSetup> OnWireAdded = delegate { };
         public event Action<Guid> OnWireRemoved = delegate { };
-
         public event Action<NodeSetup> OnNodeUpdated = delegate {};
-
         public event Action<Guid, NodeState> OnNodeStateChanged = delegate {};
         public event Action<Guid, string> OnNodeEnvironmentChanged = delegate {};
     }
