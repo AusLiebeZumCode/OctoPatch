@@ -67,5 +67,25 @@ namespace OctoPatch
         /// <param name="wire">reference to the wire</param>
         /// <param name="cancellationToken">cancellation token</param>
         Task RemoveWire(IWire wire, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets a call when a new node was added
+        /// </summary>
+        event Action<INode> NodeAdded;
+
+        /// <summary>
+        /// Gets a call when a node was removed
+        /// </summary>
+        event Action<INode> NodeRemoved;
+
+        /// <summary>
+        /// Gets a call when a new wire was added
+        /// </summary>
+        event Action<IWire> WireAdded;
+
+        /// <summary>
+        /// Gets a call when a wire was removed
+        /// </summary>
+        event Action<IWire> WireRemoved;
     }
 }

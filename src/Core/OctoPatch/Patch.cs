@@ -78,6 +78,7 @@ namespace OctoPatch
             }
 
             _nodes.Add(node);
+            NodeAdded?.Invoke(node);
 
             if (!string.IsNullOrEmpty(configuration))
             {
@@ -152,18 +153,11 @@ namespace OctoPatch
             // Shut down and dispose it
             await node.Deinitialize(cancellationToken);
 
-            //var connectors = node.Inputs.Cast<IConnector>()
-            //    .Union(node.Outputs.Cast<IConnector>()).ToArray();
-
-            //// Remove all wires
-            //foreach (var wire in _wires.ToArray()
-            //    .Where(w => connectors.Contains(w.InputConnector) ||
-            //                connectors.Contains(w.OutputConnector)))
-            //{
-            //    await InternalRemoveWire(wire, cancellationToken);
-            //}
+            // TODO: Remove Wires
+            // TODO: Remove attached nodes
 
             _nodes.Remove(node);
+            NodeRemoved?.Invoke(node);
         }
 
         #endregion
@@ -195,6 +189,8 @@ namespace OctoPatch
             // Attach it
             // Add it
 
+            WireAdded?.Invoke(null);
+
             throw new NotImplementedException();
         }
 
@@ -203,6 +199,8 @@ namespace OctoPatch
         /// </summary>
         public Task RemoveWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector, CancellationToken cancellationToken)
         {
+            WireRemoved?.Invoke(null);
+
             throw new NotImplementedException();
 
             //await _localLock.WaitAsync(cancellationToken);
@@ -259,5 +257,25 @@ namespace OctoPatch
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets a call when a new node was added
+        /// </summary>
+        public event Action<INode> NodeAdded;
+
+        /// <summary>
+        /// Gets a call when a node was removed
+        /// </summary>
+        public event Action<INode> NodeRemoved;
+
+        /// <summary>
+        /// Gets a call when a new wire was added
+        /// </summary>
+        public event Action<IWire> WireAdded;
+
+        /// <summary>
+        /// Gets a call when a wire was removed
+        /// </summary>
+        public event Action<IWire> WireRemoved;
     }
 }
