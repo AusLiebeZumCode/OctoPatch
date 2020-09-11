@@ -7,7 +7,7 @@ namespace OctoPatch.Core
     /// </summary>
     public sealed class CorePlugin : Server.Plugin
     {
-        private const string PluginId = "{598D58EB-756D-4BF7-B04B-AC9603315B6D}";
+        public const string PluginId = "{598D58EB-756D-4BF7-B04B-AC9603315B6D}";
 
         public override Guid Id => Guid.Parse(PluginId);
 
