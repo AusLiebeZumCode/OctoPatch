@@ -226,9 +226,9 @@ namespace OctoPatch.Client
         /// </summary>
         public event Action<Guid> OnNodeRemoved;
 
-        public event Action<NodeSetup> OnNodeUpdated;
-        public event Action<Guid, NodeState> OnNodeStateChanged;
-        public event Action<Guid, string> OnNodeEnvironmentChanged;
+        public event Action<NodeSetup> OnNodeUpdated = delegate { };
+        public event Action<Guid, NodeState> OnNodeStateChanged = delegate { };
+        public event Action<Guid, string> OnNodeEnvironmentChanged = delegate { };
 
         /// <summary>
         /// <inheritdoc />
