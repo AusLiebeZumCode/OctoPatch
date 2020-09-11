@@ -220,7 +220,10 @@ namespace OctoPatch
         /// </summary>
         /// <param name="configuration">configuration</param>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnInitialize(TConfiguration configuration, CancellationToken cancellationToken);
+        protected virtual Task OnInitialize(TConfiguration configuration, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -286,7 +289,10 @@ namespace OctoPatch
         /// Gets a call when node is starting
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnStart(CancellationToken cancellationToken);
+        protected virtual Task OnStart(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -351,7 +357,10 @@ namespace OctoPatch
         /// Gets a call when node is stopping
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnStop(CancellationToken cancellationToken);
+        protected virtual Task OnStop(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -421,7 +430,10 @@ namespace OctoPatch
         /// Gets a call when node gets disposed
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnDeinitialize(CancellationToken cancellationToken);
+        protected virtual Task OnDeinitialize(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Internal initialize reset call without lock. This method is used to chain transitions.
@@ -454,7 +466,10 @@ namespace OctoPatch
         /// Gets a call when node gets a reset for issues during initialization
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnInitializeReset(CancellationToken cancellationToken);
+        protected virtual Task OnInitializeReset(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Internal reset call without lock. This method is used to chain transitions.
@@ -487,7 +502,10 @@ namespace OctoPatch
         /// Gets a call when node gets a reset for issues during runtime
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnReset(CancellationToken cancellationToken);
+        protected virtual Task OnReset(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Sets the node state to failed based on an internal execution
