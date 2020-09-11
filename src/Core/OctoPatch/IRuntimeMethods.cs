@@ -83,10 +83,10 @@ namespace OctoPatch
         /// <param name="outputNodeId">node id of the output node</param>
         /// <param name="outputConnectorId">connector id for the output</param>
         /// <param name="inputNodeId">node id of the input node</param>
-        /// <param name="intputConnectorId">connector id for the input</param>
+        /// <param name="inputConnectorId">connector id for the input</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new wire instance</returns>
-        Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid inputConnectorId,
             CancellationToken cancellationToken);
 
         /// <summary>

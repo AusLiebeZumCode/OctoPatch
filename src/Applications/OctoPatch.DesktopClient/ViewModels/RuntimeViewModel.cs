@@ -300,15 +300,15 @@ namespace OctoPatch.DesktopClient.ViewModels
                 return;
             }
 
-            if (contextNode is SplitterNodeDescription splitter)
+            if (contextNode is SplitterNodeDescription)
             {
                 await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
             }
-            else if (contextNode is CollectorNodeDescription collector)
+            else if (contextNode is CollectorNodeDescription)
             {
                 await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
             }
-            else if (contextNode is AttachedNodeDescription attached)
+            else if (contextNode is AttachedNodeDescription)
             {
                 await _runtime.AddNode(contextNode.Key, parentId, null, CancellationToken.None);
             }
@@ -366,7 +366,6 @@ namespace OctoPatch.DesktopClient.ViewModels
                 return;
             }
 
-            node.State = state;
             node.Model.State = state;
         }
 
@@ -428,12 +427,10 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnOnWireRemoved(Guid obj)
         {
-            throw new NotImplementedException();
         }
 
         private void RuntimeOnOnWireAdded(WireSetup obj)
         {
-            throw new NotImplementedException();
         }
 
         private void RuntimeOnOnNodeRemoved(Guid obj)
@@ -444,9 +441,30 @@ namespace OctoPatch.DesktopClient.ViewModels
                 return;
             }
 
-            // TODO: Remove node in tree
+            // Remove node in tree
+            RemoveRecursive(node.Model, NodeTree);
 
             _nodes.Remove(node);
+        }
+
+        private void RemoveRecursive(NodeModel model, ObservableCollection<NodeModel> list)
+        {
+            NodeModel hit = null;
+
+            foreach (var item in list)
+            {
+                if (item == model)
+                {
+                    hit = item;
+                }
+
+                RemoveRecursive(model, item.Items);
+            }
+
+            if (hit != null)
+            {
+                list.Remove(hit);
+            }
         }
 
         private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state, string environment)
@@ -514,7 +532,6 @@ namespace OctoPatch.DesktopClient.ViewModels
             var node = new NodeItem
             {
                 Setup = setup,
-                State = state,
                 Environment = environment,
                 Model = nodeModel
             };
@@ -545,8 +562,6 @@ namespace OctoPatch.DesktopClient.ViewModels
         private sealed class NodeItem
         {
             public NodeSetup Setup { get; set; }
-
-            public NodeState State { get; set; }
 
             public string Environment { get; set; }
 

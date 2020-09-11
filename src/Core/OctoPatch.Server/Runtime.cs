@@ -61,6 +61,12 @@ namespace OctoPatch.Server
             node.ConfigurationChanged += NodeOnConfigurationChanged;
             node.EnvironmentChanged += NodeOnEnvironmentChanged;
             node.StateChanged += NodeOnStateChanged;
+
+            // Find setup and report new node to the outside
+            if (_nodeMapping.TryGetValue(node.Id, out var nodeSetup))
+            {
+                NodeAdded?.Invoke(nodeSetup.setup, node.State, node.GetEnvironment());
+            }
         }
 
         /// <summary>
@@ -72,6 +78,8 @@ namespace OctoPatch.Server
             node.ConfigurationChanged -= NodeOnConfigurationChanged;
             node.EnvironmentChanged -= NodeOnEnvironmentChanged;
             node.StateChanged -= NodeOnStateChanged;
+
+            NodeRemoved?.Invoke(node.Id);
         }
 
         private void PatchOnWireRemoved(IWire wire)
@@ -123,8 +131,6 @@ namespace OctoPatch.Server
                 return null;
             }
 
-            await _patch.AddNode(node, cancellationToken);
-
             var setup = new NodeSetup
             {
                 NodeId = node.Id,
@@ -136,6 +142,8 @@ namespace OctoPatch.Server
             };
 
             _nodeMapping.Add(node.Id, (node, setup));
+
+            await _patch.AddNode(node, cancellationToken);
 
             return setup;
         }
@@ -200,7 +208,7 @@ namespace OctoPatch.Server
         }
 
         public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,
-            Guid intputConnectorId, CancellationToken cancellationToken)
+            Guid inputConnectorId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -291,14 +299,39 @@ namespace OctoPatch.Server
             return node.node.Stop(cancellationToken);
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public event Action<NodeSetup, NodeState, string> NodeAdded;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public event Action<Guid> NodeRemoved;
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public event Action<WireSetup> WireAdded;
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public event Action<Guid> WireRemoved;
         
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public event Action<NodeSetup> NodeUpdated;
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public event Action<Guid, NodeState> NodeStateChanged;
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public event Action<Guid, string> NodeEnvironmentChanged;
     }
 }
