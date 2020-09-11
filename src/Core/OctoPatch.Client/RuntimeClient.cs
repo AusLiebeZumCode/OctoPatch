@@ -28,11 +28,11 @@ namespace OctoPatch.Client
 
             _hubConnection.Closed += Connection_Closed;
 
-            _hubConnection.On<NodeSetup, NodeState, string>(nameof(NodeAdded), NodeAdded);
-            _hubConnection.On<Guid>(nameof(NodeRemoved), NodeRemoved);
-            _hubConnection.On<NodeSetup>(nameof(NodeUpdated), NodeUpdated);
-            _hubConnection.On<WireSetup>(nameof(WireAdded), WireAdded);
-            _hubConnection.On<Guid>(nameof(WireRemoved), WireRemoved);
+            _hubConnection.On<NodeSetup, NodeState, string>(nameof(OnNodeAdded), OnNodeAdded);
+            _hubConnection.On<Guid>(nameof(OnNodeRemoved), OnNodeRemoved);
+            _hubConnection.On<NodeSetup>(nameof(OnNodeUpdated), OnNodeUpdated);
+            _hubConnection.On<WireSetup>(nameof(OnWireAdded), OnWireAdded);
+            _hubConnection.On<Guid>(nameof(OnWireRemoved), OnWireRemoved);
 
             await _hubConnection.StartAsync(cancellationToken);
         }
@@ -165,53 +165,57 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void NodeAdded(NodeSetup instance, NodeState state, string environment)
+        public void OnNodeAdded(NodeSetup instance, NodeState state, string environment)
         {
-            OnNodeAdded?.Invoke(instance, state, environment);
-        }
-
-        public void NodeStateChanged(Guid nodeId, NodeState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void NodeEnvironmentChanged(Guid nodeId, string environment)
-        {
-            throw new NotImplementedException();
+            NodeAdded?.Invoke(instance, state, environment);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void NodeRemoved(Guid instanceGuid)
+        public void OnNodeStateChanged(Guid nodeId, NodeState state)
         {
-            OnNodeRemoved?.Invoke(instanceGuid);
-        }
-
-        public void NodeAdded(NodeSetup setup, NodeState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void NodeUpdated(NodeSetup nodeSetup)
-        {
-
+            NodeStateChanged?.Invoke(nodeId, state);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void WireAdded(WireSetup instance)
+        public void OnNodeEnvironmentChanged(Guid nodeId, string environment)
         {
-            OnWireAdded?.Invoke(instance);
+            NodeEnvironmentChanged?.Invoke(nodeId, environment);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void WireRemoved(Guid instanceGuid)
+        public void OnNodeRemoved(Guid instanceGuid)
         {
-            OnWireRemoved?.Invoke(instanceGuid);
+            NodeRemoved?.Invoke(instanceGuid);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void OnNodeUpdated(NodeSetup nodeSetup)
+        {
+            NodeUpdated?.Invoke(nodeSetup);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void OnWireAdded(WireSetup instance)
+        {
+            WireAdded?.Invoke(instance);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void OnWireRemoved(Guid instanceGuid)
+        {
+            WireRemoved?.Invoke(instanceGuid);
         }
 
         #endregion
@@ -219,25 +223,36 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<NodeSetup, NodeState, string> OnNodeAdded;
+        public event Action<NodeSetup, NodeState, string> NodeAdded;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<Guid> OnNodeRemoved;
-
-        public event Action<NodeSetup> OnNodeUpdated = delegate { };
-        public event Action<Guid, NodeState> OnNodeStateChanged = delegate { };
-        public event Action<Guid, string> OnNodeEnvironmentChanged = delegate { };
+        public event Action<Guid> NodeRemoved;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<WireSetup> OnWireAdded;
+        public event Action<NodeSetup> NodeUpdated;
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid, NodeState> NodeStateChanged;
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid, string> NodeEnvironmentChanged;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<Guid> OnWireRemoved;
+        public event Action<WireSetup> WireAdded;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid> WireRemoved;
     }
 }

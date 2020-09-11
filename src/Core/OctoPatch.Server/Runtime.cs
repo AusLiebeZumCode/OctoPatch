@@ -88,17 +88,16 @@ namespace OctoPatch.Server
 
         private void NodeOnStateChanged(INode node, NodeState state)
         {
-            
+            NodeStateChanged?.Invoke(node.Id, state);
         }
 
         private void NodeOnEnvironmentChanged(INode node, string environment)
         {
-            
+            NodeEnvironmentChanged?.Invoke(node.Id, environment);
         }
 
         private void NodeOnConfigurationChanged(INode node, string configuration)
         {
-            
         }
 
         #endregion
@@ -124,9 +123,6 @@ namespace OctoPatch.Server
                 return null;
             }
 
-            node.StateChanged += NodeOnStateChanged;
-            node.EnvironmentChanged += NodeOnEnvironmentChanged;
-
             await _patch.AddNode(node, cancellationToken);
 
             var setup = new NodeSetup
@@ -140,8 +136,6 @@ namespace OctoPatch.Server
             };
 
             _nodeMapping.Add(node.Id, (node, setup));
-
-            OnNodeAdded?.Invoke(setup, node.State, node.GetEnvironment());
 
             return setup;
         }
@@ -177,9 +171,6 @@ namespace OctoPatch.Server
                 throw new ArgumentException("description key is not a connector node");
             }
 
-            node.StateChanged += NodeOnStateChanged;
-            node.EnvironmentChanged += NodeOnEnvironmentChanged;
-
             await _patch.AddNode(node, cancellationToken);
 
             var setup = new NodeSetup
@@ -194,20 +185,7 @@ namespace OctoPatch.Server
 
             _nodeMapping.Add(node.Id, (node, setup));
 
-            OnNodeAdded?.Invoke(setup, node.State, node.GetEnvironment());
-
             return setup;
-        }
-
-        private void NodeOnStateChanged(object sender, NodeState e)
-        {
-            var node = (INode) sender;
-            OnNodeStateChanged?.Invoke(node.Id, e);
-        }
-
-        private void NodeOnEnvironmentChanged(object sender, string e)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
@@ -217,13 +195,8 @@ namespace OctoPatch.Server
                 return;
             }
 
-            x.node.EnvironmentChanged -= NodeOnEnvironmentChanged;
-            x.node.StateChanged -= NodeOnStateChanged;
-
             await _patch.RemoveNode(nodeId, cancellationToken);
             _nodeMapping.Remove(nodeId);
-
-            OnNodeRemoved?.Invoke(nodeId);
         }
 
         public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,
@@ -272,7 +245,7 @@ namespace OctoPatch.Server
             x.setup.Name = name;
             x.setup.Description = description;
 
-            OnNodeUpdated?.Invoke(x.setup);
+            NodeUpdated?.Invoke(x.setup);
             return Task.CompletedTask;
         }
 
@@ -318,12 +291,14 @@ namespace OctoPatch.Server
             return node.node.Stop(cancellationToken);
         }
 
-        public event Action<NodeSetup, NodeState, string> OnNodeAdded = delegate { };
-        public event Action<Guid> OnNodeRemoved = delegate { };
-        public event Action<WireSetup> OnWireAdded = delegate { };
-        public event Action<Guid> OnWireRemoved = delegate { };
-        public event Action<NodeSetup> OnNodeUpdated = delegate {};
-        public event Action<Guid, NodeState> OnNodeStateChanged = delegate {};
-        public event Action<Guid, string> OnNodeEnvironmentChanged = delegate {};
+        public event Action<NodeSetup, NodeState, string> NodeAdded;
+        public event Action<Guid> NodeRemoved;
+        public event Action<WireSetup> WireAdded;
+        public event Action<Guid> WireRemoved;
+        
+        public event Action<NodeSetup> NodeUpdated;
+
+        public event Action<Guid, NodeState> NodeStateChanged;
+        public event Action<Guid, string> NodeEnvironmentChanged;
     }
 }

@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Newtonsoft.Json;
 using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
 using OctoPatch.Server;
@@ -242,13 +241,13 @@ namespace OctoPatch.DesktopClient.ViewModels
             var repository = new Repository();
             _runtime = new Runtime(repository);
 
-            _runtime.OnNodeAdded += RuntimeOnOnNodeAdded;
-            _runtime.OnNodeRemoved += RuntimeOnOnNodeRemoved;
-            _runtime.OnNodeUpdated += RuntimeOnOnNodeUpdated;
-            _runtime.OnNodeStateChanged += RuntimeOnOnNodeStateChanged;
-            _runtime.OnNodeEnvironmentChanged += RuntimeOnOnNodeEnvironmentChanged;
-            _runtime.OnWireAdded += RuntimeOnOnWireAdded;
-            _runtime.OnWireRemoved += RuntimeOnOnWireRemoved;
+            _runtime.NodeAdded += RuntimeOnOnNodeAdded;
+            _runtime.NodeRemoved += RuntimeOnOnNodeRemoved;
+            _runtime.NodeUpdated += RuntimeOnOnNodeUpdated;
+            _runtime.NodeStateChanged += RuntimeOnOnNodeStateChanged;
+            _runtime.NodeEnvironmentChanged += RuntimeOnOnNodeEnvironmentChanged;
+            _runtime.WireAdded += RuntimeOnOnWireAdded;
+            _runtime.WireRemoved += RuntimeOnOnWireRemoved;
 
             Task.Run(() => Setup(CancellationToken.None));
         }
