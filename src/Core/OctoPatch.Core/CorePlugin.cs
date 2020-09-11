@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.Core.Nodes;
 
 namespace OctoPatch.Core
 {
@@ -17,9 +18,9 @@ namespace OctoPatch.Core
         
         public override Version Version => new Version(1, 0, 0);
 
-        protected override INode OnCreateNode(Type type, Guid nodeId, INode parent = null)
+        public CorePlugin()
         {
-            return null;
+            RegisterNode<ConsoleNode>(ConsoleNode.Description);
         }
 
         protected override IAdapter OnCreateAdapter(Type type)

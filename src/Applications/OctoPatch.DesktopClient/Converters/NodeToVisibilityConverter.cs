@@ -11,7 +11,7 @@ namespace OctoPatch.DesktopClient.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value is CommonNodeModel ? Visibility.Visible : Visibility.Collapsed;
+            return value is CommonNodeModel || value is AttachedNodeModel || value is SplitterNodeModel || value is CollectorNodeModel ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
