@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -8,8 +9,14 @@ namespace OctoPatch
     /// </summary>
     internal sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
     {
-        public OutputConnector(ConnectorDescription description) : base(description)
+        private readonly HashSet<Subscription> _subscriptions;
+
+        public OutputConnector(Guid nodeId, ConnectorDescription description) 
+            : base(nodeId, description)
         {
+            // TODO: Make subscriptions threadsafe
+
+            _subscriptions = new HashSet<Subscription>();
         }
 
         /// <summary>
@@ -18,7 +25,7 @@ namespace OctoPatch
         public void Send()
         {
             var message = Message.Create();
-            Send(message);
+            InternalSend(message);
         }
 
         /// <summary>
@@ -26,7 +33,7 @@ namespace OctoPatch
         /// </summary>
         public void SendRaw(Message message)
         {
-            Send(message);
+            InternalSend(message);
         }
 
         /// <summary>
@@ -35,12 +42,15 @@ namespace OctoPatch
         public void Send<T>(T value) where T : struct
         {
             var message = Message.Create(value);
-            Send(message);
+            InternalSend(message);
         }
 
         private void InternalSend(Message message)
         {
-
+            foreach (var subscription in _subscriptions)
+            {
+                subscription.Send(message);
+            }
         }
 
         /// <summary>
@@ -48,7 +58,15 @@ namespace OctoPatch
         /// </summary>
         public IDisposable Subscribe(IObserver<Message> observer)
         {
-            throw new NotImplementedException();
+            var subscription = new Subscription(observer);
+            subscription.Disposed += SubscriptionOnDisposed;
+            _subscriptions.Add(subscription);
+            return subscription;
+        }
+
+        private void SubscriptionOnDisposed(Subscription subscription)
+        {
+            _subscriptions.Remove(subscription);
         }
 
         /// <summary>
@@ -64,6 +82,28 @@ namespace OctoPatch
                     messageHandler(specificType);
                 }
             });
+        }
+
+        private sealed class Subscription : IDisposable
+        {
+            private readonly IObserver<Message> _observer;
+
+            public Subscription(IObserver<Message> observer)
+            {
+                _observer = observer;
+            }
+
+            public void Send(Message message)
+            {
+                _observer.OnNext(message);
+            }
+
+            public void Dispose()
+            {
+                Disposed?.Invoke(this);
+            }
+
+            public event Action<Subscription> Disposed;
         }
     }
 }

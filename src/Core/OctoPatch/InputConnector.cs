@@ -8,7 +8,8 @@ namespace OctoPatch
     /// </summary>
     internal sealed class InputConnector : Connector, IInputConnector, IInputConnectorHandler
     {
-        public InputConnector(ConnectorDescription description) : base(description)
+        public InputConnector(Guid nodeId, ConnectorDescription description) 
+            : base(nodeId, description)
         {
         }
 

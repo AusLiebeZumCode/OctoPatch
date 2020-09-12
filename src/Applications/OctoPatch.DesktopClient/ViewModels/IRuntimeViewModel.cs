@@ -29,16 +29,20 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         ICommand StopSelectedNode { get; }
 
-        public NodeModel SelectedNode { get; set; }
+        NodeModel SelectedNode { get; set; }
 
-        public NodeDescriptionModel NodeDescription { get; }
+        NodeDescriptionModel NodeDescription { get; }
 
         ICommand SaveNodeDescription { get; }
 
-        public NodeConfigurationModel NodeConfiguration { get; }
+        NodeConfigurationModel NodeConfiguration { get; }
 
         ICommand SaveNodeConfiguration { get; }
 
-        public ObservableCollection<WireSetup> Wires { get; }
+        OutputNodeModel SelectedWireConnector { get; }
+
+        ICommand TakeConnector { get; }
+
+        ObservableCollection<WireSetup> Wires { get; }
     }
 }

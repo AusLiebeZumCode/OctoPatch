@@ -87,6 +87,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _selectedNode = value;
                 OnPropertyChanged();
 
+                // Fill context toolbox
                 ContextNodeDescriptions.Clear();
                 switch (value)
                 {
@@ -145,7 +146,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 }
 
                 var item = _nodes.FirstOrDefault(n => n.Model == value);
-                
+
                 if (item == null)
                 {
                     NodeDescription = null;
@@ -163,6 +164,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _startSelectedNode.Enabled = item != null;
                 _stopSelectedNode.Enabled = item != null;
                 _saveNodeDescription.Enabled = item != null;
+                _takeConnector.Enabled = (SelectedWireConnector != null && value is InputNodeModel) || value is OutputNodeModel;
 
                 //// TODO: Lookup model by Attribute
                 if (item != null && item.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode")
@@ -218,6 +220,22 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand SaveNodeConfiguration => _saveNodeConfiguration;
 
+        private OutputNodeModel _selectedWireConnector;
+
+        public OutputNodeModel SelectedWireConnector
+        {
+            get => _selectedWireConnector;
+            private set
+            {
+                _selectedWireConnector = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private readonly ActionCommand _takeConnector;
+
+        public ICommand TakeConnector => _takeConnector;
+
         public ObservableCollection<WireSetup> Wires { get; }
 
         public RuntimeViewModel()
@@ -237,6 +255,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             _stopSelectedNode = new ActionCommand(StopSelectedNodeCallback, false);
             _saveNodeDescription = new ActionCommand(SaveNodeDescriptionCallback, false);
             _saveNodeConfiguration = new ActionCommand(SaveNodeConfigurationCallback, false);
+            _takeConnector = new ActionCommand(TakeConnectorCallback, false);
 
             var repository = new Repository();
             _runtime = new Runtime(repository);
@@ -250,6 +269,28 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.WireRemoved += RuntimeOnOnWireRemoved;
 
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private async void TakeConnectorCallback(object obj)
+        {
+            var node = SelectedNode;
+
+            // Select first connector
+            if (node is OutputNodeModel outputNode)
+            {
+                SelectedWireConnector = outputNode;
+                return;
+            }
+
+            // Wire up
+            if (SelectedWireConnector != null && node is InputNodeModel inputNode)
+            {
+                await _runtime.AddWire(
+                    SelectedWireConnector.ParentId, SelectedWireConnector.Key, 
+                    inputNode.ParentId, inputNode.Key, CancellationToken.None);
+                SelectedWireConnector = null;
+                _takeConnector.Enabled = false;
+            }
         }
 
         private async void AddContextNodeDescriptionCallback(object obj)

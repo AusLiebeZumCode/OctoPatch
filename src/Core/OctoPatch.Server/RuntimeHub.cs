@@ -103,7 +103,7 @@ namespace OctoPatch.Server
         }
 
 
-        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId, string intputConnectorKey,
             CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

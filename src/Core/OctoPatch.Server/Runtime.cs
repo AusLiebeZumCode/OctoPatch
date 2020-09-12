@@ -28,9 +28,9 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly NodeDescription[] _descriptions;
 
-        private Dictionary<Guid, (INode node, NodeSetup setup)> _nodeMapping;
+        private readonly Dictionary<Guid, (INode node, NodeSetup setup)> _nodeMapping;
 
-        private Dictionary<IWire, WireSetup> _wireMapping;
+        private readonly Dictionary<Guid, (IWire wire, WireSetup setup)> _wireMapping;
 
         public Runtime(IRepository repository)
         {
@@ -42,7 +42,7 @@ namespace OctoPatch.Server
             _descriptions = nodes.ToArray();
 
             _nodeMapping = new Dictionary<Guid, (INode node, NodeSetup setup)>();
-            _wireMapping = new Dictionary<IWire, WireSetup>();
+            _wireMapping = new Dictionary<Guid, (IWire wire, WireSetup setup)>();
 
             _patch = new Patch();
             _patch.NodeAdded += PatchOnNodeAdded;
@@ -85,10 +85,17 @@ namespace OctoPatch.Server
 
         private void PatchOnWireRemoved(IWire wire)
         {
+            _wireMapping.Remove(wire.Id);
+            WireRemoved?.Invoke(wire.Id);
         }
 
         private void PatchOnWireAdded(IWire wire)
         {
+            // Find setup and report new node to the outside
+            if (_wireMapping.TryGetValue(wire.Id, out var wireSetup))
+            {
+                WireAdded?.Invoke(wireSetup.setup);
+            }
         }
 
         #endregion
@@ -164,54 +171,6 @@ namespace OctoPatch.Server
             return setup;
         }
 
-        public async Task<NodeSetup> AddConnectorNode(string key, Guid parentId, string connectorKey,
-            CancellationToken cancellationToken)
-        {
-            var description = _descriptions.First(d => d.Key == key);
-            if (!_nodeMapping.TryGetValue(parentId, out var parent))
-            {
-                throw new ArgumentException("parent does not exist");
-            }
-
-            INode node;
-            if (description is SplitterNodeDescription splitter)
-            {
-                // TODO: Check if types match (splitter description vs. output vs. type)
-
-                var output = parent.node.Outputs.FirstOrDefault(o => o.Key == connectorKey);
-                var type = _repository.GetTypeDescriptions().FirstOrDefault(t => t.Key == output.Description.Key);
-                node = new SplitterNode(Guid.NewGuid(), type, output);
-            }
-            else if (description is CollectorNodeDescription collector)
-            {
-                // TODO: Check if types match (splitter description vs. output vs. type)
-
-                var input = parent.node.Inputs.FirstOrDefault(o => o.Key == connectorKey);
-                var type = _repository.GetTypeDescriptions().FirstOrDefault(t => t.Key == input.Description.Key);
-                node = new CollectorNode(Guid.NewGuid(), type, input);
-            }
-            else
-            {
-                throw new ArgumentException("description key is not a connector node");
-            }
-
-            await _patch.AddNode(node, cancellationToken);
-
-            var setup = new NodeSetup
-            {
-                NodeId = node.Id,
-                Key = key,
-                ParentNodeId = parentId,
-                ParentConnector = null,
-                Name = description.DisplayName,
-                Description = description.DisplayDescription
-            };
-
-            _nodeMapping.Add(node.Id, (node, setup));
-
-            return setup;
-        }
-
         public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
             if (!_nodeMapping.TryGetValue(nodeId, out var x))
@@ -223,15 +182,30 @@ namespace OctoPatch.Server
             _nodeMapping.Remove(nodeId);
         }
 
-        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId,
-            Guid inputConnectorId, CancellationToken cancellationToken)
+        public async Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId,
+            string inputConnectorKey, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var wire = await _patch.AddWire(outputNodeId, outputConnectorKey, 
+                inputNodeId, inputConnectorKey, cancellationToken);
+
+            var setup = new WireSetup
+            {
+                WireId = wire.Id,
+                InputNodeId = inputNodeId,
+                InputConnectorKey = inputConnectorKey,
+                OutputNodeId = outputNodeId,
+                OutputConnectorKey = outputConnectorKey
+            };
+
+            _wireMapping.Add(wire.Id, (wire, setup));
+            WireAdded?.Invoke(setup);
+
+            return setup;
         }
 
         public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return _patch.RemoveWire(wireId, cancellationToken);
         }
 
         public Task<IEnumerable<NodeDescription>> GetNodeDescriptions(CancellationToken cancellationToken)
@@ -251,7 +225,7 @@ namespace OctoPatch.Server
 
         public Task<IEnumerable<WireSetup>> GetWires(CancellationToken cancellationToken)
         {
-            return Task.FromResult(_wireMapping.Values.AsEnumerable());
+            return Task.FromResult(_wireMapping.Values.Select(i => i.setup).AsEnumerable());
         }
 
         public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)

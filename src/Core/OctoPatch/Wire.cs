@@ -5,12 +5,31 @@ namespace OctoPatch
     /// <summary>
     /// Represents a single wire between two connectors
     /// </summary>
-    internal sealed class Wire : IWire
+    public sealed class Wire : IWire
     {
         private readonly IDisposable _subscription;
 
-        public Wire(IInputConnector input, IOutputConnector output)
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Guid Id { get; }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public IInputConnector Input { get; }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public IOutputConnector Output { get; }
+
+        public Wire(Guid id, IInputConnector input, IOutputConnector output)
         {
+            Id = id;
+            Input = input;
+            Output = output;
+
             _subscription = output.Subscribe(input);
         }
 

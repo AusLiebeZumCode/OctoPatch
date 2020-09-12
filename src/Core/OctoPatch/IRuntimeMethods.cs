@@ -81,12 +81,12 @@ namespace OctoPatch
         /// Adds a new wire to the patch
         /// </summary>
         /// <param name="outputNodeId">node id of the output node</param>
-        /// <param name="outputConnectorId">connector id for the output</param>
+        /// <param name="outputConnectorKey">connector key for the output</param>
         /// <param name="inputNodeId">node id of the input node</param>
-        /// <param name="inputConnectorId">connector id for the input</param>
+        /// <param name="inputConnectorKey">connector key for the input</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new wire instance</returns>
-        Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid inputConnectorId,
+        Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId, string inputConnectorKey,
             CancellationToken cancellationToken);
 
         /// <summary>

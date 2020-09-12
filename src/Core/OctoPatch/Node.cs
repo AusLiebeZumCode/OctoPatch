@@ -544,7 +544,7 @@ namespace OctoPatch
         /// <returns>new connector</returns>
         protected IOutputConnectorHandler RegisterOutputConnector(ConnectorDescription description)
         {
-            var outputConnector = new OutputConnector(description);
+            var outputConnector = new OutputConnector(Id, description);
             _outputs.Add(outputConnector);
             return outputConnector;
         }
@@ -556,7 +556,7 @@ namespace OctoPatch
         /// <returns>new connector</returns>
         protected IInputConnectorHandler RegisterInputConnector(ConnectorDescription description)
         {
-            var inputConnector = new InputConnector(description);
+            var inputConnector = new InputConnector(Id, description);
             _inputs.Add(inputConnector);
             return inputConnector;
         }

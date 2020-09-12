@@ -9,6 +9,11 @@ namespace OctoPatch
     public interface IConnector
     {
         /// <summary>
+        /// Gets the id of the related node
+        /// </summary>
+        Guid NodeId { get; }
+
+        /// <summary>
         /// Gets the unique id of the current connector
         /// </summary>
         string Key { get; }
