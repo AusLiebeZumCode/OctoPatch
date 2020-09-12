@@ -10,10 +10,17 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Name -->
-        <Label Grid.Row="0" Content="Device" FontWeight="Bold" />
-        <ComboBox Grid.Row="1" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice}" Margin="5 0 5 10" />
+        <!-- Input -->
+        <Label Grid.Row="0" Content="Input device" FontWeight="Bold" />
+        <ComboBox Grid.Row="1" ItemsSource="{Binding InputDevices}" SelectedItem="{Binding SelectedInputDevice}" Margin="5 0 5 10" />
+
+        <!-- Output -->
+        <Label Grid.Row="2" Content="Output device" FontWeight="Bold" />
+        <ComboBox Grid.Row="3" ItemsSource="{Binding OutputDevices}" SelectedItem="{Binding SelectedOutputDevice}" Margin="5 0 5 10" />
+
     </Grid>
 </UserControl>

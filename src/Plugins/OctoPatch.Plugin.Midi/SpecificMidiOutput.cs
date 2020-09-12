@@ -10,14 +10,14 @@ namespace OctoPatch.Plugin.Midi
     /// <summary>
     /// Attached node for a specific output type
     /// </summary>
-    public sealed class SpecificMidiOutput : AttachedNode<SpecificMidiOutput.NodeConfiguration, EmptyEnvironment, MidiDevice>
+    public sealed class SpecificMidiOutput : AttachedNode<SpecificMidiOutput.NodeConfiguration, EmptyEnvironment, MidiDeviceNode>
     {
         #region Type description
 
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<SpecificMidiOutput, MidiDevice>(
+        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<SpecificMidiOutput, MidiDeviceNode>(
                 Guid.Parse(MidiPlugin.PluginId),
                 "Specific MIDI Output",
                 "This is our first plugin to see how it works")
@@ -38,11 +38,11 @@ namespace OctoPatch.Plugin.Midi
 
         private IDisposable _subscription;
 
-        public SpecificMidiOutput(Guid nodeId, MidiDevice parentNode) 
+        public SpecificMidiOutput(Guid nodeId, MidiDeviceNode parentNode) 
             : base(nodeId, parentNode)
         {
             _input = parentNode.Outputs
-                .First(o => o.Key == MidiDevice.MidiOutputDescription.Key);
+                .First(o => o.Key == MidiDeviceNode.MidiOutputDescription.Key);
 
             _output = RegisterOutputConnector(OutputDescription);
         }

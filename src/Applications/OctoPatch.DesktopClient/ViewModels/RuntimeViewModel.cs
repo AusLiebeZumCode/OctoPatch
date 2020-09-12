@@ -165,7 +165,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _saveNodeDescription.Enabled = item != null;
 
                 //// TODO: Lookup model by Attribute
-                if (item != null && item.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDevice")
+                if (item != null && item.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode")
                 {
                     var model = new MidiDeviceModel();
                     model.Setup(item.Environment);

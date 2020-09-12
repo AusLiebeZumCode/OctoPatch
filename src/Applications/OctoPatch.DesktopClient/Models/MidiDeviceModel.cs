@@ -3,46 +3,81 @@ using OctoPatch.Plugin.Midi;
 
 namespace OctoPatch.DesktopClient.Models
 {
-    public sealed class MidiDeviceModel : NodeConfigurationModel<MidiDeviceConfiguration, MidiDeviceEnvironment>
+    public sealed class MidiDeviceModel : NodeConfigurationModel<MidiDeviceNode.MidiDeviceConfiguration, MidiDeviceNode.MidiDeviceEnvironment>
     {
-        public ObservableCollection<string> Devices { get; }
+        /// <summary>
+        /// List of available input devices
+        /// </summary>
+        public ObservableCollection<string> InputDevices { get; }
 
-        private string _selectedDevice;
+        /// <summary>
+        /// List of available output devices
+        /// </summary>
+        public ObservableCollection<string> OutputDevices { get; }
 
-        public string SelectedDevice
+        private string _selectedInputDevice;
+
+        /// <summary>
+        /// Gets or sets the selected input device
+        /// </summary>
+        public string SelectedInputDevice
         {
-            get => _selectedDevice;
+            get => _selectedInputDevice;
             set
             {
-                _selectedDevice = value;
+                _selectedInputDevice = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _selectedOutputDevice;
+
+        /// <summary>
+        /// Gets or sets the selected output device
+        /// </summary>
+        public string SelectedOutputDevice
+        {
+            get => _selectedOutputDevice;
+            set
+            {
+                _selectedOutputDevice = value;
                 OnPropertyChanged();
             }
         }
 
         public MidiDeviceModel()
         {
-            Devices = new ObservableCollection<string>();
+            InputDevices = new ObservableCollection<string>();
+            OutputDevices = new ObservableCollection<string>();
         }
 
-        protected override void OnSetup(MidiDeviceEnvironment environment)
+        protected override void OnSetup(MidiDeviceNode.MidiDeviceEnvironment environment)
         {
-            Devices.Clear();
-            foreach (var device in environment.Devices)
+            InputDevices.Clear();
+            foreach (var device in environment.InputDevices)
             {
-                Devices.Add(device);
+                InputDevices.Add(device);
+            }
+
+            OutputDevices.Clear();
+            foreach (var device in environment.OutputDevices)
+            {
+                OutputDevices.Add(device);
             }
         }
 
-        protected override void OnSetConfiguration(MidiDeviceConfiguration configuration)
+        protected override void OnSetConfiguration(MidiDeviceNode.MidiDeviceConfiguration configuration)
         {
-            SelectedDevice = configuration.DeviceName;
+            SelectedInputDevice = configuration.InputDeviceName;
+            SelectedOutputDevice = configuration.OutputDeviceName;
         }
 
-        protected override MidiDeviceConfiguration OnGetConfiguration()
+        protected override MidiDeviceNode.MidiDeviceConfiguration OnGetConfiguration()
         {
-            return new MidiDeviceConfiguration
+            return new MidiDeviceNode.MidiDeviceConfiguration
             {
-                DeviceName = SelectedDevice
+                InputDeviceName = SelectedInputDevice,
+                OutputDeviceName = SelectedOutputDevice,
             };
         }
     }

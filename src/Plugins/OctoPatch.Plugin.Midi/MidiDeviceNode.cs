@@ -14,14 +14,14 @@ namespace OctoPatch.Plugin.Midi
     /// <summary>
     /// Represents a single midi device
     /// </summary>
-    public sealed class MidiDevice : Node<MidiDeviceConfiguration, MidiDeviceEnvironment>
+    public sealed class MidiDeviceNode : Node<MidiDeviceNode.MidiDeviceConfiguration, MidiDeviceNode.MidiDeviceEnvironment>
     {
         #region Type description
 
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => CommonNodeDescription.Create<MidiDevice>(
+        public static NodeDescription NodeDescription => CommonNodeDescription.Create<MidiDeviceNode>(
                 Guid.Parse(MidiPlugin.PluginId),
                 "MIDI Device",
                 "This is our first plugin to see how it works")
@@ -46,9 +46,11 @@ namespace OctoPatch.Plugin.Midi
 
         private readonly IOutputConnectorHandler _output;
 
-        private IMidiInputDevice _device;
+        private IMidiInputDevice _inputDevice;
 
-        public MidiDevice(Guid nodeId) : base(nodeId)
+        private IMidiOutputDevice _outputDevice;
+
+        public MidiDeviceNode(Guid nodeId) : base(nodeId)
         {
             _output = RegisterOutputConnector(MidiOutputDescription);
             RegisterInputConnector(MidiInputDescription).Handle<MidiMessage>(HandleMessage);
@@ -56,13 +58,18 @@ namespace OctoPatch.Plugin.Midi
             // Build environment
             UpdateEnvironment(new MidiDeviceEnvironment
             {
-                Devices = MidiDeviceManager.Default.InputDevices.Select(d => d.Name).ToList()
+                InputDevices = MidiDeviceManager.Default.InputDevices.Select(d => d.Name).ToList(),
+                OutputDevices = MidiDeviceManager.Default.OutputDevices.Select(d => d.Name).ToList()
             });
         }
 
-        private void HandleMessage(MidiMessage obj)
+        private void HandleMessage(MidiMessage message)
         {
-            
+            if (State == NodeState.Running)
+            {
+                // TODO: Send out
+                // _outputDevice?.Send()
+            }
         }
 
         protected override Task OnInitialize(MidiDeviceConfiguration configuration, CancellationToken cancellationToken)
@@ -72,45 +79,44 @@ namespace OctoPatch.Plugin.Midi
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            var deviceInfo = MidiDeviceManager.Default.InputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.DeviceName));
-            if (deviceInfo == null)
+            var inputDeviceInfo = MidiDeviceManager.Default.InputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.InputDeviceName));
+            if (inputDeviceInfo != null)
             {
-                throw new ArgumentException("configured device is not available", nameof(configuration));
+                _inputDevice = inputDeviceInfo.CreateDevice();
+
+                _inputDevice.NoteOn += DeviceOnNoteOn;
+                _inputDevice.NoteOff += DeviceOnNoteOff;
+                _inputDevice.ControlChange += DeviceOnControlChange;
+
             }
 
-            _device = deviceInfo.CreateDevice();
-            _device.NoteOn += DeviceOnNoteOn;
-            _device.NoteOff += DeviceOnNoteOff;
-            _device.ControlChange += DeviceOnControlChange;
+            var outputDeviceInfo = MidiDeviceManager.Default.OutputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.OutputDeviceName));
+            if (outputDeviceInfo != null)
+            {
+                _outputDevice = outputDeviceInfo.CreateDevice();
+            }
 
             return Task.CompletedTask;
         }
 
         protected override Task OnStart(CancellationToken cancellationToken)
         {
-            _device?.Open();
+            _inputDevice?.Open();
+            _outputDevice?.Open();
             return Task.CompletedTask;
         }
 
         protected override Task OnStop(CancellationToken cancellationToken)
         {
-            _device?.Close();
+            _inputDevice?.Close();
+            _outputDevice?.Close();
             return Task.CompletedTask;
         }
 
         protected override Task OnDeinitialize(CancellationToken cancellationToken)
         {
-            _device?.Dispose();
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnInitializeReset(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnReset(CancellationToken cancellationToken)
-        {
+            _inputDevice?.Dispose();
+            _outputDevice?.Dispose();
             return Task.CompletedTask;
         }
 
@@ -138,6 +144,42 @@ namespace OctoPatch.Plugin.Midi
         public static IEnumerable<string> GetDevices()
         {
             return MidiDeviceManager.Default.InputDevices.Select(d => d.Name);
+        }
+
+        #endregion
+
+        #region nested classes
+
+        /// <summary>
+        /// Configuration set for the MIDI Devices
+        /// </summary>
+        public sealed class MidiDeviceConfiguration : IConfiguration
+        {
+            /// <summary>
+            /// Gets or sets the name of the input device that's represented
+            /// </summary>
+            public string InputDeviceName { get; set; }
+
+            /// <summary>
+            /// Gets or sets the name of the output device that's represented
+            /// </summary>
+            public string OutputDeviceName { get; set; }
+        }
+
+        /// <summary>
+        /// Environment of a MIDI device
+        /// </summary>
+        public sealed class MidiDeviceEnvironment : IEnvironment
+        {
+            /// <summary>
+            /// List of available input devices
+            /// </summary>
+            public List<string> InputDevices { get; set; }
+
+            /// <summary>
+            /// List of available output devices
+            /// </summary>
+            public List<string> OutputDevices { get; set; }
         }
 
         #endregion

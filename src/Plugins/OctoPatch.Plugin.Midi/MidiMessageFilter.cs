@@ -6,7 +6,7 @@ using OctoPatch.Descriptions;
 
 namespace OctoPatch.Plugin.Midi
 {
-    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration, IEnvironment>
+    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration, EmptyEnvironment>
     {
         #region Type description
 
@@ -79,6 +79,14 @@ namespace OctoPatch.Plugin.Midi
             return true;
         }
 
+        protected override Task OnInitialize(FilterConfiguration configuration, CancellationToken cancellationToken)
+        {
+            _configuration = configuration;
+            return Task.CompletedTask;
+        }
+
+        #region nested classes
+
         public sealed class FilterConfiguration : IConfiguration
         {
             public int? MessageType { get; set; }
@@ -90,35 +98,6 @@ namespace OctoPatch.Plugin.Midi
             public int? Value { get; set; }
         }
 
-        protected override Task OnInitialize(FilterConfiguration configuration, CancellationToken cancellationToken)
-        {
-            _configuration = configuration;
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnStart(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnStop(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnDeinitialize(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnInitializeReset(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnReset(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

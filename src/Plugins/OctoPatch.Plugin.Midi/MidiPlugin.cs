@@ -34,7 +34,7 @@ namespace OctoPatch.Plugin.Midi
 
         public MidiPlugin()
         {
-            RegisterNode<MidiDevice>(MidiDevice.NodeDescription);
+            RegisterNode<MidiDeviceNode>(MidiDeviceNode.NodeDescription);
             RegisterNode<MidiMessageFilter>(MidiMessageFilter.NodeDescription);
             RegisterNode<SpecificMidiOutput>(SpecificMidiOutput.NodeDescription);
 
