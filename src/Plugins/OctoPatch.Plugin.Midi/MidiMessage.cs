@@ -64,5 +64,10 @@ namespace OctoPatch.Plugin.Midi
             Key = key;
             Value = value;
         }
+
+        public override string ToString()
+        {
+            return $"{MessageType}: Ch{Channel}, Key{Key}, V{Value}";
+        }
     }
 }
