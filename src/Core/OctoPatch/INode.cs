@@ -9,7 +9,7 @@ namespace OctoPatch
     /// Represents the interface of a node within the OctoPatch grid
     /// StreamNote: TheBlubb14 was here (2020-06-30 20:47)
     /// </summary>
-    public interface INode
+    public interface INode : IDisposable
     {
         /// <summary>
         /// Gets the node id. This is only set when initialized.

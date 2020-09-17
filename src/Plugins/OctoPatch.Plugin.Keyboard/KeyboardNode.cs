@@ -12,7 +12,7 @@ using OctoPatch.Descriptions;
 
 namespace OctoPatch.Plugin.Keyboard
 {
-    public sealed class KeyboardNode : Node<EmptyConfiguration, EmptyEnvironment>, IDisposable
+    public sealed class KeyboardNode : Node<EmptyConfiguration, EmptyEnvironment>
     {
         #region Type description
 
@@ -84,7 +84,7 @@ namespace OctoPatch.Plugin.Keyboard
             return Task.CompletedTask;
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
             hook?.Dispose();
         }

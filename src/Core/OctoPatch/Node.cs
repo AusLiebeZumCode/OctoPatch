@@ -533,6 +533,19 @@ namespace OctoPatch
             State = initialized ? NodeState.Failed : NodeState.InitializationFailed;
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void Dispose()
+        {
+            OnDispose();
+        }
+
+        /// <summary>
+        /// Gets a call on dispose
+        /// </summary>
+        protected virtual void OnDispose() { }
+
         #endregion
 
         #region Connector Management
