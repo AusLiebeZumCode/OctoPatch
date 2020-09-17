@@ -50,6 +50,8 @@ namespace OctoPatch.Plugin.Midi
 
         private IMidiOutputDevice _outputDevice;
 
+        protected override MidiDeviceConfiguration DefaultConfiguration => new MidiDeviceConfiguration();
+
         public MidiDeviceNode(Guid nodeId) : base(nodeId)
         {
             _output = RegisterOutputConnector(MidiOutputDescription);

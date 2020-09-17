@@ -38,6 +38,8 @@ namespace OctoPatch.Plugin.Midi
 
         private IDisposable _subscription;
 
+        protected override NodeConfiguration DefaultConfiguration => new NodeConfiguration();
+
         public SpecificMidiOutput(Guid nodeId, MidiDeviceNode parentNode) 
             : base(nodeId, parentNode)
         {

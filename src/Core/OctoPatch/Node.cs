@@ -120,6 +120,11 @@ namespace OctoPatch
         #region Lifecycle methods
 
         /// <summary>
+        /// Returns a default configuration for this node
+        /// </summary>
+        protected abstract TConfiguration DefaultConfiguration { get; }
+
+        /// <summary>
         /// <inheritdoc />
         /// </summary>
         public async Task Initialize(string configuration, CancellationToken cancellationToken)

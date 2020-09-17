@@ -19,6 +19,8 @@ namespace OctoPatch
 
         private readonly Dictionary<string, IOutputConnectorHandler> _outputs;
 
+        protected override EmptyConfiguration DefaultConfiguration => new EmptyConfiguration();
+
         public SplitterNode(Guid nodeId, TypeDescription description, IOutputConnector connector) : base(nodeId)
         {
             _description = description;

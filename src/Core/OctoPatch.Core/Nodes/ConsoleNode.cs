@@ -29,6 +29,8 @@ namespace OctoPatch.Core.Nodes
 
         #endregion
 
+        protected override EmptyConfiguration DefaultConfiguration => new EmptyConfiguration();
+
         public ConsoleNode(Guid id) : base(id)
         {
             RegisterInputConnector(InputDescription).HandleRaw(Handle);

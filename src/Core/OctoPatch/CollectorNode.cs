@@ -10,6 +10,8 @@ namespace OctoPatch
     /// </summary>
     public sealed class CollectorNode : Node<EmptyConfiguration, EmptyEnvironment>
     {
+        protected override EmptyConfiguration DefaultConfiguration => new EmptyConfiguration();
+
         public CollectorNode(Guid nodeId, TypeDescription typeDescription, IInputConnector connector) : base(nodeId)
         {
         }

@@ -38,6 +38,8 @@ namespace OctoPatch.Plugin.Keyboard
 
         private GlobalKeyboardHook hook;
 
+        protected override EmptyConfiguration DefaultConfiguration => new EmptyConfiguration();
+
         public KeyboardNode(Guid id) : base(id)
         {
             hook = new GlobalKeyboardHook();

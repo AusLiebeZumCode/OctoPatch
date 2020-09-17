@@ -40,6 +40,8 @@ namespace OctoPatch.Plugin.Midi
 
         private readonly IOutputConnectorHandler _output;
 
+        protected override FilterConfiguration DefaultConfiguration => new FilterConfiguration();
+
         public MidiMessageFilter(Guid nodeId) : base(nodeId)
         {
             _output = RegisterOutputConnector(MidiOutputDescription);
