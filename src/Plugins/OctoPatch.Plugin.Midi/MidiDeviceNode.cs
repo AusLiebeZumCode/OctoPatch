@@ -81,25 +81,81 @@ namespace OctoPatch.Plugin.Midi
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            var inputDeviceInfo = MidiDeviceManager.Default.InputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.InputDeviceName));
-            if (inputDeviceInfo != null)
+            // Attach input device
+            if (!string.IsNullOrEmpty(configuration.InputDeviceName))
             {
-                _inputDevice = inputDeviceInfo.CreateDevice();
+                var inputDeviceInfo = MidiDeviceManager.Default.InputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.InputDeviceName));
+                if (inputDeviceInfo != null)
+                {
+                    _inputDevice = inputDeviceInfo.CreateDevice();
 
-                _inputDevice.NoteOn += DeviceOnNoteOn;
-                _inputDevice.NoteOff += DeviceOnNoteOff;
-                _inputDevice.ControlChange += DeviceOnControlChange;
-
+                    _inputDevice.NoteOn += DeviceOnNoteOn;
+                    _inputDevice.NoteOff += DeviceOnNoteOff;
+                    _inputDevice.ControlChange += DeviceOnControlChange;
+                    _inputDevice.ChannelPressure += InputDeviceOnChannelPressure;
+                    _inputDevice.PitchBend += InputDeviceOnPitchBend;
+                    _inputDevice.ProgramChange += InputDeviceOnProgramChange;
+                    _inputDevice.PolyphonicKeyPressure += InputDeviceOnPolyphonicKeyPressure;
+                    _inputDevice.Nrpn += InputDeviceOnNrpn;
+                    _inputDevice.SysEx += InputDeviceOnSysEx;
+                }
             }
 
-            var outputDeviceInfo = MidiDeviceManager.Default.OutputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.OutputDeviceName));
-            if (outputDeviceInfo != null)
+            // Attach output device
+            if (!string.IsNullOrEmpty(configuration.OutputDeviceName))
             {
-                _outputDevice = outputDeviceInfo.CreateDevice();
+                var outputDeviceInfo = MidiDeviceManager.Default.OutputDevices.FirstOrDefault(d => d.Name.StartsWith(configuration.OutputDeviceName));
+                if (outputDeviceInfo != null)
+                {
+                    _outputDevice = outputDeviceInfo.CreateDevice();
+                }
             }
 
             return Task.CompletedTask;
         }
+
+        #region Input Handler
+
+        private void InputDeviceOnSysEx(IMidiInputDevice sender, in SysExMessage msg)
+        {
+        }
+
+        private void InputDeviceOnNrpn(IMidiInputDevice sender, in NrpnMessage msg)
+        {
+        }
+
+        private void InputDeviceOnPolyphonicKeyPressure(IMidiInputDevice sender, in PolyphonicKeyPressureMessage msg)
+        {
+        }
+
+        private void InputDeviceOnProgramChange(IMidiInputDevice sender, in ProgramChangeMessage msg)
+        {
+        }
+
+        private void InputDeviceOnPitchBend(IMidiInputDevice sender, in PitchBendMessage msg)
+        {
+        }
+
+        private void InputDeviceOnChannelPressure(IMidiInputDevice sender, in ChannelPressureMessage msg)
+        {
+        }
+
+        private void DeviceOnControlChange(IMidiInputDevice sender, in ControlChangeMessage msg)
+        {
+            _output.Send(new MidiMessage(3, (int)msg.Channel, msg.Control, msg.Value));
+        }
+
+        private void DeviceOnNoteOff(IMidiInputDevice sender, in NoteOffMessage msg)
+        {
+            _output.Send(new MidiMessage(1, (int)msg.Channel, (int)msg.Key, msg.Velocity));
+        }
+
+        private void DeviceOnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
+        {
+            _output.Send(new MidiMessage(2, (int)msg.Channel, (int)msg.Key, msg.Velocity));
+        }
+
+        #endregion
 
         protected override Task OnStart(CancellationToken cancellationToken)
         {
@@ -117,24 +173,25 @@ namespace OctoPatch.Plugin.Midi
 
         protected override Task OnDeinitialize(CancellationToken cancellationToken)
         {
-            _inputDevice?.Dispose();
+            if (_inputDevice != null)
+            {
+                _inputDevice.NoteOn -= DeviceOnNoteOn;
+                _inputDevice.NoteOff -= DeviceOnNoteOff;
+                _inputDevice.ControlChange -= DeviceOnControlChange;
+                _inputDevice.ChannelPressure -= InputDeviceOnChannelPressure;
+                _inputDevice.PitchBend -= InputDeviceOnPitchBend;
+                _inputDevice.ProgramChange -= InputDeviceOnProgramChange;
+                _inputDevice.PolyphonicKeyPressure -= InputDeviceOnPolyphonicKeyPressure;
+                _inputDevice.Nrpn -= InputDeviceOnNrpn;
+                _inputDevice.SysEx -= InputDeviceOnSysEx;
+
+                _inputDevice?.Dispose();
+                _inputDevice = null;
+            }
+
             _outputDevice?.Dispose();
+            _outputDevice = null;
             return Task.CompletedTask;
-        }
-
-        private void DeviceOnControlChange(IMidiInputDevice sender, in ControlChangeMessage msg)
-        {
-            _output.Send(new MidiMessage(3, (int)msg.Channel, msg.Control, msg.Value));
-        }
-
-        private void DeviceOnNoteOff(IMidiInputDevice sender, in NoteOffMessage msg)
-        {
-            _output.Send(new MidiMessage(1, (int)msg.Channel, (int)msg.Key, msg.Velocity));
-        }
-
-        private void DeviceOnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
-        {
-            _output.Send(new MidiMessage(2, (int)msg.Channel, (int)msg.Key, msg.Velocity));
         }
 
         #region static helper methods
