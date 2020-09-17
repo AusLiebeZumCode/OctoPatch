@@ -9,7 +9,7 @@ namespace OctoPatch
     /// <summary>
     /// Special node to split up complex types
     /// </summary>
-    public sealed class SplitterNode : Node<IConfiguration, IEnvironment>
+    public sealed class SplitterNode : Node<EmptyConfiguration, EmptyEnvironment>
     {
         private IDisposable _subscription;
 
@@ -37,7 +37,7 @@ namespace OctoPatch
             }
         }
 
-        protected override Task OnInitialize(IConfiguration configuration, CancellationToken cancellationToken)
+        protected override Task OnInitialize(EmptyConfiguration configuration, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
