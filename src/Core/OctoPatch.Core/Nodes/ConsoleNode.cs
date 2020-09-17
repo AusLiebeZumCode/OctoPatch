@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.ContentTypes;
@@ -37,7 +38,7 @@ namespace OctoPatch.Core.Nodes
         {
             if (State == NodeState.Running)
             {
-                Console.WriteLine(message.ToString());
+                Trace.WriteLine(message.ToString());
             }
         }
 
