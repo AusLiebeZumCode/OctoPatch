@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -28,9 +29,15 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly NodeDescription[] _descriptions;
 
-        private readonly Dictionary<Guid, (INode node, NodeSetup setup)> _nodeMapping;
+        /// <summary>
+        /// Collection of existing nodes
+        /// </summary>
+        private readonly ConcurrentDictionary<Guid, (INode node, NodeSetup setup)> _nodeMapping;
 
-        private readonly Dictionary<Guid, (IWire wire, WireSetup setup)> _wireMapping;
+        /// <summary>
+        /// Collection of existing wires
+        /// </summary>
+        private readonly ConcurrentDictionary<Guid, (IWire wire, WireSetup setup)> _wireMapping;
 
         public Runtime(IRepository repository)
         {
@@ -41,8 +48,8 @@ namespace OctoPatch.Server
 
             _descriptions = nodes.ToArray();
 
-            _nodeMapping = new Dictionary<Guid, (INode node, NodeSetup setup)>();
-            _wireMapping = new Dictionary<Guid, (IWire wire, WireSetup setup)>();
+            _nodeMapping = new ConcurrentDictionary<Guid, (INode node, NodeSetup setup)>();
+            _wireMapping = new ConcurrentDictionary<Guid, (IWire wire, WireSetup setup)>();
 
             _patch = new Patch();
             _patch.NodeAdded += PatchOnNodeAdded;
@@ -85,7 +92,7 @@ namespace OctoPatch.Server
 
         private void PatchOnWireRemoved(IWire wire)
         {
-            _wireMapping.Remove(wire.Id);
+            _wireMapping.TryRemove(wire.Id, out _);
             WireRemoved?.Invoke(wire.Id);
         }
 
@@ -164,8 +171,7 @@ namespace OctoPatch.Server
                 Description = description.DisplayDescription
             };
 
-            _nodeMapping.Add(node.Id, (node, setup));
-
+            _nodeMapping.TryAdd(node.Id, (node, setup));
             await _patch.AddNode(node, cancellationToken);
 
             return setup;
@@ -179,7 +185,7 @@ namespace OctoPatch.Server
             }
 
             await _patch.RemoveNode(nodeId, cancellationToken);
-            _nodeMapping.Remove(nodeId);
+            _nodeMapping.TryRemove(nodeId, out _);
         }
 
         public async Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId,
