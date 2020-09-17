@@ -192,25 +192,48 @@ namespace OctoPatch.Server
             _nodeMapping.TryRemove(nodeId, out _);
         }
 
-        public async Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId,
             string inputConnectorKey, CancellationToken cancellationToken)
         {
-            var wire = await _patch.AddWire(outputNodeId, outputConnectorKey, 
-                inputNodeId, inputConnectorKey, cancellationToken);
-
             var setup = new WireSetup
             {
-                WireId = wire.Id,
+                OutputNodeId = outputNodeId,
+                OutputConnectorKey = outputConnectorKey,
                 InputNodeId = inputNodeId,
                 InputConnectorKey = inputConnectorKey,
-                OutputNodeId = outputNodeId,
-                OutputConnectorKey = outputConnectorKey
+                WireId = Guid.NewGuid()
             };
 
-            _wireMapping.Add(wire.Id, (wire, setup));
+            // Lookup Output Connector
+            if (!_nodeMapping.TryGetValue(outputNodeId, out var outputSetup))
+            {
+                throw new ArgumentException("output node does not exist");
+            }
+
+            var outputConnector = outputSetup.node.Outputs.FirstOrDefault(c => c.Key == outputConnectorKey);
+            if (outputConnector == null)
+            {
+                throw new ArgumentException("output connector could not be found");
+            }
+
+            // Lookup Input Connector
+            if (!_nodeMapping.TryGetValue(inputNodeId, out var inputSetup))
+            {
+                throw new ArgumentException("input node does not exist");
+            }
+
+            var inputConnector = inputSetup.node.Inputs.FirstOrDefault(c => c.Key == inputConnectorKey);
+            if (inputConnector == null)
+            {
+                throw new ArgumentException("input connector could not be found");
+            }
+
+            var wire = new Wire(setup.WireId, inputConnector, outputConnector);
+
+            _wireMapping.TryAdd(setup.WireId, (wire, setup));
             WireAdded?.Invoke(setup);
 
-            return setup;
+            return Task.FromResult(setup);
         }
 
         public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
