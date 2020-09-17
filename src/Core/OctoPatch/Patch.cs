@@ -93,9 +93,14 @@ namespace OctoPatch
             _nodes.Add(node);
             NodeAdded?.Invoke(node);
 
+            // Try to setup
             if (!string.IsNullOrEmpty(configuration))
             {
                 await node.Initialize(configuration, cancellationToken);
+            }
+            else
+            {
+                await node.Initialize(cancellationToken);
             }
         }
 
@@ -159,12 +164,12 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<IWire> AddWire(Guid outputNode, string outputConnector, Guid inputNode, string inputConnector, CancellationToken cancellationToken)
+        public async Task AddWire(IWire wire, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
             try
             {
-                return await InternalAddWire(outputNode, outputConnector, inputNode, inputConnector, cancellationToken);
+                await InternalAddWire(wire);
             }
             finally
             {
@@ -172,44 +177,12 @@ namespace OctoPatch
             }
         }
 
-        private Task<IWire> InternalAddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId, 
-            string inputConnectorKey, CancellationToken cancellationToken)
+        private Task InternalAddWire(IWire wire)
         {
-            // Identify nodes and outputs
-            // CHeck collision
-            // Create the wire
-            // Attach it
-            // Add it
-
-            var outputNode = _nodes.FirstOrDefault(n => n.Id == outputNodeId);
-            if (outputNode == null)
-            {
-                throw new ArgumentException("output node does not exist", nameof(outputNodeId));
-            }
-
-            var outputConnector = outputNode.Outputs.FirstOrDefault(o => string.Equals(o.Key, outputConnectorKey));
-            if (outputConnector == null)
-            {
-                throw new ArgumentException("output connector does not exist", nameof(outputConnectorKey));
-            }
-
-            var inputNode = _nodes.FirstOrDefault(n => n.Id == inputNodeId);
-            if (inputNode == null)
-            {
-                throw new ArgumentException("input node does not exist", nameof(inputNodeId));
-            }
-
-            var inputConnector = inputNode.Inputs.FirstOrDefault(i => string.Equals(i.Key, inputConnectorKey));
-            if (inputConnector == null)
-            {
-                throw new ArgumentException("input connector does not exist", nameof(inputConnectorKey));
-            }
-
-            var wire = new Wire(Guid.NewGuid(), inputConnector, outputConnector);
             _wires.Add(wire);
             WireAdded?.Invoke(wire);
 
-            return Task.FromResult<IWire>(wire);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -226,7 +199,7 @@ namespace OctoPatch
                     throw new ArgumentException("wire does not exist");
                 }
 
-                await InternalRemoveWire(wire, cancellationToken);
+                await InternalRemoveWire(wire);
             }
             finally
             {
@@ -234,7 +207,7 @@ namespace OctoPatch
             }
         }
 
-        private Task InternalRemoveWire(IWire wire, CancellationToken cancellationToken)
+        private Task InternalRemoveWire(IWire wire)
         {
             if (wire == null)
             {

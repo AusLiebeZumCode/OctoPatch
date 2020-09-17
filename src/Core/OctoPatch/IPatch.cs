@@ -36,13 +36,9 @@ namespace OctoPatch
         /// <summary>
         /// Adds a wire between the given nodes and outputs.
         /// </summary>
-        /// <param name="outputNode">node id of the output node</param>
-        /// <param name="outputConnector">connector key of the output</param>
-        /// <param name="inputNode">node id of the input node</param>
-        /// <param name="inputConnector">connector key</param>
+        /// <param name="wire">wire instance</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>reference to the new wire</returns>
-        Task<IWire> AddWire(Guid outputNode, string outputConnector, Guid inputNode, string inputConnector, CancellationToken cancellationToken);
+        Task AddWire(IWire wire, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the given wire
