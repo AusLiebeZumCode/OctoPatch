@@ -120,6 +120,15 @@ namespace OctoPatch
         #region Lifecycle methods
 
         /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task Initialize(CancellationToken cancellationToken)
+        {
+            var configuration = JsonConvert.SerializeObject(DefaultConfiguration);
+            return Initialize(configuration, cancellationToken);
+        }
+
+        /// <summary>
         /// Returns a default configuration for this node
         /// </summary>
         protected abstract TConfiguration DefaultConfiguration { get; }

@@ -44,6 +44,14 @@ namespace OctoPatch
         string GetConfiguration();
 
         /// <summary>
+        /// Initializes the current node with the default configuration. This leads to a state
+        /// change between <see cref="NodeState.Uninitialized"/> to <see cref="NodeState.Stopped"/>
+        /// and can lead to <see cref="NodeState.InitializationFailed"/> in case of an error.
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task Initialize(CancellationToken cancellationToken);
+
+        /// <summary>
         /// Initializes the current node. This leads to a state change between <see cref="NodeState.Uninitialized"/>
         /// to <see cref="NodeState.Stopped"/> and can lead to <see cref="NodeState.InitializationFailed"/> in case of an error.
         /// </summary>
