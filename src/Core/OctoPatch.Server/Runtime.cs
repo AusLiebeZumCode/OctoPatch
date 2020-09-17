@@ -174,6 +174,10 @@ namespace OctoPatch.Server
             _nodeMapping.TryAdd(node.Id, (node, setup));
             await _patch.AddNode(node, cancellationToken);
 
+            // automatic start
+            await node.Start(cancellationToken);
+
+
             return setup;
         }
 
