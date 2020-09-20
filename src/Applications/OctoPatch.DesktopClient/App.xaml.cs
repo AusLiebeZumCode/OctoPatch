@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using OctoPatch.Logging;
+using Serilog;
 using System.Windows;
 
 namespace OctoPatch.DesktopClient
@@ -13,5 +10,20 @@ namespace OctoPatch.DesktopClient
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            Log.Logger = new LoggerConfiguration()
+              .Enrich.FromLogContext()
+              .WriteTo.Console()
+              .WriteTo.File("./logs/.log", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+              .WriteTo.Seq("http://localhost:5341")
+              .MinimumLevel.Debug()
+              .CreateLogger();
+
+            var loggerFactory = new LoggerFactory()
+                .AddSerilog();
+
+            LogManager.SetLoggerFactory(loggerFactory);
+        }
     }
 }

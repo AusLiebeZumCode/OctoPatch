@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using OctoPatch.Descriptions;
 using OctoPatch.Setup;
 
@@ -15,13 +16,14 @@ namespace OctoPatch.Server
     public sealed class RuntimeHub : Hub<IRuntimeCallbacks>, IRuntimeMethods
     {
         private readonly IRepository _repository;
-
         private readonly IRuntimeMethods _runtime;
+        private readonly ILogger<RuntimeHub> logger;
 
-        public RuntimeHub(IRepository repository, IRuntimeMethods runtime)
+        public RuntimeHub(IRepository repository, IRuntimeMethods runtime, ILogger<RuntimeHub> logger)
         {
             _repository = repository;
             _runtime = runtime;
+            this.logger = logger;
         }
 
         #region Meta information
