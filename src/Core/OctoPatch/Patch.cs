@@ -33,6 +33,9 @@ namespace OctoPatch
 
         #region node management
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public async Task AddNode(INode node, CancellationToken cancellationToken)
         {
             if (node == null)
@@ -51,6 +54,9 @@ namespace OctoPatch
             }
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public async Task AddNode(INode node, string configuration, CancellationToken cancellationToken)
         {
             if (node == null)
@@ -69,6 +75,13 @@ namespace OctoPatch
             }
         }
 
+        /// <summary>
+        /// Adds the given node to the patch
+        /// </summary>
+        /// <param name="node">node reference</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <param name="configuration">optional configuration</param>
+        /// <returns></returns>
         private async Task InternalAddNode(INode node, CancellationToken cancellationToken, string configuration = null)
         {
             // Double check for node id collisions
@@ -78,31 +91,16 @@ namespace OctoPatch
             }
 
             _nodes.Add(node);
+            NodeAdded?.Invoke(node);
 
+            // Try to setup
             if (!string.IsNullOrEmpty(configuration))
             {
                 await node.Initialize(configuration, cancellationToken);
             }
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task RemoveNode(INode node, CancellationToken cancellationToken)
-        {
-            if (node == null)
+            else
             {
-                throw new ArgumentNullException(nameof(node));
-            }
-
-            await _localLock.WaitAsync(cancellationToken);
-            try
-            {
-                await InternalRemoveNode(node, cancellationToken);
-            }
-            finally
-            {
-                _localLock.Release();
+                await node.Initialize(cancellationToken);
             }
         }
 
@@ -144,7 +142,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(node));
             }
 
-            if (_nodes.ToArray().Contains(node))
+            if (!_nodes.ToArray().Contains(node))
             {
                 throw new ArgumentException("node does not exist", nameof(node));
             }
@@ -152,18 +150,11 @@ namespace OctoPatch
             // Shut down and dispose it
             await node.Deinitialize(cancellationToken);
 
-            //var connectors = node.Inputs.Cast<IConnector>()
-            //    .Union(node.Outputs.Cast<IConnector>()).ToArray();
-
-            //// Remove all wires
-            //foreach (var wire in _wires.ToArray()
-            //    .Where(w => connectors.Contains(w.InputConnector) ||
-            //                connectors.Contains(w.OutputConnector)))
-            //{
-            //    await InternalRemoveWire(wire, cancellationToken);
-            //}
+            // TODO: Remove Wires
+            // TODO: Remove attached nodes
 
             _nodes.Remove(node);
+            NodeRemoved?.Invoke(node);
         }
 
         #endregion
@@ -173,12 +164,12 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public async Task<IWire> AddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector, CancellationToken cancellationToken)
+        public async Task AddWire(IWire wire, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
             try
             {
-                return await InternalAddWire(outputNode, outputConnector, inputNode, inputConnector, cancellationToken);
+                await InternalAddWire(wire);
             }
             finally
             {
@@ -186,60 +177,29 @@ namespace OctoPatch
             }
         }
 
-        private Task<IWire> InternalAddWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector,
-            CancellationToken cancellationToken)
+        private Task InternalAddWire(IWire wire)
         {
-            // Identify nodes and outputs
-            // CHeck collision
-            // Create the wire
-            // Attach it
-            // Add it
+            _wires.Add(wire);
+            WireAdded?.Invoke(wire);
 
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public Task RemoveWire(Guid outputNode, Guid outputConnector, Guid inputNode, Guid inputConnector, CancellationToken cancellationToken)
+        public async Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-
-            //await _localLock.WaitAsync(cancellationToken);
-            //try
-            //{
-            //    // Lookup wire
-            //    var wire = _wires.ToArray().FirstOrDefault(w =>
-            //        w.Instance.OutputNode == outputNode && w.Instance.OutputConnector == outputConnector &&
-            //        w.Instance.InputNode == inputNode && w.Instance.InputConnector == inputConnector);
-
-            //    if (wire == null)
-            //    {
-            //        throw new ArgumentException("there is no wire with this parameter");
-            //    }
-
-            //    await InternalRemoveWire(wire, cancellationToken);
-            //}
-            //finally
-            //{
-            //    _localLock.Release();
-            //}
-        }
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task RemoveWire(IWire wire, CancellationToken cancellationToken)
-        {
-            if (wire == null)
-            {
-                throw new ArgumentNullException(nameof(wire));
-            }
-
             await _localLock.WaitAsync(cancellationToken);
             try
             {
-                await InternalRemoveWire(wire, cancellationToken);
+                var wire = _wires.FirstOrDefault(w => w.Id == wireId);
+                if (wire == null)
+                {
+                    throw new ArgumentException("wire does not exist");
+                }
+
+                await InternalRemoveWire(wire);
             }
             finally
             {
@@ -247,7 +207,7 @@ namespace OctoPatch
             }
         }
 
-        private Task InternalRemoveWire(IWire wire, CancellationToken cancellationToken)
+        private Task InternalRemoveWire(IWire wire)
         {
             if (wire == null)
             {
@@ -255,9 +215,31 @@ namespace OctoPatch
             }
 
             _wires.Remove(wire);
+            WireRemoved?.Invoke(wire);
+
             return Task.CompletedTask;
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets a call when a new node was added
+        /// </summary>
+        public event Action<INode> NodeAdded;
+
+        /// <summary>
+        /// Gets a call when a node was removed
+        /// </summary>
+        public event Action<INode> NodeRemoved;
+
+        /// <summary>
+        /// Gets a call when a new wire was added
+        /// </summary>
+        public event Action<IWire> WireAdded;
+
+        /// <summary>
+        /// Gets a call when a wire was removed
+        /// </summary>
+        public event Action<IWire> WireRemoved;
     }
 }

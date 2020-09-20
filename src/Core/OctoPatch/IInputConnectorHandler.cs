@@ -8,6 +8,13 @@ namespace OctoPatch
     public interface IInputConnectorHandler
     {
         /// <summary>
+        /// Register handler for raw message
+        /// </summary>
+        /// <param name="handler">raw message handler</param>
+        /// <returns>reference to connector handler</returns>
+        IInputConnectorHandler HandleRaw(Action<Message> handler);
+
+        /// <summary>
         /// Register handler for empty messages
         /// </summary>
         /// <param name="handler">delegate to handle empty messages</param>

@@ -32,8 +32,10 @@ namespace OctoPatch.Server
         /// </summary>
         /// <param name="key">unique key of the node description</param>
         /// <param name="nodeId">id of the new node</param>
+        /// <param name="parent">optional reference to the parent node in case of an attached node</param>
+        /// <param name="connectorKey">optional connector key for splitters and collectors</param>
         /// <returns>new node instance</returns>
-        INode CreateNode(string key, Guid nodeId);
+        INode CreateNode(string key, Guid nodeId, INode parent = null, string connectorKey = null);
 
         /// <summary>
         /// Generates a new adapter for the given key

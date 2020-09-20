@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:OctoPatch.DesktopClient.Views"
         mc:Ignorable="d"
-        Title="OctoPatch Desktop" Height="450" Width="800">
+        Title="OctoPatch Desktop" Height="700" Width="800">
     <Grid>
         <views:RuntimeView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>

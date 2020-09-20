@@ -11,6 +11,11 @@ namespace OctoPatch
         /// <summary>
         /// <inheritdoc />
         /// </summary>
+        public Guid NodeId { get; }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public string Key { get; }
 
         /// <summary>
@@ -18,13 +23,14 @@ namespace OctoPatch
         /// </summary>
         public ConnectorDescription Description { get; }
 
-        protected Connector(ConnectorDescription description)
+        protected Connector(Guid nodeId, ConnectorDescription description)
         {
             if (description == null)
             {
                 throw new ArgumentNullException(nameof(description));
             }
 
+            NodeId = nodeId;
             Key = description.Key;
             Description = description;
         }

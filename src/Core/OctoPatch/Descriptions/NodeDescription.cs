@@ -8,7 +8,7 @@ namespace OctoPatch.Descriptions
     /// <summary>
     /// Meta description of a node
     /// </summary>
-    public class NodeDescription : KeyDescription
+    public abstract class NodeDescription : KeyDescription
     {
         private static readonly ILogger<NodeDescription> logger = LogManager.GetLogger<NodeDescription>();
 
@@ -56,20 +56,6 @@ namespace OctoPatch.Descriptions
             logger.LogDebug("Add new input description '{Key} - {DisplayName}'", description.Key, description.DisplayName, description);
             InputDescriptions.Add(description);
             return this;
-        }
-
-        /// <summary>
-        /// Creates a new description for common nodes
-        /// </summary>
-        /// <typeparam name="T">node type</typeparam>
-        /// <param name="pluginId">plugin id</param>
-        /// <param name="displayName">name of the node</param>
-        /// <param name="displayDescription">optional description</param>
-        /// <returns>node description</returns>
-        public static NodeDescription Create<T>(Guid pluginId, string displayName, string displayDescription)
-        {
-            logger.LogDebug("Create new node description for type {Type} in plugin {PluginId}", typeof(T), pluginId);
-            return new NodeDescription($"{pluginId}:{typeof(T).Name}", displayName, displayDescription);
         }
     }
 }
