@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch.Server
@@ -96,18 +97,42 @@ namespace OctoPatch.Server
         /// </summary>
         public IEnumerable<AdapterDescription> GetAdapterDescriptions() => _adapterDescriptions;
 
-        public INode CreateNode(string key, Guid nodeId)
+        public INode CreateNode(string key, Guid nodeId, INode parent = null, string connectorKey = null)
         {
             // Special case of splitter
             if (_splitterMapping.TryGetValue(key, out var splitterTypeDescription))
             {
-                return new SplitterNode(nodeId, splitterTypeDescription);
+                if (parent == null)
+                {
+                    throw new ArgumentNullException(nameof(parent));
+                }
+
+                var output = parent.Outputs.FirstOrDefault(o => o.Key == connectorKey);
+
+                if (output == null)
+                {
+                    throw new ArgumentException("connector key does not exist");
+                }
+
+                return new SplitterNode(nodeId, splitterTypeDescription, output);
             }
 
             // Special case of collector
             if (_collectorMapping.TryGetValue(key, out var collectorTypeDescription))
             {
-                return new CollectorNode(nodeId, collectorTypeDescription);
+                if (parent == null)
+                {
+                    throw new ArgumentNullException(nameof(parent));
+                }
+
+                var input = parent.Inputs.FirstOrDefault(i => i.Key == connectorKey);
+
+                if (input == null)
+                {
+                    throw new ArgumentException("connector key does not exist");
+                }
+
+                return new CollectorNode(nodeId, collectorTypeDescription, input);
             }
 
             // Common nodes
@@ -116,7 +141,7 @@ namespace OctoPatch.Server
                 return null;
             }
 
-            return OnCreateNode(type, nodeId);
+            return OnCreateNode(type, nodeId, parent);
         }
 
         /// <summary>
@@ -124,8 +149,16 @@ namespace OctoPatch.Server
         /// </summary>
         /// <param name="type">requested node type</param>
         /// <param name="nodeId">node id</param>
+        /// <param name="parent">optional reference to the parent node</param>
         /// <returns>new instance</returns>
-        protected abstract INode OnCreateNode(Type type, Guid nodeId);
+        protected virtual INode OnCreateNode(Type type, Guid nodeId, INode parent = null)
+        {
+            if (typeof(IAttachedNode).IsAssignableFrom(type))
+            {
+                return (INode)Activator.CreateInstance(type, nodeId, parent);
+            }
+            return (INode)Activator.CreateInstance(type, nodeId);
+        }
 
         public IAdapter CreateAdapter(string key)
         {

@@ -23,6 +23,11 @@ namespace OctoPatch
             Content = content;
         }
 
+        public override string ToString()
+        {
+            return $"{Content}";
+        }
+
         /// <summary>
         /// Creates a new message based on the content
         /// </summary>

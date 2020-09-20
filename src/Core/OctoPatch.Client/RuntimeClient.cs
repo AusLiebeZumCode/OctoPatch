@@ -28,10 +28,11 @@ namespace OctoPatch.Client
 
             _hubConnection.Closed += Connection_Closed;
 
-            _hubConnection.On<NodeSetup>(nameof(NodeAdded), NodeAdded);
-            _hubConnection.On<Guid>(nameof(NodeRemoved), NodeRemoved);
-            _hubConnection.On<WireSetup>(nameof(WireAdded), WireAdded);
-            _hubConnection.On<Guid>(nameof(WireRemoved), WireRemoved);
+            _hubConnection.On<NodeSetup, NodeState, string>(nameof(OnNodeAdded), OnNodeAdded);
+            _hubConnection.On<Guid>(nameof(OnNodeRemoved), OnNodeRemoved);
+            _hubConnection.On<NodeSetup>(nameof(OnNodeUpdated), OnNodeUpdated);
+            _hubConnection.On<WireSetup>(nameof(OnWireAdded), OnWireAdded);
+            _hubConnection.On<Guid>(nameof(OnWireRemoved), OnWireRemoved);
 
             await _hubConnection.StartAsync(cancellationToken);
         }
@@ -42,6 +43,15 @@ namespace OctoPatch.Client
         }
 
         #region IRuntimeMethods
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task SetNodeDescription(Guid nodeId, string name, string description,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -115,11 +125,20 @@ namespace OctoPatch.Client
             return _hubConnection.InvokeAsync(nameof(SetNodeConfiguration), nodeGuid, configuration, cancellationToken, cancellationToken);
         }
 
-        public Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
+        public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
+        public Task StopNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
 
         public Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
@@ -127,7 +146,7 @@ namespace OctoPatch.Client
         }
 
 
-        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId, string intputConnectorKey,
             CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -146,35 +165,57 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void NodeAdded(NodeSetup instance)
+        public void OnNodeAdded(NodeSetup instance, NodeState state, string environment)
         {
-            OnNodeAdded?.Invoke(instance);
+            NodeAdded?.Invoke(instance, state, environment);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void NodeRemoved(Guid instanceGuid)
+        public void OnNodeStateChanged(Guid nodeId, NodeState state)
         {
-            OnNodeRemoved?.Invoke(instanceGuid);
-        }
-
-
-
-        /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public void WireAdded(WireSetup instance)
-        {
-            OnWireAdded?.Invoke(instance);
+            NodeStateChanged?.Invoke(nodeId, state);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void WireRemoved(Guid instanceGuid)
+        public void OnNodeEnvironmentChanged(Guid nodeId, string environment)
         {
-            OnWireRemoved?.Invoke(instanceGuid);
+            NodeEnvironmentChanged?.Invoke(nodeId, environment);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void OnNodeRemoved(Guid instanceGuid)
+        {
+            NodeRemoved?.Invoke(instanceGuid);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void OnNodeUpdated(NodeSetup nodeSetup)
+        {
+            NodeUpdated?.Invoke(nodeSetup);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void OnWireAdded(WireSetup instance)
+        {
+            WireAdded?.Invoke(instance);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void OnWireRemoved(Guid instanceGuid)
+        {
+            WireRemoved?.Invoke(instanceGuid);
         }
 
         #endregion
@@ -182,21 +223,36 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<NodeSetup> OnNodeAdded;
+        public event Action<NodeSetup, NodeState, string> NodeAdded;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<Guid> OnNodeRemoved;
+        public event Action<Guid> NodeRemoved;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<WireSetup> OnWireAdded;
+        public event Action<NodeSetup> NodeUpdated;
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid, NodeState> NodeStateChanged;
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid, string> NodeEnvironmentChanged;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public event Action<Guid> OnWireRemoved;
+        public event Action<WireSetup> WireAdded;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public event Action<Guid> WireRemoved;
     }
 }

@@ -34,15 +34,11 @@ namespace OctoPatch.Plugin.Midi
 
         public MidiPlugin()
         {
-            RegisterNode<MidiDevice>(MidiDevice.NodeDescription);
+            RegisterNode<MidiDeviceNode>(MidiDeviceNode.NodeDescription);
             RegisterNode<MidiMessageFilter>(MidiMessageFilter.NodeDescription);
+            RegisterNode<SpecificMidiOutput>(SpecificMidiOutput.NodeDescription);
 
             RegisterType<MidiMessage>(MidiMessage.TypeDescription);
-        }
-
-        protected override INode OnCreateNode(Type type, Guid nodeId)
-        {
-            return (INode)Activator.CreateInstance(type, nodeId);
         }
 
         protected override IAdapter OnCreateAdapter(Type type)

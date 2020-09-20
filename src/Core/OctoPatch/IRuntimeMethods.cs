@@ -61,12 +61,14 @@ namespace OctoPatch
         Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Adds a new node to the patch
+        /// Adds a new common node to the patch
         /// </summary>
         /// <param name="key">unique key for the node description</param>
+        /// <param name="connectorKey">optional connector key. Is used for splitters and collectors only</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <returns>new node instance</returns>
-        Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken);
+        /// <param name="parentId">optional parent id. Is used for attached nodes, splitter or collectors</param>
+        /// <returns>new node setup</returns>
+        Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id from the patch
@@ -79,12 +81,12 @@ namespace OctoPatch
         /// Adds a new wire to the patch
         /// </summary>
         /// <param name="outputNodeId">node id of the output node</param>
-        /// <param name="outputConnectorId">connector id for the output</param>
+        /// <param name="outputConnectorKey">connector key for the output</param>
         /// <param name="inputNodeId">node id of the input node</param>
-        /// <param name="intputConnectorId">connector id for the input</param>
+        /// <param name="inputConnectorKey">connector key for the input</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>new wire instance</returns>
-        Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId, string inputConnectorKey,
             CancellationToken cancellationToken);
 
         /// <summary>
@@ -99,28 +101,51 @@ namespace OctoPatch
         #region Node configuration
 
         /// <summary>
+        /// Sets the name and the description of a single node instance
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="name">new name for this node</param>
+        /// <param name="description">optional description for the block</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task SetNodeDescription(Guid nodeId, string name, string description, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets the current environment information of the requested node
         /// </summary>
-        /// <param name="nodeGuid">guid of node</param>
+        /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>serialized environment information</returns>
-        Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken);
+        Task<string> GetNodeEnvironment(Guid nodeId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the configuration from the given node
         /// </summary>
-        /// <param name="nodeGuid">node guid</param>
+        /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <returns>serialized configuration for this node</returns>
-        Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken);
+        Task<string> GetNodeConfiguration(Guid nodeId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Applies the given serialized configuration to the node
         /// </summary>
-        /// <param name="nodeGuid">node guid</param>
+        /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <param name="configuration">configuration</param>
-        Task SetNodeConfiguration(Guid nodeGuid, string configuration, CancellationToken cancellationToken);
+        Task SetNodeConfiguration(Guid nodeId, string configuration, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Starts the given node
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task StartNode(Guid nodeId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Stops the given node
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task StopNode(Guid nodeId, CancellationToken cancellationToken);
 
         #endregion
     }

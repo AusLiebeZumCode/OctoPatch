@@ -113,14 +113,14 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public INode CreateNode(string key, Guid nodeId)
+        public INode CreateNode(string key, Guid nodeId, INode parent = null, string connectorKey = null)
         {
             if (!_nodeMapping.TryGetValue(key, out var plugin))
             {
                 return null;
             }
 
-            return plugin.CreateNode(key, nodeId);
+            return plugin.CreateNode(key, nodeId, parent, connectorKey);
         }
 
         /// <summary>

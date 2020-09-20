@@ -9,7 +9,7 @@ namespace OctoPatch
     /// Represents the interface of a node within the OctoPatch grid
     /// StreamNote: TheBlubb14 was here (2020-06-30 20:47)
     /// </summary>
-    public interface INode
+    public interface INode : IDisposable
     {
         /// <summary>
         /// Gets the node id. This is only set when initialized.
@@ -31,7 +31,25 @@ namespace OctoPatch
         /// </summary>
         IEnumerable<IOutputConnector> Outputs { get; }
 
-        #region Lifecycle methods
+        /// <summary>
+        /// Returns the current environment serialized as string
+        /// </summary>
+        /// <returns>serialized environment</returns>
+        string GetEnvironment();
+
+        /// <summary>
+        /// Returns the current configuration serialized as string
+        /// </summary>
+        /// <returns>serialized configuration</returns>
+        string GetConfiguration();
+
+        /// <summary>
+        /// Initializes the current node with the default configuration. This leads to a state
+        /// change between <see cref="NodeState.Uninitialized"/> to <see cref="NodeState.Stopped"/>
+        /// and can lead to <see cref="NodeState.InitializationFailed"/> in case of an error.
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task Initialize(CancellationToken cancellationToken);
 
         /// <summary>
         /// Initializes the current node. This leads to a state change between <see cref="NodeState.Uninitialized"/>
@@ -59,6 +77,19 @@ namespace OctoPatch
         /// <param name="cancellationToken">cancellation token</param>
         Task Deinitialize(CancellationToken cancellationToken);
 
-        #endregion
+        /// <summary>
+        /// Gets a call when the current node state changes.
+        /// </summary>
+        event Action<INode, NodeState> StateChanged;
+
+        /// <summary>
+        /// Gets a call when the current configuration changes.
+        /// </summary>
+        event Action<INode, string> ConfigurationChanged;
+
+        /// <summary>
+        /// Gets a call when the current environment changes.
+        /// </summary>
+        event Action<INode, string> EnvironmentChanged;
     }
 }

@@ -11,6 +11,12 @@
         void Send();
 
         /// <summary>
+        /// Sends the raw message
+        /// </summary>
+        /// <param name="message">raw message</param>
+        void SendRaw(Message message);
+
+        /// <summary>
         /// Sends a message of the given type
         /// </summary>
         /// <typeparam name="T">message type</typeparam>

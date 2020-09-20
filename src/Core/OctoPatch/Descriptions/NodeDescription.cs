@@ -8,7 +8,7 @@ namespace OctoPatch.Descriptions
     /// <summary>
     /// Meta description of a node
     /// </summary>
-    public class NodeDescription : KeyDescription
+    public abstract class NodeDescription : KeyDescription
     {
         private static readonly ILogger<NodeDescription> logger = LogManager.GetLogger<NodeDescription>();
 

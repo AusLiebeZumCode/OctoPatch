@@ -6,14 +6,14 @@ using OctoPatch.Descriptions;
 
 namespace OctoPatch.Plugin.Midi
 {
-    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration, IEnvironment>
+    public sealed class MidiMessageFilter : Node<MidiMessageFilter.FilterConfiguration, EmptyEnvironment>
     {
         #region Type description
 
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => NodeDescription.Create<MidiMessageFilter>(
+        public static NodeDescription NodeDescription => CommonNodeDescription.Create<MidiMessageFilter>(
                 Guid.Parse(MidiPlugin.PluginId),
                 "MIDI filter",
                 "This block allows to filter the stream of midi messages")
@@ -39,6 +39,8 @@ namespace OctoPatch.Plugin.Midi
         private FilterConfiguration _configuration;
 
         private readonly IOutputConnectorHandler _output;
+
+        protected override FilterConfiguration DefaultConfiguration => new FilterConfiguration();
 
         public MidiMessageFilter(Guid nodeId) : base(nodeId)
         {
@@ -79,6 +81,14 @@ namespace OctoPatch.Plugin.Midi
             return true;
         }
 
+        protected override Task OnInitialize(FilterConfiguration configuration, CancellationToken cancellationToken)
+        {
+            _configuration = configuration;
+            return Task.CompletedTask;
+        }
+
+        #region nested classes
+
         public sealed class FilterConfiguration : IConfiguration
         {
             public int? MessageType { get; set; }
@@ -90,35 +100,6 @@ namespace OctoPatch.Plugin.Midi
             public int? Value { get; set; }
         }
 
-        protected override Task OnInitialize(FilterConfiguration configuration, CancellationToken cancellationToken)
-        {
-            _configuration = configuration;
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnStart(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnStop(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnDeinitialize(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnInitializeReset(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task OnReset(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
