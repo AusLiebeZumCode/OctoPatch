@@ -8,23 +8,28 @@ namespace OctoPatch.Setup
     public sealed class WireSetup
     {
         /// <summary>
-        /// Instance id of the node with the output connector
+        /// Gets the wire id
         /// </summary>
-        public Guid OutputNode { get; set; }
+        public Guid WireId { get; set; }
 
         /// <summary>
-        /// connector id of the output connector
+        /// Instance id of the node with the output connector
         /// </summary>
-        public Guid OutputConnector { get; set; }
+        public Guid OutputNodeId { get; set; }
+
+        /// <summary>
+        /// connector key of the output connector
+        /// </summary>
+        public string OutputConnectorKey { get; set; }
 
         /// <summary>
         /// Instance id of the node with the input connector
         /// </summary>
-        public Guid InputNode { get; set; }
+        public Guid InputNodeId { get; set; }
 
         /// <summary>
-        /// connector id of the input connector
+        /// connector key of the input connector
         /// </summary>
-        public Guid InputConnector { get; set; }
+        public string InputConnectorKey { get; set; }
     }
 }

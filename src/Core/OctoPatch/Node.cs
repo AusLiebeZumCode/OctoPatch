@@ -30,15 +30,50 @@ namespace OctoPatch
         /// </summary>
         public Guid Id { get; }
 
+        private TConfiguration _configuration;
+
         /// <summary>
         /// Internal reference to the current configuration
         /// </summary>
-        protected TConfiguration Configuration { get; private set; }
+        protected TConfiguration Configuration
+        {
+            get => _configuration;
+            private set
+            {
+                _configuration = value;
+                ConfigurationChanged?.Invoke(this, GetEnvironment());
+            }
+        }
+
+        private TEnvironment _environment;
+
+        /// <summary>
+        /// Internal reference to the current environment
+        /// </summary>
+        protected TEnvironment Environment
+        {
+            get => _environment;
+            private set
+            {
+                _environment = value;
+                EnvironmentChanged?.Invoke(this, GetEnvironment());
+            }
+        }
+
+        private NodeState _state;
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public NodeState State { get; private set; }
+        public NodeState State
+        {
+            get => _state;
+            private set
+            {
+                _state = value;
+                StateChanged?.Invoke(this, value);
+            }
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -49,6 +84,22 @@ namespace OctoPatch
         /// <inheritdoc />
         /// </summary>
         public IEnumerable<IOutputConnector> Outputs => _outputs;
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public string GetEnvironment()
+        {
+            return JsonConvert.SerializeObject(Environment);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public string GetConfiguration()
+        {
+            return JsonConvert.SerializeObject(Configuration);
+        }
 
         protected Node(Guid id)
         {
@@ -61,7 +112,26 @@ namespace OctoPatch
             _outputs = new List<IOutputConnector>();
         }
 
+        protected void UpdateEnvironment(TEnvironment environment)
+        {
+            Environment = environment;
+        }
+
         #region Lifecycle methods
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public Task Initialize(CancellationToken cancellationToken)
+        {
+            var configuration = JsonConvert.SerializeObject(DefaultConfiguration);
+            return Initialize(configuration, cancellationToken);
+        }
+
+        /// <summary>
+        /// Returns a default configuration for this node
+        /// </summary>
+        protected abstract TConfiguration DefaultConfiguration { get; }
 
         /// <summary>
         /// <inheritdoc />
@@ -164,7 +234,10 @@ namespace OctoPatch
         /// </summary>
         /// <param name="configuration">configuration</param>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnInitialize(TConfiguration configuration, CancellationToken cancellationToken);
+        protected virtual Task OnInitialize(TConfiguration configuration, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -230,7 +303,10 @@ namespace OctoPatch
         /// Gets a call when node is starting
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnStart(CancellationToken cancellationToken);
+        protected virtual Task OnStart(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -295,7 +371,10 @@ namespace OctoPatch
         /// Gets a call when node is stopping
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnStop(CancellationToken cancellationToken);
+        protected virtual Task OnStop(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// <inheritdoc />
@@ -365,7 +444,10 @@ namespace OctoPatch
         /// Gets a call when node gets disposed
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnDeinitialize(CancellationToken cancellationToken);
+        protected virtual Task OnDeinitialize(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Internal initialize reset call without lock. This method is used to chain transitions.
@@ -398,7 +480,10 @@ namespace OctoPatch
         /// Gets a call when node gets a reset for issues during initialization
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnInitializeReset(CancellationToken cancellationToken);
+        protected virtual Task OnInitializeReset(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Internal reset call without lock. This method is used to chain transitions.
@@ -431,7 +516,10 @@ namespace OctoPatch
         /// Gets a call when node gets a reset for issues during runtime
         /// </summary>
         /// <param name="cancellationToken">cancellation token</param>
-        protected abstract Task OnReset(CancellationToken cancellationToken);
+        protected virtual Task OnReset(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Sets the node state to failed based on an internal execution
@@ -459,6 +547,19 @@ namespace OctoPatch
             State = initialized ? NodeState.Failed : NodeState.InitializationFailed;
         }
 
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        public void Dispose()
+        {
+            OnDispose();
+        }
+
+        /// <summary>
+        /// Gets a call on dispose
+        /// </summary>
+        protected virtual void OnDispose() { }
+
         #endregion
 
         #region Connector Management
@@ -470,7 +571,7 @@ namespace OctoPatch
         /// <returns>new connector</returns>
         protected IOutputConnectorHandler RegisterOutputConnector(ConnectorDescription description)
         {
-            var outputConnector = new OutputConnector(description);
+            var outputConnector = new OutputConnector(Id, description);
             _outputs.Add(outputConnector);
             return outputConnector;
         }
@@ -482,11 +583,26 @@ namespace OctoPatch
         /// <returns>new connector</returns>
         protected IInputConnectorHandler RegisterInputConnector(ConnectorDescription description)
         {
-            var inputConnector = new InputConnector(description);
+            var inputConnector = new InputConnector(Id, description);
             _inputs.Add(inputConnector);
             return inputConnector;
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets a call when the current node state changes.
+        /// </summary>
+        public event Action<INode, NodeState> StateChanged;
+
+        /// <summary>
+        /// Gets a call when the current configuration changes.
+        /// </summary>
+        public event Action<INode, string> ConfigurationChanged;
+
+        /// <summary>
+        /// Gets a call when the current environment changes.
+        /// </summary>
+        public event Action<INode, string> EnvironmentChanged;
     }
 }

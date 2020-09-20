@@ -8,13 +8,15 @@ namespace OctoPatch
     /// <summary>
     /// Special node to collect different values to combine them into a complex type
     /// </summary>
-    public sealed class CollectorNode : Node<IConfiguration, IEnvironment>
+    public sealed class CollectorNode : Node<EmptyConfiguration, EmptyEnvironment>
     {
-        public CollectorNode(Guid nodeId, TypeDescription typeDescription) : base(nodeId)
+        protected override EmptyConfiguration DefaultConfiguration => new EmptyConfiguration();
+
+        public CollectorNode(Guid nodeId, TypeDescription typeDescription, IInputConnector connector) : base(nodeId)
         {
         }
 
-        protected override Task OnInitialize(IConfiguration configuration, CancellationToken cancellationToken)
+        protected override Task OnInitialize(EmptyConfiguration configuration, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

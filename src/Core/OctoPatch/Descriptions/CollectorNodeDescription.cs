@@ -50,11 +50,6 @@ namespace OctoPatch.Descriptions
                     propertyDescription.DisplayDescription, propertyDescription.ContentType));
             }
 
-            // Add given type as output
-            result.AddOutputDescription(new ConnectorDescription(
-                "Output", null, null,
-                new ComplexContentType {Key = typeDescription.Key}));
-
             return result;
         }
     }

@@ -15,15 +15,13 @@
         /// </summary>
         public int? MaximumValue { get; set; }
 
-        public IntegerContentType()
+        public static IntegerContentType Create(int? minimumValue = null, int? maximumValue = null)
         {
-
-        }
-
-        public IntegerContentType(int? minimumValue = null, int? maximumValue = null)
-        {
-            MinimumValue = minimumValue;
-            MaximumValue = maximumValue;
+            return new IntegerContentType
+            {
+                MinimumValue = minimumValue,
+                MaximumValue = maximumValue
+            };
         }
     }
 }

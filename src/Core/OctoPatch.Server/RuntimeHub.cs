@@ -69,6 +69,15 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
+        public Task SetNodeDescription(Guid nodeId, string name, string description,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
         public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -85,7 +94,7 @@ namespace OctoPatch.Server
             //return Task.CompletedTask;
         }
 
-        public Task<NodeSetup> AddNode(string key, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -96,7 +105,7 @@ namespace OctoPatch.Server
         }
 
 
-        public Task<WireSetup> AddWire(Guid outputNodeId, Guid outputConnectorId, Guid inputNodeId, Guid intputConnectorId,
+        public Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId, string intputConnectorKey,
             CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -159,6 +168,16 @@ namespace OctoPatch.Server
 
             //return Task.CompletedTask;
             //// TODO: Apply configuration to the node
+        }
+
+        public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StopNode(Guid nodeId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
