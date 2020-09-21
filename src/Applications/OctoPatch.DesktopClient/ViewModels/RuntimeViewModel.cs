@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
+using OctoPatch.Plugin.Rest;
 using OctoPatch.Server;
 using OctoPatch.Setup;
 
@@ -167,7 +168,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _takeConnector.Enabled = (SelectedWireConnector != null && value is InputNodeModel) || value is OutputNodeModel;
 
                 //// TODO: Lookup model by Attribute
-                if (item != null && item.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode")
+                if (item?.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode")
                 {
                     var model = new MidiDeviceModel();
                     model.Setup(item.Environment);
@@ -175,9 +176,17 @@ namespace OctoPatch.DesktopClient.ViewModels
                     NodeConfiguration = model;
                     _saveNodeConfiguration.Enabled = true;
                 }
-                else if (item != null && item.Setup.Key == "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode")
+                else if (item?.Setup.Key == "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode")
                 {
                     NodeConfiguration = null;
+                    _saveNodeConfiguration.Enabled = true;
+                }
+                else if(item?.Setup.Key == $"{RestPlugin.PluginId[1..^1].ToLower()}:{nameof(RestGetNode)}")
+                {
+                    var model = new RestGetModel();
+                    model.Setup(item.Environment);
+                    model.SetConfiguration(item.Setup.Configuration);
+                    NodeConfiguration = model;
                     _saveNodeConfiguration.Enabled = true;
                 }
                 else

@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Core", "src\Core\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Server", "src\Core\OctoPatch.Server\OctoPatch.Server.csproj", "{F2305E34-ABDE-4418-B0D5-727FEBB6EB33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoPatch.Plugin.Keyboard", "src\Plugins\OctoPatch.Plugin.Keyboard\OctoPatch.Plugin.Keyboard.csproj", "{DD956A0D-1556-4CCA-B1F3-4010D0F0F8F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OctoPatch.Plugin.Keyboard", "src\Plugins\OctoPatch.Plugin.Keyboard\OctoPatch.Plugin.Keyboard.csproj", "{DD956A0D-1556-4CCA-B1F3-4010D0F0F8F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OctoPatch.Plugin.Rest", "OctoPatch.Plugin.Rest\OctoPatch.Plugin.Rest.csproj", "{E137C0B0-09E4-441B-8075-6007297F2E84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{DD956A0D-1556-4CCA-B1F3-4010D0F0F8F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD956A0D-1556-4CCA-B1F3-4010D0F0F8F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD956A0D-1556-4CCA-B1F3-4010D0F0F8F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E137C0B0-09E4-441B-8075-6007297F2E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E137C0B0-09E4-441B-8075-6007297F2E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E137C0B0-09E4-441B-8075-6007297F2E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E137C0B0-09E4-441B-8075-6007297F2E84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +92,7 @@ Global
 		{639499F3-9B9A-4175-B8CF-1C96D880987F} = {826BC5FD-CEF2-466A-88E5-55489BDAD44B}
 		{DBA37B79-AF44-4C21-8BD6-B7704BD339F5} = {FA7B21A1-3ADA-4C35-BF59-100BFD2A689D}
 		{DD956A0D-1556-4CCA-B1F3-4010D0F0F8F3} = {826BC5FD-CEF2-466A-88E5-55489BDAD44B}
+		{E137C0B0-09E4-441B-8075-6007297F2E84} = {826BC5FD-CEF2-466A-88E5-55489BDAD44B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F9B99B3-F5BE-4428-9751-1CC99FA5761B}
