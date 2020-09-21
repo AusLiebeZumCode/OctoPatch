@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OctoPatch.Plugin.Rest\OctoPatch.Plugin.Rest.csproj" />
     <ProjectReference Include="..\..\Core\OctoPatch.Core\OctoPatch.Core.csproj" />
     <ProjectReference Include="..\..\Core\OctoPatch.Server\OctoPatch.Server.csproj" />
     <ProjectReference Include="..\..\Plugins\OctoPatch.Plugin.Keyboard\OctoPatch.Plugin.Keyboard.csproj" />
     <ProjectReference Include="..\..\Plugins\OctoPatch.Plugin.Midi\OctoPatch.Plugin.Midi.csproj" />
+    <ProjectReference Include="..\..\Plugins\OctoPatch.Plugin.Rest\OctoPatch.Plugin.Rest.csproj" />
   </ItemGroup>
 
 </Project>
