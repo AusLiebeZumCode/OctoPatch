@@ -59,5 +59,14 @@ namespace OctoPatch.DesktopClient.Models
         {
             Name = description.DisplayName;
         }
+
+        protected NodeModel(Guid wireId)
+        {
+            this.Name = "Wire";
+            Items = new ObservableCollection<NodeModel>();
+            Key = wireId.ToString();
+            State = NodeState.Uninitialized;
+
+        }
     }
 }

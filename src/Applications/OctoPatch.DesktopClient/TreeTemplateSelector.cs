@@ -18,6 +18,8 @@ namespace OctoPatch.DesktopClient
 
         public DataTemplate InputTemplate { get; set; }
 
+        public DataTemplate WireTemplate { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             switch (item)
@@ -34,6 +36,8 @@ namespace OctoPatch.DesktopClient
                     return OutputTemplate;
                 case InputNodeModel _:
                     return InputTemplate;
+                case WireNodeModel _:
+                    return WireTemplate;
             }
 
             return base.SelectTemplate(item, container);

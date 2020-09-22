@@ -87,6 +87,14 @@
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </desktopClient:TreeTemplateSelector.OutputTemplate>
+            <desktopClient:TreeTemplateSelector.WireTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔌" Margin="0 0 5 0" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </desktopClient:TreeTemplateSelector.WireTemplate>
 
         </desktopClient:TreeTemplateSelector>
 
