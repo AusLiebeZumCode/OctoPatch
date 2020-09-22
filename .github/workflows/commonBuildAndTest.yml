@@ -23,7 +23,7 @@ jobs:
 
       - name: Bump version and push tag
         id: tag_action
-        uses: anothrNick/github-tag-action@master
+        uses: anothrNick/github-tag-action@1.26.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
@@ -107,6 +107,9 @@ jobs:
 
       - name: Create NuGet Package (OctoPatch.Plugin.Midi)
         run: dotnet pack src/Plugins/OctoPatch.Plugin.Midi/OctoPatch.Plugin.Midi.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
+      
+      - name: Create NuGet Package (OctoPatch.Plugin.Rest)
+        run: dotnet pack src/Plugins/OctoPatch.Plugin.Rest/OctoPatch.Plugin.Rest.csproj --configuration Release --output ./artifacts/nuget -p:Version=${{ needs.tag.outputs.version }} --no-restore
 
       - name: Publish NuGet Packages
         if: ${{ github.repository == 'AusLiebeZumCode/OctoPatch' && needs.tag.outputs.release == 'true' }}

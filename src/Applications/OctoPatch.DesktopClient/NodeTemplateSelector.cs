@@ -8,11 +8,17 @@ namespace OctoPatch.DesktopClient
     {
         public DataTemplate MidiDeviceTemplate { get; set; }
 
+        public DataTemplate RestGetTemplate { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             if (item is MidiDeviceModel)
             {
                 return MidiDeviceTemplate;
+            }
+            else if(item is RestGetModel)
+            {
+                return RestGetTemplate;
             }
 
             return base.SelectTemplate(item, container);

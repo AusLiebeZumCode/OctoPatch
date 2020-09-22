@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Authors>Tom Wendel, TheBlubb14</Authors>
+    <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Plugin.Rest</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AusLiebeZumCode/OctoPatch.Plugin.Rest</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/AusLiebeZumCode/OctoPatch.Plugin.Rest</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\OctoPatch.Server\OctoPatch.Server.csproj" />
+    <ProjectReference Include="..\..\Core\OctoPatch\OctoPatch.csproj" />
+  </ItemGroup>
+
+</Project>

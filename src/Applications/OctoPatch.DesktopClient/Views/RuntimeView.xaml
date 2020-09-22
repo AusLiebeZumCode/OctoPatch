@@ -23,6 +23,11 @@
                     <views:MidiDeviceView />
                 </DataTemplate>
             </desktopClient:NodeTemplateSelector.MidiDeviceTemplate>
+            <desktopClient:NodeTemplateSelector.RestGetTemplate>
+                <DataTemplate>
+                    <views:RestGetView />
+                </DataTemplate>
+            </desktopClient:NodeTemplateSelector.RestGetTemplate>
         </desktopClient:NodeTemplateSelector>
 
         <desktopClient:TreeTemplateSelector x:Key="TreeTemplateSelector">
