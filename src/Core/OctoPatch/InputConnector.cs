@@ -7,21 +7,26 @@ namespace OctoPatch
     /// <summary>
     /// Connector implementation for incoming messages
     /// </summary>
-    internal sealed class InputConnector : Connector, IInputConnector, IInputConnectorHandler
+    public sealed class InputConnector : Connector, IInputConnector, IInputConnectorHandler
     {
         /// <summary>
         /// List of handlers
         /// </summary>
         private readonly List<IHandler> _handlers;
 
-        public InputConnector(Guid nodeId, ConnectorDescription description) 
-            : base(nodeId, description)
+        private InputConnector(Guid nodeId, Type supportedType, ConnectorDescription description) 
+            : base(nodeId, supportedType, description)
         {
             _handlers = new List<IHandler>();
         }
 
         public IInputConnectorHandler HandleRaw(Action<Message> handler)
         {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
             _handlers.Add(new RawHandler(handler));
             return this;
         }
@@ -31,6 +36,16 @@ namespace OctoPatch
         /// </summary>
         public IInputConnectorHandler Handle(Action handler)
         {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            if (SupportedType != typeof(void))
+            {
+                throw new NotSupportedException("connector is not a trigger connector");
+            }
+
             _handlers.Add(new Handler(handler));
             return this;
         }
@@ -40,6 +55,16 @@ namespace OctoPatch
         /// </summary>
         public IInputConnectorHandler Handle<T>(Action<T> handler) where T : struct
         {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            if (SupportedType != typeof(T))
+            {
+                throw new NotSupportedException("connector does not handle the requested type");
+            }
+
             _handlers.Add(new Handler<T>(handler));
             return this;
         }
@@ -59,6 +84,33 @@ namespace OctoPatch
                 handler.Handle(value);
             }
         }
+
+        #region static fabric
+
+        /// <summary>
+        /// Creates a new input connector for trigger messages
+        /// </summary>
+        /// <param name="nodeId">parent node id</param>
+        /// <param name="description">connector description</param>
+        /// <returns>new connector</returns>
+        public static InputConnector Create(Guid nodeId, ConnectorDescription description)
+        {
+            return new InputConnector(nodeId, typeof(void), description);
+        }
+
+        /// <summary>
+        /// Creates a new input connector with the given message type
+        /// </summary>
+        /// <typeparam name="T">type of message</typeparam>
+        /// <param name="nodeId">parent node id</param>
+        /// <param name="description">connector description</param>
+        /// <returns>new connector</returns>
+        public static InputConnector Create<T>(Guid nodeId, ConnectorDescription description)
+        {
+            return new InputConnector(nodeId, typeof(T), description);
+        }
+
+        #endregion
 
         /// <summary>
         /// Common interface for a handler

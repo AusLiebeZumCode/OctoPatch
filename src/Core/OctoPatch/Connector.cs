@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -6,29 +7,59 @@ namespace OctoPatch
     /// <summary>
     /// Base class for all kind of connectors
     /// </summary>
-    internal abstract class Connector : IConnector
+    public abstract class Connector : IConnector
     {
         /// <summary>
-        /// <inheritdoc />
+        /// Returns the supported type
         /// </summary>
+        protected Type SupportedType { get; }
+
+        /// <inheritdoc />
         public Guid NodeId { get; }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public string Key { get; }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public ConnectorDescription Description { get; }
 
-        protected Connector(Guid nodeId, ConnectorDescription description)
+        protected Connector(Guid nodeId, Type supportedType, ConnectorDescription description)
         {
-            if (description == null)
+            if (description is null)
             {
                 throw new ArgumentNullException(nameof(description));
             }
+
+            // Compare supported type with description type
+            switch (description.ContentType)
+            {
+                case AllContentType _:
+                    break;
+                case BinaryContentType _:
+                    if (supportedType != typeof(byte[])) throw new ArgumentException("types do not match", nameof(description));
+                    break;
+                case BoolContentType _:
+                    if (supportedType != typeof(bool)) throw new ArgumentException("types do not match", nameof(description));
+                    break;
+                case ComplexContentType _:
+                    break;
+                case EmptyContentType _:
+                    if (supportedType != typeof(void)) throw new ArgumentException("types do not match", nameof(description));
+                    break;
+                case EnumContentType _:
+                    break;
+                case FloatContentType _:
+                    if (supportedType != typeof(float)) throw new ArgumentException("types do not match", nameof(description));
+                    break;
+                case IntegerContentType _:
+                    if (supportedType != typeof(int)) throw new ArgumentException("types do not match", nameof(description));
+                    break;
+                case StringContentType _:
+                    if (supportedType != typeof(string)) throw new ArgumentException("types do not match", nameof(description));
+                    break;
+            }
+
+            SupportedType = supportedType;
 
             NodeId = nodeId;
             Key = description.Key;

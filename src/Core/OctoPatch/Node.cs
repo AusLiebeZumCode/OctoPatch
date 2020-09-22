@@ -565,25 +565,50 @@ namespace OctoPatch
         #region Connector Management
 
         /// <summary>
-        /// Registers a new output connector to the node
+        /// Registers a new trigger output connector to the node
         /// </summary>
         /// <param name="description">output connector description</param>
         /// <returns>new connector</returns>
         protected IOutputConnectorHandler RegisterOutputConnector(ConnectorDescription description)
         {
-            var outputConnector = new OutputConnector(Id, description);
+            var outputConnector = OutputConnector.Create(Id, description);
             _outputs.Add(outputConnector);
             return outputConnector;
         }
 
         /// <summary>
-        /// Registers a new input connector to the node
+        /// Registers a new output connector to the node
+        /// </summary>
+        /// <param name="description">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IOutputConnectorHandler RegisterOutputConnector<T>(ConnectorDescription description)
+        {
+            var outputConnector = OutputConnector.Create<T>(Id, description);
+            _outputs.Add(outputConnector);
+            return outputConnector;
+        }
+
+        /// <summary>
+        /// Registers a new trigger input connector to the node
         /// </summary>
         /// <param name="description">input connector description</param>
         /// <returns>new connector</returns>
         protected IInputConnectorHandler RegisterInputConnector(ConnectorDescription description)
         {
-            var inputConnector = new InputConnector(Id, description);
+            var inputConnector = InputConnector.Create(Id, description);
+            _inputs.Add(inputConnector);
+            return inputConnector;
+        }
+
+        /// <summary>
+        /// Registers a new input connector to the node
+        /// </summary>
+        /// <typeparam name="T">message type</typeparam>
+        /// <param name="description">input connector description</param>
+        /// <returns>new connector</returns>
+        protected IInputConnectorHandler RegisterInputConnector<T>(ConnectorDescription description)
+        {
+            var inputConnector = InputConnector.Create<T>(Id, description);
             _inputs.Add(inputConnector);
             return inputConnector;
         }

@@ -11,8 +11,8 @@ namespace OctoPatch
     {
         private readonly HashSet<Subscription> _subscriptions;
 
-        public OutputConnector(Guid nodeId, ConnectorDescription description) 
-            : base(nodeId, description)
+        private OutputConnector(Guid nodeId, Type supportedType, ConnectorDescription description) 
+            : base(nodeId, supportedType, description)
         {
             // TODO: Make subscriptions threadsafe
 
@@ -83,6 +83,33 @@ namespace OctoPatch
                 }
             });
         }
+
+        #region static fabrics
+
+        /// <summary>
+        /// Creates a new output connector for trigger type
+        /// </summary>
+        /// <param name="nodeId">parent node id</param>
+        /// <param name="description">connector description</param>
+        /// <returns>new connector</returns>
+        public static OutputConnector Create(Guid nodeId, ConnectorDescription description)
+        {
+            return new OutputConnector(nodeId, typeof(void), description);
+        }
+
+        /// <summary>
+        /// Creates a new output connector for the given type
+        /// </summary>
+        /// <typeparam name="T">message type</typeparam>
+        /// <param name="nodeId">parent node id</param>
+        /// <param name="description">connector description</param>
+        /// <returns>new connector</returns>
+        public static OutputConnector Create<T>(Guid nodeId, ConnectorDescription description)
+        {
+            return new OutputConnector(nodeId, typeof(T), description);
+        }
+
+        #endregion
 
         private sealed class Subscription : IDisposable
         {
