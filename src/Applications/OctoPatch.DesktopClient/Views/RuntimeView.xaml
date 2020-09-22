@@ -120,10 +120,33 @@
             </Grid.RowDefinitions>
 
             <!-- Toolbox -->
-            <views:ToolboxView />
+            <ListBox
+                ItemsSource="{Binding NodeDescriptions}"
+                SelectedItem="{Binding SelectedNodeDescription}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding DisplayName}" FontWeight="Bold" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
             <!-- Block infos -->
-            <views:NodeDescriptionView Grid.Row="1" DataContext="{Binding SelectedNodeDescription}" />
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Name -->
+                <TextBlock Grid.Row="0" Margin="10" Text="{Binding Path=SelectedNodeDescription.DisplayName}" FontWeight="Bold" />
+
+                <!-- Description -->
+                <TextBlock Grid.Row="1" Margin="10 0" Text="{Binding Path=SelectedNodeDescription.DisplayDescription}" TextWrapping="Wrap" />
+
+            </Grid>
 
             <!-- buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
@@ -154,7 +177,30 @@
                         Foreground="White"
                         FontWeight="Bold"
                         Padding="5" />
-                <views:CommonNodeSetupView Grid.Row="1" />
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Name -->
+                    <Label Grid.Row="0" Content="Name" FontWeight="Bold" />
+                    <TextBox Grid.Row="1" VerticalContentAlignment="Center" Text="{Binding Path=NodeDescription.Name}" Margin="5 0 5 10" />
+
+                    <!-- Description -->
+                    <Label Grid.Row="2" Content="Description" VerticalAlignment="Top" FontWeight="Bold" />
+                    <TextBox VerticalContentAlignment="Center" TextWrapping="Wrap"  Grid.Row="3" Margin="5 0 5 10" Text="{Binding Path=NodeDescription.Description}" />
+
+                    <!-- Button -->
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                        <Button Content="Save" Margin="5" Padding="10 5" Command="{Binding SaveNodeDescription}" />
+                    </StackPanel>
+
+                </Grid>
             </Grid>
 
             <!-- Node settings -->

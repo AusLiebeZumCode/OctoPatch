@@ -25,10 +25,14 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private readonly List<NodeDescription> _descriptions;
 
+        #region Toolbox
+
+        /// <inheritdoc />
         public ObservableCollection<NodeDescription> NodeDescriptions { get; }
 
         private NodeDescription _selectedNodeDescription;
 
+        /// <inheritdoc />
         public NodeDescription SelectedNodeDescription
         {
             get => _selectedNodeDescription;
@@ -43,44 +47,16 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private readonly ActionCommand _addSelectedNodeDescription;
 
+        /// <inheritdoc />
         public ICommand AddSelectedNodeDescription => _addSelectedNodeDescription;
 
-        public ObservableCollection<NodeDescription> ContextNodeDescriptions { get; }
+        #endregion
 
-        private NodeDescription _selectedContextNodeDescription;
-
-        public NodeDescription SelectedContextNodeDescription
-        {
-            get => _selectedContextNodeDescription;
-            set
-            {
-                _selectedContextNodeDescription = value;
-                OnPropertyChanged();
-
-                _addSelectedContextNodeDescription.Enabled = value != null;
-            }
-        }
-
-        private readonly ActionCommand _addSelectedContextNodeDescription;
-
-        public ICommand AddSelectedContextNodeDescription => _addSelectedContextNodeDescription;
-
+        #region Patch
 
         public ObservableCollection<NodeModel> NodeTree { get; }
 
-        private readonly ActionCommand _removeSelectedNode;
-
-        public ICommand RemoveSelectedNode => _removeSelectedNode;
-
-        private readonly ActionCommand _startSelectedNode;
-
-        public ICommand StartSelectedNode => _startSelectedNode;
-
-        private readonly ActionCommand _stopSelectedNode;
-
-        public ICommand StopSelectedNode => _stopSelectedNode;
-
-        private NodeModel _selectedNode;
+                private NodeModel _selectedNode;
 
         public NodeModel SelectedNode
         {
@@ -199,6 +175,56 @@ namespace OctoPatch.DesktopClient.ViewModels
             }
         }
 
+        private readonly ActionCommand _removeSelectedNode;
+
+        public ICommand RemoveSelectedNode => _removeSelectedNode;
+
+        private readonly ActionCommand _removeSelectedWire;
+
+        public ICommand RemoveSelectedWire => _removeSelectedWire;
+
+        #endregion
+
+        #region Context Toolbox
+
+        public ObservableCollection<NodeDescription> ContextNodeDescriptions { get; }
+
+        private NodeDescription _selectedContextNodeDescription;
+
+        public NodeDescription SelectedContextNodeDescription
+        {
+            get => _selectedContextNodeDescription;
+            set
+            {
+                _selectedContextNodeDescription = value;
+                OnPropertyChanged();
+
+                _addSelectedContextNodeDescription.Enabled = value != null;
+            }
+        }
+
+        private readonly ActionCommand _addSelectedContextNodeDescription;
+
+        public ICommand AddSelectedContextNodeDescription => _addSelectedContextNodeDescription;
+
+        #endregion
+
+        #region Property bar
+
+        #region Node lifecycle management
+
+        private readonly ActionCommand _startSelectedNode;
+
+        public ICommand StartSelectedNode => _startSelectedNode;
+
+        private readonly ActionCommand _stopSelectedNode;
+
+        public ICommand StopSelectedNode => _stopSelectedNode;
+
+        #endregion
+
+        #region Common node configuration
+
         private NodeDescriptionModel _nodeDescription;
 
         public NodeDescriptionModel NodeDescription
@@ -214,6 +240,10 @@ namespace OctoPatch.DesktopClient.ViewModels
         private readonly ActionCommand _saveNodeDescription;
 
         public ICommand SaveNodeDescription => _saveNodeDescription;
+
+        #endregion
+
+        #region Node specific configuration
 
         private NodeConfigurationModel _nodeConfiguration;
 
@@ -231,6 +261,10 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand SaveNodeConfiguration => _saveNodeConfiguration;
 
+        #endregion
+
+        #region Wire wizard
+
         private OutputNodeModel _selectedWireConnector;
 
         public OutputNodeModel SelectedWireConnector
@@ -247,7 +281,51 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ICommand TakeConnector => _takeConnector;
 
-        public ObservableCollection<WireSetup> Wires { get; }
+        #endregion
+
+        #region Wire configuration
+
+        public ObservableCollection<AdapterDescription> AdapterDescriptions { get; }
+
+        private AdapterDescription _selectedAdapterDescription;
+
+        public AdapterDescription SelectedAdapterDescription
+        {
+            get => _selectedAdapterDescription;
+            set
+            {
+                _selectedAdapterDescription = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private readonly ActionCommand _saveAdapter;
+
+        public ICommand SaveAdapter => _saveAdapter;
+
+        #endregion
+
+        #region Adapter configuration
+
+        private AdapterConfigurationModel _adapterConfiguration;
+
+        public AdapterConfigurationModel AdapterConfiguration
+        {
+            get => _adapterConfiguration;
+            private set
+            {
+                _adapterConfiguration = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private readonly ActionCommand _saveAdapterConfiguration;
+
+        public ICommand SaveAdapterConfiguration => _saveAdapterConfiguration;
+
+        #endregion
+
+        #endregion
 
         public RuntimeViewModel()
         {
@@ -258,16 +336,19 @@ namespace OctoPatch.DesktopClient.ViewModels
             NodeDescriptions = new ObservableCollection<NodeDescription>();
             ContextNodeDescriptions = new ObservableCollection<NodeDescription>();
             NodeTree = new ObservableCollection<NodeModel>();
-            Wires = new ObservableCollection<WireSetup>();
+            AdapterDescriptions = new ObservableCollection<AdapterDescription>();
 
             _addSelectedNodeDescription = new ActionCommand(AddNodeDescriptionCallback, false);
             _addSelectedContextNodeDescription = new ActionCommand(AddContextNodeDescriptionCallback, false);
             _removeSelectedNode = new ActionCommand(RemoveSelectedNodeCallback, false);
+            _removeSelectedWire = new ActionCommand(RemoveSelectedWireCallback, false);
             _startSelectedNode = new ActionCommand(StartSelectedNodeCallback, false);
             _stopSelectedNode = new ActionCommand(StopSelectedNodeCallback, false);
             _saveNodeDescription = new ActionCommand(SaveNodeDescriptionCallback, false);
             _saveNodeConfiguration = new ActionCommand(SaveNodeConfigurationCallback, false);
             _takeConnector = new ActionCommand(TakeConnectorCallback, false);
+            _saveAdapter = new ActionCommand(SaveAdapterCallback, false);
+            _saveAdapterConfiguration = new ActionCommand(SaveAdapterConfigurationCallback, false);
 
             var repository = new Repository();
             _runtime = new Runtime(repository);
@@ -279,8 +360,29 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.NodeEnvironmentChanged += RuntimeOnOnNodeEnvironmentChanged;
             _runtime.WireAdded += RuntimeOnOnWireAdded;
             _runtime.WireRemoved += RuntimeOnOnWireRemoved;
+            _runtime.WireUpdated += RuntimeOnWireUpdated;
 
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private void RuntimeOnWireUpdated(WireSetup obj)
+        {
+            
+        }
+
+        private void SaveAdapterConfigurationCallback(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SaveAdapterCallback(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RemoveSelectedWireCallback(object obj)
+        {
+            throw new NotImplementedException();
         }
 
         private async void TakeConnectorCallback(object obj)
