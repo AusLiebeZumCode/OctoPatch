@@ -31,5 +31,15 @@ namespace OctoPatch.Setup
         /// connector key of the input connector
         /// </summary>
         public string InputConnectorKey { get; set; }
+
+        /// <summary>
+        /// key of the adapter of this wire or null, if no adapter was set
+        /// </summary>
+        public string AdapterKey { get; set; }
+
+        /// <summary>
+        /// Adapter configuration
+        /// </summary>
+        public string AdapterConfiguration { get; set; }
     }
 }

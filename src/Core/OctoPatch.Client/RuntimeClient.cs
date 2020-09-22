@@ -125,6 +125,11 @@ namespace OctoPatch.Client
             return _hubConnection.InvokeAsync(nameof(SetNodeConfiguration), nodeGuid, configuration, cancellationToken, cancellationToken);
         }
 
+        public Task SetNodePosition(Guid nodeId, int x, int y, CancellationToken cancellationToken)
+        {
+            return _hubConnection.InvokeAsync(nameof(SetNodePosition), nodeId, x, y, cancellationToken);
+        }
+
         public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
@@ -165,9 +170,9 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void OnNodeAdded(NodeSetup instance, NodeState state, string environment)
+        public void OnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
-            NodeAdded?.Invoke(instance, state, environment);
+            NodeAdded?.Invoke(setup, state, environment);
         }
 
         /// <summary>
@@ -197,62 +202,56 @@ namespace OctoPatch.Client
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void OnNodeUpdated(NodeSetup nodeSetup)
+        public void OnNodeUpdated(NodeSetup setup)
         {
-            NodeUpdated?.Invoke(nodeSetup);
+            NodeUpdated?.Invoke(setup);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void OnWireAdded(WireSetup instance)
+        public void OnWireAdded(WireSetup setup)
         {
-            WireAdded?.Invoke(instance);
+            WireAdded?.Invoke(setup);
         }
 
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public void OnWireRemoved(Guid instanceGuid)
+        public void OnWireRemoved(Guid wireId)
         {
-            WireRemoved?.Invoke(instanceGuid);
+            WireRemoved?.Invoke(wireId);
+        }
+
+        public void OnWireUpdated(WireSetup setup)
+        {
+            WireUpdated?.Invoke(setup);
         }
 
         #endregion
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<NodeSetup, NodeState, string> NodeAdded;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid> NodeRemoved;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<NodeSetup> NodeUpdated;
         
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid, NodeState> NodeStateChanged;
         
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid, string> NodeEnvironmentChanged;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<WireSetup> WireAdded;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid> WireRemoved;
+
+        /// <inheritdoc />
+        public event Action<WireSetup> WireUpdated;
     }
 }

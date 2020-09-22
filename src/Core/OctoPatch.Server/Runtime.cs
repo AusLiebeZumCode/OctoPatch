@@ -281,6 +281,18 @@ namespace OctoPatch.Server
             return Task.CompletedTask;
         }
 
+        public Task SetNodePosition(Guid nodeId, int x, int y, CancellationToken cancellationToken)
+        {
+            if (_nodeMapping.TryGetValue(nodeId, out var nodeSetup))
+            {
+                nodeSetup.setup.PositionX = x;
+                nodeSetup.setup.PositionY = y;
+                NodeUpdated?.Invoke(nodeSetup.setup);
+            }
+
+            return Task.CompletedTask;
+        }
+
         public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
         {
             //var description = _descriptions.First(d => d.Guid == nodeInstance.NodeDescription);
@@ -334,39 +346,28 @@ namespace OctoPatch.Server
             }
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<NodeSetup, NodeState, string> NodeAdded;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid> NodeRemoved;
         
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<WireSetup> WireAdded;
         
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid> WireRemoved;
-        
-        /// <summary>
+
         /// <inheritdoc />
-        /// </summary>
+        public event Action<WireSetup> WireUpdated;
+        
+        /// <inheritdoc />
         public event Action<NodeSetup> NodeUpdated;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid, NodeState> NodeStateChanged;
         
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public event Action<Guid, string> NodeEnvironmentChanged;
     }
 }

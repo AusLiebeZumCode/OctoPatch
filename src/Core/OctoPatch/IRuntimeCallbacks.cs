@@ -53,5 +53,11 @@ namespace OctoPatch
         /// </summary>
         /// <param name="instanceGuid">wire guid</param>
         void OnWireRemoved(Guid instanceGuid);
+
+        /// <summary>
+        /// Gets a call when a wire was updated
+        /// </summary>
+        /// <param name="setup">updated setup</param>
+        void OnWireUpdated(WireSetup setup);
     }
 }

@@ -110,6 +110,16 @@ namespace OctoPatch
         Task SetNodeDescription(Guid nodeId, string name, string description, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Sets the new position of the given node
+        /// </summary>
+        /// <param name="nodeId">node id</param>
+        /// <param name="x">x position</param>
+        /// <param name="y">y position</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns></returns>
+        Task SetNodePosition(Guid nodeId, int x, int y, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets the current environment information of the requested node
         /// </summary>
         /// <param name="nodeId">node id</param>

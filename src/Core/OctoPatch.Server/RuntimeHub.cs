@@ -170,6 +170,11 @@ namespace OctoPatch.Server
             //// TODO: Apply configuration to the node
         }
 
+        public Task SetNodePosition(Guid nodeId, int x, int y, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task StartNode(Guid nodeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();

@@ -42,5 +42,10 @@ namespace OctoPatch
         /// Gets a call when an existing wire instance was removed
         /// </summary>
         event Action<Guid> WireRemoved;
+
+        /// <summary>
+        /// Gets a call when an existing wire changed setup
+        /// </summary>
+        event Action<WireSetup> WireUpdated;
     }
 }
