@@ -27,5 +27,19 @@ namespace OctoPatch
         /// <param name="handler">delegate to handle messages</param>
         /// <returns>reference to connector handler</returns>
         IInputConnectorHandler Handle<T>(Action<T> handler) where T : struct;
+
+        /// <summary>
+        /// Register handler for messages of string
+        /// </summary>
+        /// <param name="handler">delegate to handle messages</param>
+        /// <returns>reference to connector handler</returns>
+        IInputConnectorHandler HandleString(Action<string> handler);
+
+        /// <summary>
+        /// Register handler for messages of byte array
+        /// </summary>
+        /// <param name="handler">delegate to handle messages</param>
+        /// <returns>reference to connector handler</returns>
+        IInputConnectorHandler HandleBinary(Action<byte[]> handler);
     }
 }

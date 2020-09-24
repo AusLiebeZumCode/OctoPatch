@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -20,6 +21,7 @@ namespace OctoPatch
             _handlers = new List<IHandler>();
         }
 
+        /// <inheritdoc />
         public IInputConnectorHandler HandleRaw(Action<Message> handler)
         {
             if (handler == null)
@@ -31,9 +33,7 @@ namespace OctoPatch
             return this;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public IInputConnectorHandler Handle(Action handler)
         {
             if (handler == null)
@@ -41,7 +41,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            if (SupportedType != typeof(void))
+            if (!Description.ContentType.IsSupportedType(typeof(void)))
             {
                 throw new NotSupportedException("connector is not a trigger connector");
             }
@@ -50,9 +50,7 @@ namespace OctoPatch
             return this;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public IInputConnectorHandler Handle<T>(Action<T> handler) where T : struct
         {
             if (handler == null)
@@ -60,12 +58,31 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            if (SupportedType != typeof(T))
+            _handlers.Add(new Handler<T>(handler, Description.ContentType));
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IInputConnectorHandler HandleString(Action<string> handler)
+        {
+            if (handler == null)
             {
-                throw new NotSupportedException("connector does not handle the requested type");
+                throw new ArgumentNullException(nameof(handler));
             }
 
-            _handlers.Add(new Handler<T>(handler));
+            _handlers.Add(new StringHandler(handler));
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IInputConnectorHandler HandleBinary(Action<byte[]> handler)
+        {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            _handlers.Add(new BinaryHandler(handler));
             return this;
         }
 
@@ -165,19 +182,78 @@ namespace OctoPatch
         /// <typeparam name="T">message type</typeparam>
         private sealed class Handler<T> : IHandler where T : struct
         {
+            /// <summary>
+            /// Reference to the content type
+            /// </summary>
+            private readonly ContentType _contentType;
+
+            /// <summary>
+            /// Holds the handler
+            /// </summary>
             private readonly Action<T> _handler;
 
-            public Handler(Action<T> handler)
+            /// <summary>
+            /// Creates a new handler for a specific content type
+            /// </summary>
+            /// <param name="handler">handler</param>
+            /// <param name="contentType">content type</param>
+            public Handler(Action<T> handler, ContentType contentType)
+            {
+                // Make sure content type fits the the given handler type
+                if (!contentType.IsSupportedType<T>())
+                {
+                    throw new NotSupportedException("connector does not handle the requested type");
+                }
+
+                _handler = handler;
+                _contentType = contentType;
+            }
+
+            /// <inheritdoc />
+            public void Handle(Message message)
+            {
+                // Make sure message fits the expected type
+                if (!_contentType.IsSupportedType<T>()) 
+                    return;
+
+                var value = _contentType.NormalizeValue(message.Content);
+                _handler((T)value);
+            }
+        }
+
+        /// <summary>
+        /// Handler for string messages
+        /// </summary>
+        private sealed class StringHandler : IHandler
+        {
+            private readonly Action<string> _handler;
+
+            public StringHandler(Action<string> handler)
             {
                 _handler = handler;
             }
 
             public void Handle(Message message)
             {
-                if (message.Type == typeof(T))
-                {
-                    _handler((T) message.Content);
-                }
+                // TODO: Implement this
+            }
+        }
+
+        /// <summary>
+        /// Handler for binary messages
+        /// </summary>
+        private sealed class BinaryHandler : IHandler
+        {
+            private readonly Action<byte[]> _handler;
+
+            public BinaryHandler(Action<byte[]> handler)
+            {
+                _handler = handler;
+            }
+
+            public void Handle(Message message)
+            {
+                // TODO: Implement this
             }
         }
     }
