@@ -1,4 +1,6 @@
-﻿namespace OctoPatch.ContentTypes
+﻿using System;
+
+namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Represents a string based message
@@ -9,5 +11,12 @@
         /// Gets the optional maximum length for this string
         /// </summary>
         public int? MaximumLength { get; set; }
+
+        /// <inheritdoc />
+        protected override bool IsSupportedType(Type type)
+        {
+            return type == typeof(string);
+        }
+
     }
 }

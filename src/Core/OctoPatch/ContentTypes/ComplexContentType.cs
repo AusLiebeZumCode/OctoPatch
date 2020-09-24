@@ -19,5 +19,10 @@ namespace OctoPatch.ContentTypes
                 Key = $"{pluginId}:{typeof(T).Name}"
             };
         }
+
+        protected override bool IsSupportedType(Type type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace OctoPatch.ContentTypes
+﻿using System;
+
+namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Represents a integer based message
@@ -14,6 +16,12 @@
         /// Optional highest value for this message
         /// </summary>
         public int? MaximumValue { get; set; }
+
+        /// <inheritdoc />
+        protected override bool IsSupportedType(Type type)
+        {
+            return type == typeof(int);
+        }
 
         public static IntegerContentType Create(int? minimumValue = null, int? maximumValue = null)
         {
