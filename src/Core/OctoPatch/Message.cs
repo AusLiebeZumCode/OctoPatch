@@ -5,7 +5,7 @@ namespace OctoPatch
     /// <summary>
     /// Represents a single message
     /// </summary>
-    public readonly struct Message
+    public readonly struct Message : IEquatable<Message>
     {
         /// <summary>
         /// Gets or sets the type of the serialized message
@@ -46,6 +46,25 @@ namespace OctoPatch
         public static Message Create()
         {
             return new Message(typeof(void), default);
+        }
+
+        public bool Equals(Message other)
+        {
+            return Equals(Type, other.Type) && 
+                   Equals(Content, other.Content);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Message other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Type != null ? Type.GetHashCode() : 0) * 397) ^ (Content != null ? Content.GetHashCode() : 0);
+            }
         }
     }
 }
