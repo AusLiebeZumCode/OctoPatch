@@ -27,14 +27,14 @@ namespace OctoPatch.ContentTypes
         /// </summary>
         /// <param name="type">requested type</param>
         /// <returns>true when the given type can be processed by the content type</returns>
-        protected abstract bool IsSupportedType(Type type);
+        public abstract bool IsSupportedType(Type type);
 
         /// <summary>
         /// Normalizes the value of the message based on the given content type parameters
         /// </summary>
         /// <param name="value">input value</param>
         /// <returns>normalized output</returns>
-        protected virtual ValueType NormalizeValue(ValueType value)
+        public virtual ValueType NormalizeValue(ValueType value)
         {
             // In most cases this will handover just the input value
             return value;

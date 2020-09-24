@@ -13,13 +13,13 @@ namespace OctoPatch.ContentTypes
         public int? MaximumLength { get; set; }
 
         /// <inheritdoc />
-        protected override bool IsSupportedType(Type type)
+        public override bool IsSupportedType(Type type)
         {
             return type == typeof(string);
         }
 
         /// <inheritdoc />
-        protected override ValueType NormalizeValue(ValueType value)
+        public override ValueType NormalizeValue(ValueType value)
         {
             string input = "";
 

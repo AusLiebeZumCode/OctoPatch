@@ -20,7 +20,7 @@ namespace OctoPatch.ContentTypes
             };
         }
 
-        protected override bool IsSupportedType(Type type)
+        public override bool IsSupportedType(Type type)
         {
             throw new NotImplementedException();
         }

@@ -8,7 +8,7 @@ namespace OctoPatch.ContentTypes
     public sealed class BoolContentType : ContentType
     {
         /// <inheritdoc />
-        protected override bool IsSupportedType(Type type)
+        public override bool IsSupportedType(Type type)
         {
             return type == typeof(bool);
         }

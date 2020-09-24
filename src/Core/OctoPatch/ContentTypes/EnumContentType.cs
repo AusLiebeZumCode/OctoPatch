@@ -8,7 +8,7 @@ namespace OctoPatch.ContentTypes
     public sealed class EnumContentType : ContentType
     {
         /// <inheritdoc />
-        protected override bool IsSupportedType(Type type)
+        public override bool IsSupportedType(Type type)
         {
             throw new NotImplementedException();
         }
