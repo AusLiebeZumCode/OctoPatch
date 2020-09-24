@@ -11,7 +11,7 @@ namespace OctoPatch
     {
         private readonly HashSet<Subscription> _subscriptions;
 
-        private OutputConnector(Guid nodeId, Type supportedType, ConnectorDescription description) 
+        private OutputConnector(Guid nodeId, Type supportedType, ConnectorDescription description)
             : base(nodeId, supportedType, description)
         {
             // TODO: Make subscriptions threadsafe
@@ -19,26 +19,34 @@ namespace OctoPatch
             _subscriptions = new HashSet<Subscription>();
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void Send()
         {
             var message = Message.Create();
             InternalSend(message);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void SendRaw(Message message)
         {
             InternalSend(message);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
+        public void Send(string value)
+        {
+            // TODO: Wrap string
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public void Send(byte[] value)
+        {
+            // TODO: Wrap byte[]
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
         public void Send<T>(T value) where T : struct
         {
             var message = Message.Create(value);
@@ -47,15 +55,24 @@ namespace OctoPatch
 
         private void InternalSend(Message message)
         {
+            // Prevent output from sending invalid types
+            if (Description.ContentType.IsSupportedType(message.Type))
+            {
+                throw new NotSupportedException("message is not of the right type.");
+            }
+
+            // Normalize message content
+            var normalizedMessage = new Message(
+                    message.Type,
+                    Description.ContentType.NormalizeValue(message.Content));
+
             foreach (var subscription in _subscriptions)
             {
-                subscription.Send(message);
+                subscription.Send(normalizedMessage);
             }
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public IDisposable Subscribe(IObserver<Message> observer)
         {
             var subscription = new Subscription(observer);
@@ -69,9 +86,7 @@ namespace OctoPatch
             _subscriptions.Remove(subscription);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public IDisposable Subscribe<T>(Action<T> messageHandler) where T : struct
         {
             return this.Subscribe((m) =>
@@ -111,25 +126,46 @@ namespace OctoPatch
 
         #endregion
 
+        /// <summary>
+        /// Represents a single subscription within that output
+        /// </summary>
         private sealed class Subscription : IDisposable
         {
+            /// <summary>
+            /// Holds the related observer
+            /// </summary>
             private readonly IObserver<Message> _observer;
 
+            /// <summary>
+            /// Creates a new subscription and listens to the dispose
+            /// </summary>
+            /// <param name="observer">reference to the observer</param>
             public Subscription(IObserver<Message> observer)
             {
-                _observer = observer;
+                _observer = observer ?? throw new ArgumentNullException(nameof(observer));
             }
 
+            /// <summary>
+            /// Sends a single message to the observer
+            /// </summary>
+            /// <param name="message">message</param>
             public void Send(Message message)
             {
                 _observer.OnNext(message);
             }
 
+            /// <summary>
+            /// Disposes the subscription
+            /// </summary>
             public void Dispose()
             {
+                _observer.OnCompleted();
                 Disposed?.Invoke(this);
             }
 
+            /// <summary>
+            /// Gets a call when subscription was disposed
+            /// </summary>
             public event Action<Subscription> Disposed;
         }
     }

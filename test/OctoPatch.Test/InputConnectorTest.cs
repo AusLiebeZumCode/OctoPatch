@@ -81,7 +81,5 @@ namespace OctoPatch.Test
         }
 
         #endregion
-
-        
     }
 }
