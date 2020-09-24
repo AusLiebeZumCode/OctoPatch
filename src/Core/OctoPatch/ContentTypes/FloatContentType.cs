@@ -22,5 +22,25 @@ namespace OctoPatch.ContentTypes
         {
             return type == typeof(float);
         }
+
+        /// <inheritdoc />
+        protected override ValueType NormalizeValue(ValueType value)
+        {
+            var input = (float)value;
+
+            // Cap on minimum
+            if (MinimumValue.HasValue)
+            {
+                input = Math.Max(input, MinimumValue.Value);
+            }
+
+            // Cap on maximum
+            if (MaximumValue.HasValue)
+            {
+                input = Math.Min(input, MaximumValue.Value);
+            }
+
+            return input;
+        }
     }
 }

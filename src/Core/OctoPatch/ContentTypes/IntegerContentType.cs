@@ -23,6 +23,26 @@ namespace OctoPatch.ContentTypes
             return type == typeof(int);
         }
 
+        /// <inheritdoc />
+        protected override ValueType NormalizeValue(ValueType value)
+        {
+            var input = (int)value;
+
+            // Cap on minimum
+            if (MinimumValue.HasValue)
+            {
+                input = Math.Max(input, MinimumValue.Value);
+            }
+
+            // Cap on maximum
+            if (MaximumValue.HasValue)
+            {
+                input = Math.Min(input, MaximumValue.Value);
+            }
+
+            return input;
+        }
+
         public static IntegerContentType Create(int? minimumValue = null, int? maximumValue = null)
         {
             return new IntegerContentType

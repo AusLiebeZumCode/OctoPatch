@@ -18,5 +18,20 @@ namespace OctoPatch.ContentTypes
             return type == typeof(string);
         }
 
+        /// <inheritdoc />
+        protected override ValueType NormalizeValue(ValueType value)
+        {
+            string input = "";
+
+            // Cap the length
+            if (MaximumLength.HasValue && input.Length > MaximumLength.Value)
+            {
+                input = input.Substring(0, MaximumLength.Value);
+            }
+
+            // TODO: Wrap string into struct
+
+            return 2;
+        }
     }
 }
