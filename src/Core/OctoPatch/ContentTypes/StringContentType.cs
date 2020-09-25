@@ -34,6 +34,8 @@ namespace OctoPatch.ContentTypes
             return 2;
         }
 
+        #region nested container type
+
         /// <summary>
         /// Internal container for the string type
         /// </summary>
@@ -44,5 +46,7 @@ namespace OctoPatch.ContentTypes
             /// </summary>
             public string Content { get; set; }
         }
+
+        #endregion
     }
 }

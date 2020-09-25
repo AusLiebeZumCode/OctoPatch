@@ -36,16 +36,19 @@ namespace OctoPatch
         /// <inheritdoc />
         public void Send(string value)
         {
-            var message = new Message(typeof(string), 
-                new StringContentType.StringContainer{ Content = value });
+            var message = new Message(typeof(string),
+                new StringContentType.StringContainer { Content = value });
             InternalSend(message);
         }
 
         /// <inheritdoc />
         public void Send(byte[] value)
         {
-            // TODO: Wrap byte[]
-            throw new NotImplementedException();
+            // TODO: Think about cloning the array since this is a mutable type
+
+            var message = new Message(typeof(byte[]), 
+                new BinaryContentType.BinaryContainer { Content = value });
+            InternalSend(message);
         }
 
         /// <inheritdoc />

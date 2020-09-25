@@ -12,5 +12,20 @@ namespace OctoPatch.ContentTypes
         {
             return type == typeof(byte[]);
         }
+
+        #region nested container type
+
+        /// <summary>
+        /// Container type for transporting byte[]
+        /// </summary>
+        public struct BinaryContainer
+        {
+            /// <summary>
+            /// Holds the actual content
+            /// </summary>
+            public byte[] Content { get; set; }
+        }
+
+        #endregion
     }
 }
