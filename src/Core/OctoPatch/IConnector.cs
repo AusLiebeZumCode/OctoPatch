@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -22,5 +23,10 @@ namespace OctoPatch
         /// Returns the description
         /// </summary>
         ConnectorDescription Description { get; }
+
+        /// <summary>
+        /// Returns the related content type
+        /// </summary>
+        ContentType ContentType { get; }
     }
 }

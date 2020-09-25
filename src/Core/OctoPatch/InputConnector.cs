@@ -15,7 +15,7 @@ namespace OctoPatch
         /// </summary>
         private readonly List<IHandler> _handlers;
 
-        private InputConnector(Guid nodeId, Type supportedType, ConnectorDescription description) 
+        private InputConnector(Guid nodeId, Type supportedType, ConnectorDescription description)
             : base(nodeId, supportedType, description)
         {
             _handlers = new List<IHandler>();
@@ -41,12 +41,12 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            if (!Description.ContentType.IsSupportedType(typeof(void)))
+            if (!ContentType.IsSupportedType(typeof(void)))
             {
                 throw new NotSupportedException("connector is not a trigger connector");
             }
 
-            _handlers.Add(new Handler(handler));
+            _handlers.Add(new TriggerHandler(handler, ContentType));
             return this;
         }
 
@@ -58,7 +58,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _handlers.Add(new Handler<T>(handler, Description.ContentType));
+            _handlers.Add(new ValueTypeHandler<T>(handler, ContentType));
             return this;
         }
 
@@ -70,7 +70,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _handlers.Add(new StringHandler(handler, Description.ContentType));
+            _handlers.Add(new StringHandler(handler, ContentType));
             return this;
         }
 
@@ -82,7 +82,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _handlers.Add(new BinaryHandler(handler));
+            _handlers.Add(new BinaryHandler(handler, ContentType));
             return this;
         }
 
@@ -134,7 +134,52 @@ namespace OctoPatch
         /// </summary>
         private interface IHandler
         {
+            /// <summary>
+            /// Tries to handle the incoming message
+            /// </summary>
+            /// <param name="message">message</param>
             void Handle(Message message);
+        }
+
+        /// <summary>
+        /// Handler for trigger
+        /// </summary>
+        private sealed class TriggerHandler : IHandler
+        {
+            /// <summary>
+            /// Holds the delegate
+            /// </summary>
+            private readonly Action _handlerDelegate;
+
+            /// <summary>
+            /// Creates a new handler for non content messages
+            /// </summary>
+            /// <param name="handlerDelegate">delegate to call on fitting messages</param>
+            /// <param name="contentType">content type</param>
+            public TriggerHandler(Action handlerDelegate, ContentType contentType)
+            {
+                if (contentType == null)
+                {
+                    throw new ArgumentNullException(nameof(contentType));
+                }
+
+                // Make sure content type fits the the given handler type
+                if (!contentType.IsSupportedType(typeof(void)))
+                {
+                    throw new NotSupportedException("connector does not handle the requested type");
+                }
+
+                _handlerDelegate = handlerDelegate ?? throw new ArgumentNullException(nameof(handlerDelegate));
+            }
+
+            /// <inheritdoc />
+            public void Handle(Message message)
+            {
+                if (message.Type == typeof(void))
+                {
+                    _handlerDelegate();
+                }
+            }
         }
 
         /// <summary>
@@ -142,142 +187,160 @@ namespace OctoPatch
         /// </summary>
         private sealed class RawHandler : IHandler
         {
-            private readonly Action<Message> _handler;
+            /// <summary>
+            /// holds the delegate
+            /// </summary>
+            private readonly Action<Message> _handlerDelegate;
 
-            public RawHandler(Action<Message> handler)
+            /// <summary>
+            /// Creates a new handler for non content messages
+            /// </summary>
+            /// <param name="handlerDelegate">delegate to call on fitting messages</param>
+            public RawHandler(Action<Message> handlerDelegate)
             {
-                _handler = handler;
+                _handlerDelegate = handlerDelegate ?? throw new ArgumentNullException(nameof(handlerDelegate));
             }
 
+            /// <inheritdoc />
             public void Handle(Message message)
             {
-                _handler(message);
+                _handlerDelegate(message);
             }
         }
 
         /// <summary>
-        /// Handler for trigger
+        /// Handler for callbacks with a value
         /// </summary>
-        private sealed class Handler : IHandler
-        {
-            private readonly Action _handler;
-
-            public Handler(Action handler)
-            {
-                _handler = handler;
-            }
-
-            public void Handle(Message message)
-            {
-                if (message.Type == typeof(void))
-                {
-                    _handler();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Handler for generic handler
-        /// </summary>
-        /// <typeparam name="T">message type</typeparam>
-        private sealed class Handler<T> : IHandler where T : struct
+        /// <typeparam name="T">value type</typeparam>
+        private abstract class Handler<T> : IHandler
         {
             /// <summary>
             /// Reference to the content type
             /// </summary>
-            private readonly ContentType _contentType;
+            protected ContentType ContentType { get; }
 
             /// <summary>
-            /// Holds the handler
+            /// Holds the delegate
             /// </summary>
-            private readonly Action<T> _handler;
+            protected Action<T> HandlerDelegate { get; }
 
             /// <summary>
             /// Creates a new handler for a specific content type
             /// </summary>
-            /// <param name="handler">handler</param>
+            /// <param name="handlerDelegate">handler</param>
             /// <param name="contentType">content type</param>
-            public Handler(Action<T> handler, ContentType contentType)
+            protected Handler(Action<T> handlerDelegate, ContentType contentType)
             {
+                if (contentType == null)
+                {
+                    throw new ArgumentNullException(nameof(contentType));
+                }
+
                 // Make sure content type fits the the given handler type
                 if (!contentType.IsSupportedType<T>())
                 {
                     throw new NotSupportedException("connector does not handle the requested type");
                 }
 
-                _handler = handler;
-                _contentType = contentType;
+                ContentType = contentType;
+                HandlerDelegate = handlerDelegate ?? throw new ArgumentNullException(nameof(handlerDelegate));
             }
 
             /// <inheritdoc />
             public void Handle(Message message)
             {
                 // Make sure message fits the expected type
-                if (!_contentType.IsSupportedType<T>())
+                if (!ContentType.IsSupportedType<T>())
                 {
                     return;
                 }
 
-                var value = _contentType.NormalizeValue(message.Content);
-                _handler((T)value);
+                OnHandle(message);
+            }
+
+            /// <summary>
+            /// Gets a call when the given message fits to the content type
+            /// </summary>
+            /// <param name="message"></param>
+            protected abstract void OnHandle(Message message);
+        }
+
+        /// <summary>
+        /// Special handler implementation for value types (which his the common case)
+        /// </summary>
+        /// <typeparam name="T">type of message</typeparam>
+        private sealed class ValueTypeHandler<T> : Handler<T> where T : struct
+        {
+            /// <summary>
+            /// Creates a new handler for the given value type
+            /// </summary>
+            /// <param name="handlerDelegate">handler delegate</param>
+            /// <param name="contentType">content type</param>
+            public ValueTypeHandler(Action<T> handlerDelegate, ContentType contentType)
+                : base(handlerDelegate, contentType)
+            {
+            }
+
+            /// <inheritdoc />
+            protected override void OnHandle(Message message)
+            {
+                // Normalize value by the given content type
+                var normalizedValue = ContentType.NormalizeValue(message.Content);
+                HandlerDelegate((T)normalizedValue);
             }
         }
 
         /// <summary>
         /// Handler for string messages
         /// </summary>
-        private sealed class StringHandler : IHandler
+        private sealed class StringHandler : Handler<string>
         {
             /// <summary>
-            /// Reference to the content type
+            /// Creates a new handler for string values
             /// </summary>
-            private readonly StringContentType _contentType;
-
-            /// <summary>
-            /// Reference to the handler
-            /// </summary>
-            private readonly Action<string> _handler;
-
-            public StringHandler(Action<string> handler, ContentType contentType)
+            /// <param name="handlerDelegate">handler delegate</param>
+            /// <param name="contentType">content type</param>
+            public StringHandler(Action<string> handlerDelegate, ContentType contentType)
+                : base(handlerDelegate, contentType)
             {
-                if (!(contentType is StringContentType stringContentType))
-                {
-                    throw new ArgumentException("connector does not handle the requested type");
-                }
-
-                _contentType = stringContentType;
-                _handler = handler;
             }
 
-            public void Handle(Message message)
+            /// <inheritdoc />
+            protected override void OnHandle(Message message)
             {
-                if (message.Type != typeof(string))
-                {
-                    return;
-                }
+                // Normalize value by the given content type
+                var normalizedValue = ContentType.NormalizeValue(message.Content);
 
-                var value = _contentType.NormalizeValue(message.Content);
-
-                var container = (StringContentType.StringContainer)value;
-                _handler.Invoke(container.Content);
+                var container = (StringContentType.StringContainer)normalizedValue;
+                HandlerDelegate.Invoke(container.Content);
             }
         }
 
         /// <summary>
         /// Handler for binary messages
         /// </summary>
-        private sealed class BinaryHandler : IHandler
+        private sealed class BinaryHandler : Handler<byte[]>
         {
-            private readonly Action<byte[]> _handler;
-
-            public BinaryHandler(Action<byte[]> handler)
+            /// <summary>
+            /// Creates a new handler for binary messages
+            /// </summary>
+            /// <param name="handlerDelegate">handler delegate</param>
+            /// <param name="contentType">content type</param>
+            public BinaryHandler(Action<byte[]> handlerDelegate, ContentType contentType)
+                : base(handlerDelegate, contentType)
             {
-                _handler = handler;
             }
 
-            public void Handle(Message message)
+            /// <inheritdoc />
+            protected override void OnHandle(Message message)
             {
-                // TODO: Implement this
+                // Normalize value by the given content type
+                var normalizedValue = ContentType.NormalizeValue(message.Content);
+
+                // TODO: Think about cloning the array since this is a mutable type
+
+                var container = (BinaryContentType.BinaryContainer)normalizedValue;
+                HandlerDelegate.Invoke(container.Content);
             }
         }
     }

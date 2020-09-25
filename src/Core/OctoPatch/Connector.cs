@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -17,9 +18,11 @@ namespace OctoPatch
         /// <inheritdoc />
         public ConnectorDescription Description { get; }
 
+        public ContentType ContentType { get; }
+
         protected Connector(Guid nodeId, Type supportedType, ConnectorDescription description)
         {
-            if (description is null)
+            if (description?.ContentType is null)
             {
                 throw new ArgumentNullException(nameof(description));
             }
@@ -33,6 +36,7 @@ namespace OctoPatch
             NodeId = nodeId;
             Key = description.Key;
             Description = description;
+            ContentType = description.ContentType;
         }
     }
 }
