@@ -61,7 +61,7 @@ namespace OctoPatch
         private void InternalSend(Message message)
         {
             // Prevent output from sending invalid types
-            if (Description.ContentType.IsSupportedType(message.Type))
+            if (!Description.ContentType.IsSupportedType(message.Type))
             {
                 throw new NotSupportedException("message is not of the right type.");
             }
