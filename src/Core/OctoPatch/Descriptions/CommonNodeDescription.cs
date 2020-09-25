@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Represents a common node
     /// </summary>
+    [DataContract]
     public sealed class CommonNodeDescription : NodeDescription
     {
         public CommonNodeDescription(string key, string displayName, string displayDescription) 

@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Represents a binary based message description
     /// </summary>
+    [DataContract]
     public sealed class BinaryContentType : ContentType
     {
         /// <summary>
         /// Gets or sets the optional limiter for the maximum length
         /// </summary>
+        [DataMember]
         public int? MaximumLength { get; set; }
 
         /// <inheritdoc />

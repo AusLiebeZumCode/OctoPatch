@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Description of a complex message type
     /// </summary>
+    [DataContract]
     public sealed class TypeDescription : KeyDescription
     {
         /// <summary>
         /// List of containing properties
         /// </summary>
+        [DataMember]
         public List<PropertyDescription> PropertyDescriptions { get; set; }
 
         public TypeDescription(string key, string displayName, string displayDescription, params PropertyDescription[] propertyDescriptions) 

@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Describes the type of content within a connector or complex type
     /// </summary>
+    [DataContract]
     public abstract class ContentType
     {
         /// <summary>
         /// Returns the content type name
         /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public string Type => GetType().Name;
 
         /// <summary>

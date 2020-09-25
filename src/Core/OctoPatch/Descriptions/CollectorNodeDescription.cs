@@ -1,16 +1,18 @@
 ﻿using System;
-using OctoPatch.ContentTypes;
+using System.Runtime.Serialization;
 
 namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Node to combine different inputs to get a complex type message
     /// </summary>
+    [DataContract]
     public sealed class CollectorNodeDescription : NodeDescription
     {
         /// <summary>
         /// Type to collector inputs together for
         /// </summary>
+        [DataMember]
         public string TypeKey { get; set; }
 
         private CollectorNodeDescription(string key, string typeKey, string displayName, string displayDescription) 

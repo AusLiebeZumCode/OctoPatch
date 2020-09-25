@@ -1,20 +1,24 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace OctoPatch.ContentTypes
 {
     /// <summary>
     /// Represents a integer based message
     /// </summary>
+    [DataContract]
     public sealed class FloatContentType : ContentType
     {
         /// <summary>
         /// Optional lowest value for this message
         /// </summary>
+        [DataMember]
         public float? MinimumValue { get; set; }
 
         /// <summary>
         /// Optional highest value for this message
         /// </summary>
+        [DataMember]
         public float? MaximumValue { get; set; }
 
         /// <inheritdoc />

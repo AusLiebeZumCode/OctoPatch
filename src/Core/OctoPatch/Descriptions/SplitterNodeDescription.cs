@@ -1,16 +1,18 @@
 ﻿using System;
-using OctoPatch.ContentTypes;
+using System.Runtime.Serialization;
 
 namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Node to split up complex types into its properties
     /// </summary>
+    [DataContract]
     public sealed class SplitterNodeDescription : NodeDescription
     {
         /// <summary>
         /// Gets the type key to split
         /// </summary>
+        [DataMember]
         public string TypeKey { get; set; }
 
         private SplitterNodeDescription(string key, string typeKey, string displayName, string displayDescription) 

@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace OctoPatch.Descriptions
 {
     /// <summary>
     /// Node description for attached nodes
     /// </summary>
+    [DataContract]
     public sealed class AttachedNodeDescription : NodeDescription
     {
         /// <summary>
         /// Gets or sets the key of the parent node to attach to
         /// </summary>
+        [DataMember]
         public string ParentKey { get; set; }
 
         private AttachedNodeDescription(string key, string displayName, string displayDescription, string parentKey)
