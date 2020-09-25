@@ -8,7 +8,7 @@ namespace OctoPatch
     /// <summary>
     /// Connector implementation for outgoing messages
     /// </summary>
-    internal sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
+    public sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
     {
         private readonly HashSet<Subscription> _subscriptions;
 
@@ -156,7 +156,21 @@ namespace OctoPatch
             /// <param name="message">message</param>
             public void Send(Message message)
             {
-                _observer.OnNext(message);
+                try
+                {
+                    _observer.OnNext(message);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        _observer.OnError(ex);
+                    }
+                    catch
+                    {
+                        /* We ignore exceptions during OnError handling */
+                    }
+                }
             }
 
             /// <summary>
