@@ -21,7 +21,12 @@ namespace OctoPatch.ContentTypes
         /// <inheritdoc />
         public override ValueType NormalizeValue(ValueType value)
         {
-            string input = "";
+            if (!(value is StringContainer stringContainer) || stringContainer.Content == null)
+            {
+                return value;
+            }
+
+            var input = stringContainer.Content;
 
             // Cap the length
             if (MaximumLength.HasValue && input.Length > MaximumLength.Value)
@@ -29,9 +34,7 @@ namespace OctoPatch.ContentTypes
                 input = input.Substring(0, MaximumLength.Value);
             }
 
-            // TODO: Wrap string into struct
-
-            return 2;
+            return new StringContainer(input);
         }
 
         #region nested container type
@@ -45,6 +48,20 @@ namespace OctoPatch.ContentTypes
             /// Holds the actual content
             /// </summary>
             public string Content { get; set; }
+
+            public StringContainer(string content)
+            {
+                Content = content;
+            }
+
+            /// <summary>
+            /// Common to string which returns the actual string
+            /// </summary>
+            /// <returns>content</returns>
+            public override string ToString()
+            {
+                return Content;
+            }
         }
 
         #endregion
