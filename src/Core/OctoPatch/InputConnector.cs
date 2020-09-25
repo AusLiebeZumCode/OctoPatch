@@ -70,7 +70,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _handlers.Add(new StringHandler(handler));
+            _handlers.Add(new StringHandler(handler, Description.ContentType));
             return this;
         }
 
@@ -213,8 +213,10 @@ namespace OctoPatch
             public void Handle(Message message)
             {
                 // Make sure message fits the expected type
-                if (!_contentType.IsSupportedType<T>()) 
+                if (!_contentType.IsSupportedType<T>())
+                {
                     return;
+                }
 
                 var value = _contentType.NormalizeValue(message.Content);
                 _handler((T)value);
@@ -226,16 +228,38 @@ namespace OctoPatch
         /// </summary>
         private sealed class StringHandler : IHandler
         {
+            /// <summary>
+            /// Reference to the content type
+            /// </summary>
+            private readonly StringContentType _contentType;
+
+            /// <summary>
+            /// Reference to the handler
+            /// </summary>
             private readonly Action<string> _handler;
 
-            public StringHandler(Action<string> handler)
+            public StringHandler(Action<string> handler, ContentType contentType)
             {
+                if (!(contentType is StringContentType stringContentType))
+                {
+                    throw new ArgumentException("connector does not handle the requested type");
+                }
+
+                _contentType = stringContentType;
                 _handler = handler;
             }
 
             public void Handle(Message message)
             {
-                // TODO: Implement this
+                if (message.Type != typeof(string))
+                {
+                    return;
+                }
+
+                var value = _contentType.NormalizeValue(message.Content);
+
+                var container = (StringContentType.StringContainer)value;
+                _handler.Invoke(container.Content);
             }
         }
 

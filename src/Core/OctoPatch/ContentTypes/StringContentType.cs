@@ -33,5 +33,16 @@ namespace OctoPatch.ContentTypes
 
             return 2;
         }
+
+        /// <summary>
+        /// Internal container for the string type
+        /// </summary>
+        public struct StringContainer
+        {
+            /// <summary>
+            /// Holds the actual content
+            /// </summary>
+            public string Content { get; set; }
+        }
     }
 }

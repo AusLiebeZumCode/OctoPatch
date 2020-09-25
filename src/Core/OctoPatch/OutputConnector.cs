@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -35,8 +36,9 @@ namespace OctoPatch
         /// <inheritdoc />
         public void Send(string value)
         {
-            // TODO: Wrap string
-            throw new NotImplementedException();
+            var message = new Message(typeof(string), 
+                new StringContentType.StringContainer{ Content = value });
+            InternalSend(message);
         }
 
         /// <inheritdoc />
