@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
+using OctoPatch.Logging;
 
 namespace OctoPatch
 {
@@ -10,6 +12,11 @@ namespace OctoPatch
     /// </summary>
     public sealed class InputConnector : Connector, IInputConnector, IInputConnectorHandler
     {
+        /// <summary>
+        /// Reference to the logger
+        /// </summary>
+        private static readonly ILogger<NodeDescription> logger = LogManager.GetLogger<NodeDescription>();
+
         /// <summary>
         /// List of handlers
         /// </summary>
@@ -98,7 +105,18 @@ namespace OctoPatch
         {
             foreach (var handler in _handlers)
             {
-                handler.Handle(value);
+                try
+                {
+                    handler.Handle(value);
+                }
+                catch (InvalidCastException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error in message handler");
+                }
             }
         }
 

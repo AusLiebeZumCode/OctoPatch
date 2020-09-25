@@ -18,6 +18,7 @@ namespace OctoPatch
         /// <inheritdoc />
         public ConnectorDescription Description { get; }
 
+        /// <inheritdoc />
         public ContentType ContentType { get; }
 
         protected Connector(Guid nodeId, Type supportedType, ConnectorDescription description)
