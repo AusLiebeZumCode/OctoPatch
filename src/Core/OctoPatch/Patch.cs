@@ -48,7 +48,7 @@ namespace OctoPatch
             await _localLock.WaitAsync(cancellationToken);
             try
             {
-                await InternalAddNode(node, cancellationToken);
+                InternalAddNode(node);
             }
             finally
             {
@@ -60,9 +60,8 @@ namespace OctoPatch
         /// Adds the given node to the patch
         /// </summary>
         /// <param name="node">node reference</param>
-        /// <param name="cancellationToken">cancellation token</param>
         /// <returns></returns>
-        private async Task InternalAddNode(INode node, CancellationToken cancellationToken)
+        private void InternalAddNode(INode node)
         {
             if (node == null)
             {
