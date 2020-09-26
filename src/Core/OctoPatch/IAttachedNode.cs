@@ -5,5 +5,9 @@
     /// </summary>
     public interface IAttachedNode : INode
     {
+        /// <summary>
+        /// Gets the parent node
+        /// </summary>
+        INode ParentNode { get; }
     }
 }

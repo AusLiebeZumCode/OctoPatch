@@ -5,5 +5,9 @@
     /// </summary>
     public interface ISplitterNode : INode
     {
+        /// <summary>
+        /// Reference to the related connector
+        /// </summary>
+        IOutputConnector Connector { get; }
     }
 }

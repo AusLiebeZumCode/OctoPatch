@@ -118,6 +118,18 @@ namespace OctoPatch
         }
 
         /// <summary>
+        /// Creates a new output connector for trigger type
+        /// </summary>
+        /// <param name="type">message type</param>
+        /// <param name="nodeId">parent node id</param>
+        /// <param name="description">connector description</param>
+        /// <returns>new connector</returns>
+        public static OutputConnector Create(Type type, Guid nodeId, ConnectorDescription description)
+        {
+            return new OutputConnector(nodeId, type, description);
+        }
+
+        /// <summary>
         /// Creates a new output connector for the given type
         /// </summary>
         /// <typeparam name="T">message type</typeparam>

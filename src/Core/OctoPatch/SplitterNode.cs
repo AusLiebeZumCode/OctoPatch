@@ -9,13 +9,13 @@ namespace OctoPatch
     /// <summary>
     /// Special node to split up complex types
     /// </summary>
-    public sealed class SplitterNode : Node<EmptyConfiguration, EmptyEnvironment>
+    public sealed class SplitterNode : Node<EmptyConfiguration, EmptyEnvironment>, ISplitterNode
     {
         private IDisposable _subscription;
 
-        private readonly IOutputConnector _connector;
+        public IOutputConnector Connector { get; }
 
-        private TypeDescription _description;
+        private readonly TypeDescription _description;
 
         private readonly Dictionary<string, IOutputConnectorHandler> _outputs;
 
@@ -23,8 +23,8 @@ namespace OctoPatch
 
         public SplitterNode(Guid nodeId, TypeDescription description, IOutputConnector connector) : base(nodeId)
         {
-            _description = description;
-            _connector = connector;
+            _description = description ?? throw new ArgumentNullException(nameof(description));
+            Connector = connector ?? throw new ArgumentNullException(nameof(connector));
 
             _outputs = new Dictionary<string, IOutputConnectorHandler>();
             foreach (var propertyDescription in description.PropertyDescriptions)
@@ -46,7 +46,7 @@ namespace OctoPatch
 
         protected override Task OnStart(CancellationToken cancellationToken)
         {
-            _subscription = _connector.Subscribe((msg) =>
+            _subscription = Connector.Subscribe((msg) =>
             {
                 // TODO
             });

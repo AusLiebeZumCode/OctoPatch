@@ -16,7 +16,7 @@ namespace OctoPatch
         /// <summary>
         /// Reference to the parent node
         /// </summary>
-        protected TParent ParentNode { get; }
+        public INode ParentNode { get; }
 
         protected AttachedNode(Guid nodeId, TParent parentNode) : base(nodeId)
         {
@@ -25,7 +25,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(parentNode));
             }
 
-            ParentNode = (TParent)parentNode;
+            ParentNode = parentNode;
         }
     }
 }

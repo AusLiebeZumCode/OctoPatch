@@ -15,7 +15,7 @@ namespace OctoPatch
         /// <summary>
         /// Reference to the logger
         /// </summary>
-        private static readonly ILogger<NodeDescription> logger = LogManager.GetLogger<NodeDescription>();
+        private static readonly ILogger<NodeDescription> Logger = LogManager.GetLogger<NodeDescription>();
 
         /// <summary>
         /// List of handlers
@@ -115,7 +115,7 @@ namespace OctoPatch
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Error in message handler");
+                    Logger.LogError(ex, "Error in message handler");
                 }
             }
         }

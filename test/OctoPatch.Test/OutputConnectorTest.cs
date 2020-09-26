@@ -118,6 +118,15 @@ namespace OctoPatch.Test
         }
 
         /// <summary>
+        /// Test send method of all content type
+        /// </summary>
+        [Fact]
+        public void Send_All_Success()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Test send method of trigger messages
         /// </summary>
         [Fact]
