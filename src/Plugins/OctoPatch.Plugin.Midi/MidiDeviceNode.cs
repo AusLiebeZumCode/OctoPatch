@@ -54,7 +54,7 @@ namespace OctoPatch.Plugin.Midi
 
         public MidiDeviceNode(Guid nodeId) : base(nodeId)
         {
-            _output = RegisterOutputConnector(MidiOutputDescription);
+            _output = RegisterOutputConnector<MidiMessage>(MidiOutputDescription);
             RegisterInputConnector<MidiMessage>(MidiInputDescription).Handle<MidiMessage>(HandleMessage);
 
             // Build environment
