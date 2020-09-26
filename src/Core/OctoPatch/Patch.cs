@@ -57,29 +57,12 @@ namespace OctoPatch
         }
 
         /// <summary>
-        /// <inheritdoc />
-        /// </summary>
-        public async Task AddNode(INode node, string configuration, CancellationToken cancellationToken)
-        {
-            await _localLock.WaitAsync(cancellationToken);
-            try
-            {
-                await InternalAddNode(node, cancellationToken, configuration);
-            }
-            finally
-            {
-                _localLock.Release();
-            }
-        }
-
-        /// <summary>
         /// Adds the given node to the patch
         /// </summary>
         /// <param name="node">node reference</param>
         /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="configuration">optional configuration</param>
         /// <returns></returns>
-        private async Task InternalAddNode(INode node, CancellationToken cancellationToken, string configuration = null)
+        private async Task InternalAddNode(INode node, CancellationToken cancellationToken)
         {
             if (node == null)
             {
@@ -149,16 +132,6 @@ namespace OctoPatch
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Exception during NodeAdded event");
-            }
-
-            // Try to setup
-            if (!string.IsNullOrEmpty(configuration))
-            {
-                await node.Initialize(configuration, cancellationToken);
-            }
-            else
-            {
-                await node.Initialize(cancellationToken);
             }
         }
 

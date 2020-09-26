@@ -18,15 +18,6 @@ namespace OctoPatch
         Task AddNode(INode node, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Adds a new node and configures it
-        /// </summary>
-        /// <param name="node">node instance</param>
-        /// <param name="cancellationToken">cancellation token</param>
-        /// <param name="configuration">configuration string</param>
-        /// <returns>new node</returns>
-        Task AddNode(INode node, string configuration, CancellationToken cancellationToken);
-
-        /// <summary>
         /// Removes the node with the given id and deletes also all related wires.
         /// </summary>
         /// <param name="nodeId">node id</param>
