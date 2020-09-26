@@ -171,15 +171,17 @@ namespace OctoPatch.Server
                 ParentNodeId = parentId,
                 ParentConnector = connectorKey,
                 Name = description.DisplayName,
-                Description = description.DisplayDescription
+                Description = description.DisplayDescription,
             };
 
             _nodeMapping.TryAdd(node.Id, (node, setup));
             await _patch.AddNode(node, cancellationToken);
 
+            // automatic configure
+            await node.Initialize(cancellationToken);
+
             // automatic start
             await node.Start(cancellationToken);
-
 
             return setup;
         }
@@ -252,6 +254,11 @@ namespace OctoPatch.Server
         public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
             return Task.FromResult(_repository.GetTypeDescriptions());
+        }
+
+        public Task<IEnumerable<AdapterDescription>> GetAdapterDescriptions(CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_repository.GetAdapterDescriptions());
         }
 
         public Task<IEnumerable<NodeSetup>> GetNodes(CancellationToken cancellationToken)

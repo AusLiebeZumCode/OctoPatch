@@ -28,6 +28,13 @@ namespace OctoPatch
         /// <returns>all message descriptions</returns>
         Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Returns the fill list of known adapter descriptions
+        /// </summary>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>all adapter descriptions</returns>
+        Task<IEnumerable<AdapterDescription>> GetAdapterDescriptions(CancellationToken cancellationToken);
+
         #endregion
 
         #region Patch manipulation

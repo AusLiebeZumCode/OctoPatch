@@ -85,6 +85,11 @@ namespace OctoPatch.Client
             return _hubConnection.InvokeAsync<IEnumerable<NodeDescription>>(nameof(GetNodeDescriptions), cancellationToken, cancellationToken);
         }
 
+        public Task<IEnumerable<AdapterDescription>> GetAdapterDescriptions(CancellationToken cancellationToken)
+        {
+            return _hubConnection.InvokeAsync<IEnumerable<AdapterDescription>>(nameof(GetAdapterDescriptions), cancellationToken, cancellationToken);
+        }
+
         /// <summary>
         /// <inheritdoc />
         /// </summary>

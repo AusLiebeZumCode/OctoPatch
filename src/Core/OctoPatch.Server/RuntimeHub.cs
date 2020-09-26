@@ -17,13 +17,13 @@ namespace OctoPatch.Server
     {
         private readonly IRepository _repository;
         private readonly IRuntimeMethods _runtime;
-        private readonly ILogger<RuntimeHub> logger;
+        private readonly ILogger<RuntimeHub> _logger;
 
         public RuntimeHub(IRepository repository, IRuntimeMethods runtime, ILogger<RuntimeHub> logger)
         {
             _repository = repository;
             _runtime = runtime;
-            this.logger = logger;
+            _logger = logger;
         }
 
         #region Meta information
@@ -42,6 +42,11 @@ namespace OctoPatch.Server
         public Task<IEnumerable<TypeDescription>> GetMessageDescriptions(CancellationToken cancellationToken)
         {
             return Task.FromResult(_repository.GetTypeDescriptions());
+        }
+
+        public Task<IEnumerable<AdapterDescription>> GetAdapterDescriptions(CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_repository.GetAdapterDescriptions());
         }
 
         #endregion
