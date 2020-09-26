@@ -8,19 +8,19 @@ using OctoPatch.Descriptions;
 namespace OctoPatch.Plugin.Midi
 {
     /// <summary>
-    /// Attached node for a specific output type
+    /// Attached note to monitor a control message
     /// </summary>
-    public sealed class SpecificMidiOutput : AttachedNode<SpecificMidiOutput.NodeConfiguration, EmptyEnvironment, MidiDeviceNode>
+    public sealed class ControlMidiOutput : AttachedNode<AttachedNodeConfiguration, EmptyEnvironment, MidiDeviceNode>
     {
         #region Type description
 
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<SpecificMidiOutput, MidiDeviceNode>(
+        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<ControlMidiOutput, MidiDeviceNode>(
                 Guid.Parse(MidiPlugin.PluginId),
-                "Specific MIDI Output",
-                "This is our first plugin to see how it works")
+                "Control MIDI Output",
+                "Output for a specific control message")
             .AddOutputDescription(OutputDescription);
 
         /// <summary>
@@ -38,20 +38,14 @@ namespace OctoPatch.Plugin.Midi
 
         private IDisposable _subscription;
 
-        protected override NodeConfiguration DefaultConfiguration => new NodeConfiguration();
-
-        public SpecificMidiOutput(Guid nodeId, MidiDeviceNode parentNode) 
-            : base(nodeId, parentNode)
+        protected override AttachedNodeConfiguration DefaultConfiguration => new AttachedNodeConfiguration();
+        
+        public ControlMidiOutput(Guid nodeId, MidiDeviceNode parentNode) : base(nodeId, parentNode)
         {
             _input = parentNode.Outputs
                 .First(o => o.Key == MidiDeviceNode.MidiOutputDescription.Key);
 
-            _output = RegisterOutputConnector(OutputDescription);
-        }
-
-        protected override Task OnInitialize(NodeConfiguration configuration, CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
+            _output = RegisterOutputConnector<int>(OutputDescription);
         }
 
         protected override Task OnStart(CancellationToken cancellationToken)
@@ -62,9 +56,10 @@ namespace OctoPatch.Plugin.Midi
 
         private void Handle(MidiMessage message)
         {
+            // TODO: Make sure to filter for the right message type
+
             // Send out only configured messages
             if (message.Channel == Configuration.Channel && 
-                message.MessageType == Configuration.MessageType &&
                 message.Key == Configuration.Key)
             {
                 _output.Send(message.Value);
@@ -76,36 +71,5 @@ namespace OctoPatch.Plugin.Midi
             _subscription?.Dispose();
             return Task.CompletedTask;
         }
-
-        protected override Task OnDeinitialize(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnInitializeReset(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnReset(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        #region Nested configuration
-
-        /// <summary>
-        /// Filter configuration
-        /// </summary>
-        public sealed class NodeConfiguration : IConfiguration
-        {
-            public int MessageType { get; set; }
-
-            public int Channel { get; set; }
-
-            public int Key { get; set; }
-        }
-
-        #endregion
     }
 }
