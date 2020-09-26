@@ -511,6 +511,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             }
 
             node.Setup = setup;
+            node.Model.Name = setup.Name;
         }
 
         private void RuntimeOnOnNodeStateChanged(Guid nodeId, NodeState state)
