@@ -150,9 +150,10 @@ namespace OctoPatch.DesktopClient.ViewModels
                     case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode":
                         NodeConfiguration = new MidiDeviceModel();
                         break;
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiOutput":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiOutput":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiInput":
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiOutputNode":
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiInputNode":
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiOutputNode":
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiInputNode":
                         NodeConfiguration = new MidiAttachedNodeModel();
                         break;
                     case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode":
