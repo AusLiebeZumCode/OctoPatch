@@ -10,9 +10,6 @@ namespace OctoPatch.ContentTypes
     public sealed class EmptyContentType : ContentType
     {
         /// <inheritdoc />
-        public override bool IsSupportedType(Type type)
-        {
-            return type == typeof(void);
-        }
+        public override Type SupportedType => typeof(void);
     }
 }

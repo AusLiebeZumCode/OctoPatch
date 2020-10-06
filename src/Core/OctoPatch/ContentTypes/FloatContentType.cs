@@ -22,10 +22,7 @@ namespace OctoPatch.ContentTypes
         public float? MaximumValue { get; set; }
 
         /// <inheritdoc />
-        public override bool IsSupportedType(Type type)
-        {
-            return type == typeof(float);
-        }
+        public override Type SupportedType => typeof(float);
 
         /// <inheritdoc />
         public override ValueType NormalizeValue(ValueType value)

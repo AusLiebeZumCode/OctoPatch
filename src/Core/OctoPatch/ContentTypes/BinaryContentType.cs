@@ -16,10 +16,7 @@ namespace OctoPatch.ContentTypes
         public int? MaximumLength { get; set; }
 
         /// <inheritdoc />
-        public override bool IsSupportedType(Type type)
-        {
-            return type == typeof(byte[]);
-        }
+        public override Type SupportedType => typeof(byte[]);
 
         /// <inheritdoc />
         public override ValueType NormalizeValue(ValueType value)

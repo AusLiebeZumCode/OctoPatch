@@ -10,6 +10,9 @@ namespace OctoPatch.ContentTypes
     public sealed class AllContentType : ContentType
     {
         /// <inheritdoc />
+        public override Type SupportedType => typeof(object);
+
+        /// <inheritdoc />
         public override bool IsSupportedType(Type type)
         {
             // All types are supported

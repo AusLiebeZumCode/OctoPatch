@@ -20,23 +20,22 @@ namespace OctoPatch.ContentTypes
         [DataMember]
         public string Key { get; set; }
 
-        public static ComplexContentType Create<T>(Guid pluginId)
+        /// <inheritdoc />
+        public override Type SupportedType => _supportedType;
+
+        /// <summary>
+        /// Creates a complex type based on the given type parameter
+        /// </summary>
+        /// <typeparam name="T">complex type</typeparam>
+        /// <param name="pluginId">plugin id to generate the key</param>
+        /// <returns>new complex type</returns>
+        public static ComplexContentType Create<T>(Guid pluginId) where T : struct
         {
             return new ComplexContentType
             {
                 _supportedType = typeof(T),
-                Key = $"{pluginId}:{typeof(T).Name}"
+                Key = $"{pluginId}:{typeof(T).Name}",
             };
-        }
-
-        public override bool IsSupportedType(Type type)
-        {
-            if (_supportedType == null)
-            {
-                throw new NotSupportedException("complex content type does not have a type definition");
-            }
-
-            return _supportedType == type;
         }
     }
 }

@@ -17,6 +17,11 @@ namespace OctoPatch.ContentTypes
         public string Type => GetType().Name;
 
         /// <summary>
+        /// Returns the handled type
+        /// </summary>
+        public abstract Type SupportedType { get; }
+
+        /// <summary>
         /// Checks if the given type is supported by the content type
         /// </summary>
         /// <typeparam name="T">requested type</typeparam>
@@ -31,7 +36,15 @@ namespace OctoPatch.ContentTypes
         /// </summary>
         /// <param name="type">requested type</param>
         /// <returns>true when the given type can be processed by the content type</returns>
-        public abstract bool IsSupportedType(Type type);
+        public virtual bool IsSupportedType(Type type)
+        {
+            if (SupportedType == null)
+            {
+                throw new NotSupportedException("complex content type does not have a type definition");
+            }
+
+            return type == SupportedType;
+        }
 
         /// <summary>
         /// Normalizes the value of the message based on the given content type parameters
