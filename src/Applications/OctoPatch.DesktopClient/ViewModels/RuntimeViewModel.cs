@@ -56,7 +56,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public ObservableCollection<NodeModel> NodeTree { get; }
 
-                private NodeModel _selectedNode;
+        private NodeModel _selectedNode;
 
         public NodeModel SelectedNode
         {
@@ -367,7 +367,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnWireUpdated(WireSetup obj)
         {
-            
+
         }
 
         private void SaveAdapterConfigurationCallback(object obj)
@@ -662,7 +662,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         return;
                     }
 
-                    attachedParent.Model.Items.Add(new AttachedNodeModel(setup.NodeId, attached));
+                    attachedParent.Model.Items.Add(nodeModel);
                     break;
                 case CollectorNodeDescription collector:
                     nodeModel = new CollectorNodeModel(setup.NodeId, collector);
@@ -680,7 +680,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         return;
                     }
 
-                    input.Items.Add(new CollectorNodeModel(setup.NodeId, collector));
+                    input.Items.Add(nodeModel);
                     break;
                 case SplitterNodeDescription splitter:
                     nodeModel = new SplitterNodeModel(setup.NodeId, splitter);
@@ -698,7 +698,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         return;
                     }
 
-                    output.Items.Add(new SplitterNodeModel(setup.NodeId, splitter));
+                    output.Items.Add(nodeModel);
 
                     break;
                 case CommonNodeDescription common:
@@ -749,11 +749,11 @@ namespace OctoPatch.DesktopClient.ViewModels
         private sealed class WireItem
         {
             public InputNodeModel InputConnector { get; set; }
-            
+
             public OutputNodeModel OutputConnector { get; set; }
 
             public WireNodeModel InputWire { get; set; }
-            
+
             public WireNodeModel OutputWire { get; set; }
 
             public WireSetup Setup { get; set; }
