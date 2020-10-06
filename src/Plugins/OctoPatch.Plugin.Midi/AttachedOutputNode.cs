@@ -18,14 +18,14 @@ namespace OctoPatch.Plugin.Midi
         /// Description of the value output connector
         /// </summary>
         public static ConnectorDescription ValueOutputDescription => new ConnectorDescription(
-            "Value", "Value Output", "value output signal", 
+            "Value", "Value", "value signal", 
             IntegerContentType.Create(minimumValue: 0, maximumValue: 127));
 
         /// <summary>
         /// Description of the flag output connector
         /// </summary>
         public static ConnectorDescription FlagOutputDescription => new ConnectorDescription(
-            "Flag", "Output", "flag output signal", 
+            "Flag", "Flag", "flag signal", 
             new BoolContentType());
 
         /// <summary>

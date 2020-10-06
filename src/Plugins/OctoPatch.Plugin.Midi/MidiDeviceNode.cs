@@ -7,6 +7,7 @@ using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 using RtMidi.Core;
 using RtMidi.Core.Devices;
+using RtMidi.Core.Enums;
 using RtMidi.Core.Messages;
 
 namespace OctoPatch.Plugin.Midi
@@ -85,8 +86,20 @@ namespace OctoPatch.Plugin.Midi
         {
             if (State == NodeState.Running)
             {
-                // TODO: Send out
-                // _outputDevice?.Send()
+                switch (message.MessageType)
+                {
+                    case ControlChangedMessageType:
+                        _outputDevice?.Send(new ControlChangeMessage((Channel) message.Channel, message.Key,
+                            message.Value));
+                        break;
+                    case NoteOnMessageType:
+                        _outputDevice?.Send(new NoteOnMessage((Channel) message.Channel, (Key)message.Key, message.Value));
+                        break;
+                    case NoteOffMessageType:
+                        _outputDevice?.Send(new NoteOffMessage((Channel) message.Channel, (Key) message.Key,
+                            message.Value));
+                        break;
+                }
             }
         }
 

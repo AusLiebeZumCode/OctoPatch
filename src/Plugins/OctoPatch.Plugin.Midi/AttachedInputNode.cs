@@ -16,7 +16,7 @@ namespace OctoPatch.Plugin.Midi
         /// Description of the value input connector
         /// </summary>
         public static ConnectorDescription ValueInputDescription => new ConnectorDescription(
-            "Value", "Value Input", "value signal", 
+            "Value", "Value", "value signal", 
             IntegerContentType.Create(minimumValue: 0, maximumValue: 127));
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace OctoPatch.Plugin.Midi
         /// <param name="flag"></param>
         private void HandleBool(bool flag)
         {
-            Handle(flag ? 0 : 127);
+            Handle(flag ? 127 : 0);
         }
 
         /// <summary>
