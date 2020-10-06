@@ -32,8 +32,8 @@ namespace OctoPatch.Plugin.Midi
         protected override MidiMessage OnHandle(int value)
         {
             return value == 0 
-                ? new MidiMessage(2, Configuration.Channel, Configuration.Key, 127) 
-                : new MidiMessage(1, Configuration.Channel, Configuration.Key, value);
+                ? new MidiMessage(MidiDeviceNode.NoteOffMessageType, Configuration.Channel, Configuration.Key, 127) 
+                : new MidiMessage(MidiDeviceNode.NoteOnMessageType, Configuration.Channel, Configuration.Key, value);
         }
     }
 }

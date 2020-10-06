@@ -16,6 +16,22 @@ namespace OctoPatch.Plugin.Midi
     /// </summary>
     public sealed class MidiDeviceNode : Node<MidiDeviceNode.MidiDeviceConfiguration, MidiDeviceNode.MidiDeviceEnvironment>
     {
+        /// <summary>
+        /// Message type of control changed
+        /// </summary>
+        public const int ControlChangedMessageType = 3;
+
+        /// <summary>
+        /// Message type of note on
+        /// </summary>
+        public const int NoteOnMessageType = 2;
+
+        /// <summary>
+        /// Message type of note off
+        /// </summary>
+        public const int NoteOffMessageType = 1;
+
+
         #region Type description
 
         /// <summary>

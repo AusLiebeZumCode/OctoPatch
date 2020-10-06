@@ -33,7 +33,7 @@ namespace OctoPatch.Plugin.Midi
         protected override int? OnHandle(MidiMessage message)
         {
             // Only handles message type 3 (control changed)
-            if (message.MessageType == 3)
+            if (message.MessageType == MidiDeviceNode.ControlChangedMessageType)
             {
                 return message.Value;
             }

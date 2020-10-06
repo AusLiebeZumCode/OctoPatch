@@ -33,10 +33,10 @@ namespace OctoPatch.Plugin.Midi
         {
             switch (message.MessageType)
             {
-                case 1:
+                case MidiDeviceNode.NoteOnMessageType:
                     // Take value of NoteOn
                     return message.Value;
-                case 2:
+                case MidiDeviceNode.NoteOffMessageType:
                     // Disable when NoteOff was sent
                     return 0;
                 default:

@@ -31,7 +31,7 @@ namespace OctoPatch.Plugin.Midi
         /// <inheritdoc />
         protected override MidiMessage OnHandle(int value)
         {
-            return new MidiMessage(3, Configuration.Channel, Configuration.Key, value);
+            return new MidiMessage(MidiDeviceNode.ControlChangedMessageType, Configuration.Channel, Configuration.Key, value);
         }
     }
 }
