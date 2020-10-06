@@ -6,14 +6,14 @@ namespace OctoPatch.Plugin.Midi
     /// <summary>
     /// Attached note to monitor a note message
     /// </summary>
-    public sealed class NoteMidiOutput : AttachedOutputNode
+    public sealed class NoteMidiOutputNode : AttachedOutputNode
     {
         #region Type description
 
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<NoteMidiOutput, MidiDeviceNode>(
+        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<NoteMidiOutputNode, MidiDeviceNode>(
                 Guid.Parse(MidiPlugin.PluginId),
                 "Note MIDI Output",
                 "Output for a specific note message")
@@ -24,25 +24,24 @@ namespace OctoPatch.Plugin.Midi
 
         #endregion
 
-        public NoteMidiOutput(Guid nodeId, MidiDeviceNode parentNode) : base(nodeId, parentNode)
+        public NoteMidiOutputNode(Guid nodeId, MidiDeviceNode parentNode) : base(nodeId, parentNode)
         {
         }
 
         /// <inheritdoc />
         protected override int? OnHandle(MidiMessage message)
         {
-            if (message.MessageType == 1)
+            switch (message.MessageType)
             {
-                // Take value of NoteOn
-                return message.Value;
+                case 1:
+                    // Take value of NoteOn
+                    return message.Value;
+                case 2:
+                    // Disable when NoteOff was sent
+                    return 0;
+                default:
+                    return null;
             }
-            else if (message.MessageType == 2)
-            {
-                // Disable when NoteOff was sent
-                return 0;
-            }
-
-            return null;
         }
     }
 }

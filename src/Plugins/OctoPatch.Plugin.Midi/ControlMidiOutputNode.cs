@@ -6,14 +6,14 @@ namespace OctoPatch.Plugin.Midi
     /// <summary>
     /// Attached note to monitor a control message
     /// </summary>
-    public sealed class ControlMidiOutput : AttachedOutputNode
+    public sealed class ControlMidiOutputNode : AttachedOutputNode
     {
         #region Type description
 
         /// <summary>
         /// Description of the node
         /// </summary>
-        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<ControlMidiOutput, MidiDeviceNode>(
+        public static NodeDescription NodeDescription => AttachedNodeDescription.CreateAttached<ControlMidiOutputNode, MidiDeviceNode>(
                 Guid.Parse(MidiPlugin.PluginId),
                 "Control MIDI Output",
                 "Output for a specific control message")
@@ -24,11 +24,12 @@ namespace OctoPatch.Plugin.Midi
 
         #endregion
 
-        public ControlMidiOutput(Guid nodeId, MidiDeviceNode parentNode) : base(nodeId, parentNode)
+        public ControlMidiOutputNode(Guid nodeId, MidiDeviceNode parentNode) : base(nodeId, parentNode)
         {
             
         }
 
+        /// <inheritdoc />
         protected override int? OnHandle(MidiMessage message)
         {
             // Only handles message type 3 (control changed)
