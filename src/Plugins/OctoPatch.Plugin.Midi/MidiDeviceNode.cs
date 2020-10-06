@@ -19,7 +19,7 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Message type of control changed
         /// </summary>
-        public const int ControlChangedMessageType = 3;
+        public const int ControlChangedMessageType = 1;
 
         /// <summary>
         /// Message type of note on
@@ -29,7 +29,7 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Message type of note off
         /// </summary>
-        public const int NoteOffMessageType = 1;
+        public const int NoteOffMessageType = 3;
 
 
         #region Type description
@@ -158,17 +158,17 @@ namespace OctoPatch.Plugin.Midi
 
         private void DeviceOnControlChange(IMidiInputDevice sender, in ControlChangeMessage msg)
         {
-            _output.Send(new MidiMessage(3, (int)msg.Channel, msg.Control, msg.Value));
+            _output.Send(new MidiMessage(ControlChangedMessageType, (int)msg.Channel, msg.Control, msg.Value));
         }
 
         private void DeviceOnNoteOff(IMidiInputDevice sender, in NoteOffMessage msg)
         {
-            _output.Send(new MidiMessage(1, (int)msg.Channel, (int)msg.Key, msg.Velocity));
+            _output.Send(new MidiMessage(NoteOffMessageType, (int)msg.Channel, (int)msg.Key, msg.Velocity));
         }
 
         private void DeviceOnNoteOn(IMidiInputDevice sender, in NoteOnMessage msg)
         {
-            _output.Send(new MidiMessage(2, (int)msg.Channel, (int)msg.Key, msg.Velocity));
+            _output.Send(new MidiMessage(NoteOnMessageType, (int)msg.Channel, (int)msg.Key, msg.Velocity));
         }
 
         #endregion
