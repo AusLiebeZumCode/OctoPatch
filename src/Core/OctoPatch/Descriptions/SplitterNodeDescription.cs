@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace OctoPatch.Descriptions
 {
@@ -19,20 +18,6 @@ namespace OctoPatch.Descriptions
             : base(key, displayName, displayDescription)
         {
             TypeKey = typeKey;
-        }
-
-        /// <summary>
-        /// Creates a new description for splitter nodes
-        /// </summary>
-        /// <typeparam name="T">node type</typeparam>
-        /// <param name="pluginId">plugin id</param>
-        /// <param name="typeKey">key of the split type</param>
-        /// <param name="displayName">name of the node</param>
-        /// <param name="displayDescription">optional description</param>
-        /// <returns>node description</returns>
-        public static SplitterNodeDescription CreateSplitter<T>(Guid pluginId, string typeKey, string displayName, string displayDescription)
-        {
-            return new SplitterNodeDescription($"{pluginId}:{typeof(T).Name}", typeKey, displayName, displayDescription);
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace OctoPatch.Descriptions
 {
@@ -19,20 +18,6 @@ namespace OctoPatch.Descriptions
             : base(key, displayName, displayDescription)
         {
             TypeKey = typeKey;
-        }
-
-        /// <summary>
-        /// Creates a new description for collector nodes
-        /// </summary>
-        /// <typeparam name="T">node type</typeparam>
-        /// <param name="pluginId">plugin id</param>
-        /// <param name="typeKey">key of the collect type</param>
-        /// <param name="displayName">name of the node</param>
-        /// <param name="displayDescription">optional description</param>
-        /// <returns>node description</returns>
-        public static CollectorNodeDescription CreateCollector<T>(Guid pluginId, string typeKey, string displayName, string displayDescription)
-        {
-            return new CollectorNodeDescription($"{pluginId}:{typeof(T).Name}", typeKey, displayName, displayDescription);
         }
 
         /// <summary>
