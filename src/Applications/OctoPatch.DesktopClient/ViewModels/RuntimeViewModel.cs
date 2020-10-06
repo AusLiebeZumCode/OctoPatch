@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
-using OctoPatch.Plugin.Rest;
 using OctoPatch.Server;
 using OctoPatch.Setup;
 
@@ -145,33 +144,35 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _saveNodeDescription.Enabled = item != null;
                 _takeConnector.Enabled = SelectedWireConnector != null && value is InputNodeModel || value is OutputNodeModel;
 
-                //// TODO: Lookup model by Attribute
-                if (item?.Setup.Key == "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode")
+                switch (item?.Setup.Key)
                 {
-                    var model = new MidiDeviceModel();
-                    model.Setup(item.Environment);
-                    model.SetConfiguration(item.Setup.Configuration);
-                    NodeConfiguration = model;
-                    _saveNodeConfiguration.Enabled = true;
+                    //// TODO: Lookup model by Attribute
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode":
+                        NodeConfiguration = new MidiDeviceModel();
+                        break;
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiOutput":
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiOutput":
+                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiInput":
+                        NodeConfiguration = new MidiAttachedNodeModel();
+                        break;
+                    case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode":
+                        NodeConfiguration = null;
+                        break;
+                    case "40945D30-186D-4AEE-8895-058FB4759EFF:RestGetNode":
+                        NodeConfiguration = new RestGetModel();
+                        break;
+                    default:
+                        NodeConfiguration = null;
+                        break;
                 }
-                else if (item?.Setup.Key == "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode")
+
+                if (NodeConfiguration != null)
                 {
-                    NodeConfiguration = null;
-                    _saveNodeConfiguration.Enabled = true;
+                    NodeConfiguration.Setup(item.Environment);
+                    NodeConfiguration.SetConfiguration(item.Setup.Configuration);
                 }
-                else if(item?.Setup.Key == $"{RestPlugin.PluginId[1..^1].ToLower()}:{nameof(RestGetNode)}")
-                {
-                    var model = new RestGetModel();
-                    model.Setup(item.Environment);
-                    model.SetConfiguration(item.Setup.Configuration);
-                    NodeConfiguration = model;
-                    _saveNodeConfiguration.Enabled = true;
-                }
-                else
-                {
-                    NodeConfiguration = null;
-                    _saveNodeConfiguration.Enabled = false;
-                }
+
+                _saveNodeConfiguration.Enabled = NodeConfiguration != null;
             }
         }
 
