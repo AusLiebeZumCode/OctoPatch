@@ -28,6 +28,11 @@
                     <views:RestGetView />
                 </DataTemplate>
             </desktopClient:NodeTemplateSelector.RestGetTemplate>
+            <desktopClient:NodeTemplateSelector.MidiAttachedTemplate>
+                <DataTemplate>
+                    <views:MidiAttachedView />
+                </DataTemplate>
+            </desktopClient:NodeTemplateSelector.MidiAttachedTemplate>
         </desktopClient:NodeTemplateSelector>
 
         <desktopClient:TreeTemplateSelector x:Key="TreeTemplateSelector">
@@ -99,12 +104,12 @@
         </desktopClient:TreeTemplateSelector>
 
         <converters:InstanceToVisibilityConverter x:Key="InstanceToVisibilityConverter" />
-        
+
         <!-- visible converter for configurable nodes -->
         <converters:NodeToVisibilityConverter x:Key="ConfigurableNodeToVisibilityConverter" 
                                               CommonNode="True" 
                                               AttachedNode="True" />
-        
+
         <!-- visible converter for all kind of nodes -->
         <converters:NodeToVisibilityConverter x:Key="AllNodeToVisibilityConverter" 
                                               CommonNode="True" 
@@ -183,7 +188,7 @@
                   ItemsSource="{Binding NodeTree}" SelectedItemChanged="TreeView_OnSelectedItemChanged">
         </TreeView>
 
-
+        <!-- Property column -->
         <StackPanel Grid.Column="2">
 
             <!-- Common node settings -->
@@ -333,15 +338,21 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    --><!-- Name --><!--
+                    -->
+                <!-- Name -->
+                <!--
                     <Label Grid.Row="0" Content="Name" FontWeight="Bold" />
                     <TextBox Grid.Row="1" VerticalContentAlignment="Center" Text="{Binding Path=NodeDescription.Name}" Margin="5 0 5 10" />
 
-                    --><!-- Description --><!--
+                    -->
+                <!-- Description -->
+                <!--
                     <Label Grid.Row="2" Content="Description" VerticalAlignment="Top" FontWeight="Bold" />
                     <TextBox VerticalContentAlignment="Center" TextWrapping="Wrap"  Grid.Row="3" Margin="5 0 5 10" Text="{Binding Path=NodeDescription.Description}" />
 
-                    --><!-- Button --><!--
+                    -->
+                <!-- Button -->
+                <!--
                     <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
                         <Button Content="Save" Margin="5" Padding="10 5" Command="{Binding SaveNodeDescription}" />
                     </StackPanel>
