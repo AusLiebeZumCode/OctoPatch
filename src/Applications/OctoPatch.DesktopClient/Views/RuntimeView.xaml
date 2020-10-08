@@ -33,6 +33,11 @@
                     <views:MidiAttachedView />
                 </DataTemplate>
             </desktopClient:NodeTemplateSelector.MidiAttachedTemplate>
+            <desktopClient:NodeTemplateSelector.KeyboardStringTemplate>
+                <DataTemplate>
+                    <views:KeyboardStringView />
+                </DataTemplate>
+            </desktopClient:NodeTemplateSelector.KeyboardStringTemplate>
         </desktopClient:NodeTemplateSelector>
 
         <desktopClient:TreeTemplateSelector x:Key="TreeTemplateSelector">

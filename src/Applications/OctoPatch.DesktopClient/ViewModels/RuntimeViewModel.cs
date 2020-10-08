@@ -159,8 +159,11 @@ namespace OctoPatch.DesktopClient.ViewModels
                     case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode":
                         NodeConfiguration = null;
                         break;
-                    case "40945D30-186D-4AEE-8895-058FB4759EFF:RestGetNode":
+                    case "40945d30-186d-4aee-8895-058fb4759eff:RestGetNode":
                         NodeConfiguration = new RestGetModel();
+                        break;
+                    case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardStringNode":
+                        NodeConfiguration = new KeyboardStringModel();
                         break;
                     default:
                         NodeConfiguration = null;

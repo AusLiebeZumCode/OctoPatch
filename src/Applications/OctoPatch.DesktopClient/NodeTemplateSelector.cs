@@ -12,6 +12,8 @@ namespace OctoPatch.DesktopClient
 
         public DataTemplate MidiAttachedTemplate { get; set; }
 
+        public DataTemplate KeyboardStringTemplate { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             return item switch
@@ -19,6 +21,7 @@ namespace OctoPatch.DesktopClient
                 MidiDeviceModel _ => MidiDeviceTemplate,
                 RestGetModel _ => RestGetTemplate,
                 MidiAttachedNodeModel _ => MidiAttachedTemplate,
+                KeyboardStringModel _ => KeyboardStringTemplate,
                 _ => base.SelectTemplate(item, container)
             };
         }
