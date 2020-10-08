@@ -136,8 +136,8 @@ namespace OctoPatch.Plugin.Rest
         {
             _http = new HttpClient();
 
-            RegisterInputConnector(RestGetInputDescription).HandleRaw(HandleMessage);
-            _outputConnector = RegisterOutputConnector(RestGetOutputDescription);
+            RegisterInputConnector<object>(RestGetInputDescription).HandleRaw(HandleMessage);
+            _outputConnector = RegisterOutputConnector<RestGetResult>(RestGetOutputDescription);
         }
 
         private async void HandleMessage(Message message)

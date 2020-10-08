@@ -45,7 +45,7 @@ namespace OctoPatch.Plugin.Keyboard
             hook = new GlobalKeyboardHook();
             hook.KeyboardPressed += HookOnKeyboardPressed;
 
-            _outputConnector = RegisterOutputConnector(KeyOutputDescription);
+            _outputConnector = RegisterOutputConnector<int>(KeyOutputDescription);
         }
 
         private void HookOnKeyboardPressed(object sender, GlobalKeyboardHookEventArgs e)

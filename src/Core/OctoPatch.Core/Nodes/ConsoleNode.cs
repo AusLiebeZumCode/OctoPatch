@@ -33,7 +33,7 @@ namespace OctoPatch.Core.Nodes
 
         public ConsoleNode(Guid id) : base(id)
         {
-            RegisterInputConnector(InputDescription).HandleRaw(Handle);
+            RegisterInputConnector<object>(InputDescription).HandleRaw(Handle);
         }
 
         private void Handle(Message message)
