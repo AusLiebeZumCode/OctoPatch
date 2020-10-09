@@ -144,33 +144,40 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _saveNodeDescription.Enabled = item != null;
                 _takeConnector.Enabled = SelectedWireConnector != null && value is InputNodeModel || value is OutputNodeModel;
 
-                switch (item?.Setup.Key)
+                if (item != null)
                 {
-                    //// TODO: Lookup model by Attribute
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode":
-                        NodeConfiguration = new MidiDeviceModel();
-                        break;
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiOutputNode":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiInputNode":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiOutputNode":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiInputNode":
-                        NodeConfiguration = new MidiAttachedNodeModel();
-                        break;
-                    case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode":
-                        NodeConfiguration = null;
-                        break;
-                    case "40945D30-186D-4AEE-8895-058FB4759EFF:RestGetNode":
-                        NodeConfiguration = new RestGetModel();
-                        break;
-                    default:
-                        NodeConfiguration = null;
-                        break;
-                }
+                    switch (item?.Setup.Key)
+                    {
+                        //// TODO: Lookup model by Attribute
+                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode":
+                            NodeConfiguration = new MidiDeviceModel();
+                            break;
+                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiOutputNode":
+                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiInputNode":
+                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiOutputNode":
+                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiInputNode":
+                            NodeConfiguration = new MidiAttachedNodeModel();
+                            break;
+                        case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode":
+                            NodeConfiguration = null;
+                            break;
+                        case "40945D30-186D-4AEE-8895-058FB4759EFF:RestGetNode":
+                            NodeConfiguration = new RestGetModel();
+                            break;
+                        default:
+                            NodeConfiguration = null;
+                            break;
+                    }
 
-                if (NodeConfiguration != null)
+                    if (NodeConfiguration != null)
+                    {
+                        NodeConfiguration.Setup(item.Environment);
+                        NodeConfiguration.SetConfiguration(item.Setup.Configuration);
+                    }
+                }
+                else
                 {
-                    NodeConfiguration.Setup(item.Environment);
-                    NodeConfiguration.SetConfiguration(item.Setup.Configuration);
+                    NodeConfiguration = null;
                 }
 
                 _saveNodeConfiguration.Enabled = NodeConfiguration != null;
