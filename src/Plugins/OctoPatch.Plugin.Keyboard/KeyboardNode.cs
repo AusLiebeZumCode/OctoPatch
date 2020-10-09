@@ -1,9 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using OctoPatch.ContentTypes;

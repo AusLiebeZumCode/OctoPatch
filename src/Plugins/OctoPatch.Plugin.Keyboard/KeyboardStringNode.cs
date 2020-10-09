@@ -13,7 +13,7 @@ namespace OctoPatch.Plugin.Keyboard
             AttachedNodeDescription.CreateAttached<KeyboardStringNode, KeyboardNode>(
                 Guid.Parse(KeyboardPlugin.PluginId),
                 "Keyboard String",
-                "Blabla")
+                "Gets the pressed keys from the keyboard")
             .AddOutputDescription(KeyStringPressedOutputDescription)
             .AddOutputDescription(KeyStringReleasedOutputDescription);
 
@@ -31,11 +31,28 @@ namespace OctoPatch.Plugin.Keyboard
             "KeyStringReleasedOutput", "key string released", "Key char released output signal",
             new StringContentType());
 
+
+        /// <summary>
+        /// Description of the keyboard char pressed output connector
+        /// </summary>
+        public static ConnectorDescription KeyCharPressedOutputDescription => new ConnectorDescription(
+            "KeyCharPressedOutput", "key char pressed", "Key char pressed output signal",
+            new StringContentType());
+
+        /// <summary>
+        /// Description of the keyboard char released output connector
+        /// </summary>
+        public static ConnectorDescription KeyCharReleasedOutputDescription => new ConnectorDescription(
+            "KeyCharReleasedOutput", "key char released", "Key char released output signal",
+            new StringContentType());
+
         protected override KeyboardStringConfiguration DefaultConfiguration => new KeyboardStringConfiguration();
 
         private readonly KeyboardNode _node;
         private readonly IOutputConnectorHandler _stringPressedOutputConnector;
         private readonly IOutputConnectorHandler _stringReleasedOutputConnector;
+        private readonly IOutputConnectorHandler _charPressedOutputConnector;
+        private readonly IOutputConnectorHandler _charReleasedOutputConnector;
 
         public KeyboardStringNode(Guid nodeId, KeyboardNode parentNode)
             : base(nodeId, parentNode)
@@ -45,6 +62,8 @@ namespace OctoPatch.Plugin.Keyboard
 
             _stringPressedOutputConnector = RegisterOutputConnector<string>(KeyStringPressedOutputDescription);
             _stringReleasedOutputConnector = RegisterOutputConnector<string>(KeyStringReleasedOutputDescription);
+            _charPressedOutputConnector = RegisterOutputConnector<string>(KeyCharPressedOutputDescription);
+            _charReleasedOutputConnector = RegisterOutputConnector<string>(KeyCharReleasedOutputDescription);
         }
 
         protected override void OnDispose()
@@ -56,6 +75,7 @@ namespace OctoPatch.Plugin.Keyboard
         private void Hook_KeyboardPressed(object sender, GlobalKeyboardHook.GlobalKeyboardHookEventArgs e)
         {
             var s = _node._keyboard.GetUnicodeFromVirtualKeyCode((uint)e.KeyboardData.VirtualCode);
+            var c = _node._keyboard.GetCharFromVirtualKeyCode((uint)e.KeyboardData.VirtualCode).ToString();
 
             if (Configuration.IgnoreNotPrintable && string.IsNullOrWhiteSpace(s))
                 return;
@@ -65,11 +85,13 @@ namespace OctoPatch.Plugin.Keyboard
                 case GlobalKeyboardHook.KeyboardState.KeyDown:
                 case GlobalKeyboardHook.KeyboardState.SysKeyDown:
                     _stringPressedOutputConnector.Send(s);
+                    _charPressedOutputConnector.Send(c);
                     break;
 
                 case GlobalKeyboardHook.KeyboardState.KeyUp:
                 case GlobalKeyboardHook.KeyboardState.SysKeyUp:
                     _stringReleasedOutputConnector.Send(s);
+                    _charReleasedOutputConnector.Send(c);
                     break;
             }
         }

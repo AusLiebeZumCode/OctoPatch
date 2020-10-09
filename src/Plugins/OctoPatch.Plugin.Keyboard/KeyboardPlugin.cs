@@ -17,7 +17,6 @@ namespace OctoPatch.Plugin.Keyboard
         public KeyboardPlugin()
         {
             RegisterNode<KeyboardNode>(KeyboardNode.NodeDescription);
-            RegisterNode<KeyboardCharNode>(KeyboardCharNode.NodeDescription);
             RegisterNode<KeyboardStringNode>(KeyboardStringNode.NodeDescription);
         }
 
