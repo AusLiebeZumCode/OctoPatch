@@ -22,7 +22,9 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private readonly List<WireItem> _wires;
 
-        private readonly List<NodeDescription> _descriptions;
+        private readonly List<NodeDescription> _nodeDescriptions;
+
+        private readonly List<AdapterDescription> _adapterDescriptions;
 
         #region Toolbox
 
@@ -71,7 +73,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 {
                     case InputNodeModel input:
 
-                        foreach (var description in _descriptions.OfType<CollectorNodeDescription>().Where(d => d.TypeKey == input.TypeKey))
+                        foreach (var description in _nodeDescriptions.OfType<CollectorNodeDescription>().Where(d => d.TypeKey == input.TypeKey))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -79,7 +81,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         break;
                     case OutputNodeModel output:
 
-                        foreach (var description in _descriptions.OfType<SplitterNodeDescription>().Where(d => d.TypeKey == output.TypeKey))
+                        foreach (var description in _nodeDescriptions.OfType<SplitterNodeDescription>().Where(d => d.TypeKey == output.TypeKey))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -88,7 +90,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
                     case CommonNodeModel common:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == common.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == common.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -96,7 +98,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         break;
                     case AttachedNodeModel attached:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == attached.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == attached.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -105,7 +107,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
                     case SplitterNodeModel splitter:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == splitter.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == splitter.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -114,20 +116,21 @@ namespace OctoPatch.DesktopClient.ViewModels
 
                     case CollectorNodeModel collector:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == collector.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == collector.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
 
                         break;
-
                 }
 
-                var item = _nodes.FirstOrDefault(n => n.Model == value);
+                #region node management
 
+                var item = _nodes.FirstOrDefault(n => n.Model == value);
                 if (item == null)
                 {
                     NodeDescription = null;
+                    NodeConfiguration = null;
                 }
                 else
                 {
@@ -136,17 +139,8 @@ namespace OctoPatch.DesktopClient.ViewModels
                         Name = item.Setup.Name,
                         Description = item.Setup.Description
                     };
-                }
 
-                _removeSelectedNode.Enabled = item != null;
-                _startSelectedNode.Enabled = item != null;
-                _stopSelectedNode.Enabled = item != null;
-                _saveNodeDescription.Enabled = item != null;
-                _takeConnector.Enabled = SelectedWireConnector != null && value is InputNodeModel || value is OutputNodeModel;
-
-                if (item != null)
-                {
-                    switch (item?.Setup.Key)
+                    switch (item.Setup.Key)
                     {
                         //// TODO: Lookup model by Attribute
                         case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode":
@@ -175,12 +169,43 @@ namespace OctoPatch.DesktopClient.ViewModels
                         NodeConfiguration.SetConfiguration(item.Setup.Configuration);
                     }
                 }
+
+                _removeSelectedNode.Enabled = item != null;
+                _startSelectedNode.Enabled = item != null;
+                _stopSelectedNode.Enabled = item != null;
+                _saveNodeDescription.Enabled = item != null;
+                _takeConnector.Enabled = SelectedWireConnector != null && value is InputNodeModel || value is OutputNodeModel;
+                _saveNodeConfiguration.Enabled = NodeConfiguration != null;
+
+                #endregion
+
+                #region wire management
+
+                var wire = _wires.FirstOrDefault(w => w.InputWire == value || w.OutputWire == value);
+                if (wire == null)
+                {
+                    SelectedAdapterDescription = null;
+                    AdapterConfiguration = null;
+                }
                 else
                 {
-                    NodeConfiguration = null;
+                    SelectedAdapterDescription =
+                        AdapterDescriptions.FirstOrDefault(d => d.Key == wire.Setup.AdapterKey);
+
+                    switch (wire.Setup.AdapterKey)
+                    {
+                        // TODO: Lookup model by Attribute
+                        default:
+                            AdapterConfiguration = null;
+                            break;
+                    }
                 }
 
-                _saveNodeConfiguration.Enabled = NodeConfiguration != null;
+                _removeSelectedWire.Enabled = wire != null;
+                _saveAdapter.Enabled = wire != null;
+                _saveAdapterConfiguration.Enabled = AdapterConfiguration != null;
+
+                #endregion
             }
         }
 
@@ -340,7 +365,8 @@ namespace OctoPatch.DesktopClient.ViewModels
         {
             _nodes = new List<NodeItem>();
             _wires = new List<WireItem>();
-            _descriptions = new List<NodeDescription>();
+            _nodeDescriptions = new List<NodeDescription>();
+            _adapterDescriptions = new List<AdapterDescription>();
 
             NodeDescriptions = new ObservableCollection<NodeDescription>();
             ContextNodeDescriptions = new ObservableCollection<NodeDescription>();
@@ -389,9 +415,16 @@ namespace OctoPatch.DesktopClient.ViewModels
             throw new NotImplementedException();
         }
 
-        private void RemoveSelectedWireCallback(object obj)
+        private async void RemoveSelectedWireCallback(object obj)
         {
-            throw new NotImplementedException();
+            var node = SelectedNode;
+            var item = _wires.FirstOrDefault(n => n.InputWire == node || n.OutputWire == node);
+            if (item == null)
+            {
+                return;
+            }
+
+            await _runtime.RemoveWire(item.Setup.WireId, CancellationToken.None);
         }
 
         private async void TakeConnectorCallback(object obj)
@@ -590,8 +623,19 @@ namespace OctoPatch.DesktopClient.ViewModels
             }
         }
 
-        private void RuntimeOnOnWireRemoved(Guid obj)
+        private void RuntimeOnOnWireRemoved(Guid wireId)
         {
+            var wire = _wires.FirstOrDefault(n => n.Setup.WireId == wireId);
+            if (wire == null)
+            {
+                return;
+            }
+
+            // Remove node in tree
+            RemoveRecursive(wire.InputWire, NodeTree);
+            RemoveRecursive(wire.OutputWire, NodeTree);
+
+            _wires.Remove(wire);
         }
 
         private void RuntimeOnOnWireAdded(WireSetup wire)
@@ -657,7 +701,7 @@ namespace OctoPatch.DesktopClient.ViewModels
         private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
             // identify description
-            var description = _descriptions.FirstOrDefault(d => d.Key == setup.Key);
+            var description = _nodeDescriptions.FirstOrDefault(d => d.Key == setup.Key);
 
             NodeModel nodeModel = null;
             switch (description)
@@ -728,15 +772,19 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public async Task Setup(CancellationToken cancellationToken)
         {
-            var descriptions = await _runtime.GetNodeDescriptions(cancellationToken);
+            var nodeDescriptions = await _runtime.GetNodeDescriptions(cancellationToken);
+            var adapterDescriptions = await _runtime.GetAdapterDescriptions(cancellationToken);
 
-            _descriptions.Clear();
-            _descriptions.AddRange(descriptions);
+            _nodeDescriptions.Clear();
+            _nodeDescriptions.AddRange(nodeDescriptions);
 
-            foreach (var description in _descriptions.OfType<CommonNodeDescription>())
+            foreach (var description in _nodeDescriptions.OfType<CommonNodeDescription>())
             {
                 NodeDescriptions.Add(description);
             }
+
+            _adapterDescriptions.Clear();
+            _adapterDescriptions.AddRange(adapterDescriptions);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

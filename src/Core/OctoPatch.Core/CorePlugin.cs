@@ -1,4 +1,5 @@
 ﻿using System;
+using OctoPatch.Core.Adapters;
 using OctoPatch.Core.Nodes;
 
 namespace OctoPatch.Core
@@ -21,6 +22,8 @@ namespace OctoPatch.Core
         public CorePlugin()
         {
             RegisterNode<ConsoleNode>(ConsoleNode.Description);
+
+            RegisterAdapter<LinearTransformationAdapter>(LinearTransformationAdapter.Description);
         }
 
         protected override IAdapter OnCreateAdapter(Type type)

@@ -197,7 +197,7 @@ namespace OctoPatch.Server
             _nodeMapping.TryRemove(nodeId, out _);
         }
 
-        public Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId,
+        public async Task<WireSetup> AddWire(Guid outputNodeId, string outputConnectorKey, Guid inputNodeId,
             string inputConnectorKey, CancellationToken cancellationToken)
         {
             var setup = new WireSetup
@@ -236,9 +236,9 @@ namespace OctoPatch.Server
             var wire = new Wire(setup.WireId, inputConnector, outputConnector);
 
             _wireMapping.TryAdd(setup.WireId, (wire, setup));
-            WireAdded?.Invoke(setup);
+            await _patch.AddWire(wire, cancellationToken);
 
-            return Task.FromResult(setup);
+            return setup;
         }
 
         public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
