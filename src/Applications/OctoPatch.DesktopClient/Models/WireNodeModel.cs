@@ -1,5 +1,4 @@
 ﻿using System;
-using OctoPatch.Descriptions;
 
 namespace OctoPatch.DesktopClient.Models
 {

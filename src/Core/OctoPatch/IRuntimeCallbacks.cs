@@ -19,8 +19,8 @@ namespace OctoPatch
         /// <summary>
         /// Gets a call when something changes within the node instance
         /// </summary>
-        /// <param name="instance">related node instance</param>
-        void OnNodeUpdated(NodeSetup instance);
+        /// <param name="setup">related node setup</param>
+        void OnNodeUpdated(NodeSetup setup);
 
         /// <summary>
         /// Gets a call when a node state changed during runtime
@@ -45,14 +45,14 @@ namespace OctoPatch
         /// <summary>
         /// Gets a call when there is a new wire
         /// </summary>
-        /// <param name="instance">wire instance</param>
-        void OnWireAdded(WireSetup instance);
+        /// <param name="setup">wire setup</param>
+        void OnWireAdded(WireSetup setup);
 
         /// <summary>
         /// Gets a call when a wire gets lost
         /// </summary>
-        /// <param name="instanceGuid">wire guid</param>
-        void OnWireRemoved(Guid instanceGuid);
+        /// <param name="wireId">wire id</param>
+        void OnWireRemoved(Guid wireId);
 
         /// <summary>
         /// Gets a call when a wire was updated

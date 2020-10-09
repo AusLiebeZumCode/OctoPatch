@@ -33,6 +33,7 @@ namespace OctoPatch.Server
         /// </summary>
         public Task<IEnumerable<NodeDescription>> GetNodeDescriptions(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Asked for node descriptions");
             return Task.FromResult(_repository.GetNodeDescriptions());
         }
 

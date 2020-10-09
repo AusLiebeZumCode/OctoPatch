@@ -376,7 +376,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private void RuntimeOnWireUpdated(WireSetup obj)
         {
-
+            // Nothing to do yet
         }
 
         private void SaveAdapterConfigurationCallback(object obj)

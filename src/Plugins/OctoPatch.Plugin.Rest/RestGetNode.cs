@@ -3,6 +3,7 @@ using OctoPatch.Descriptions;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace OctoPatch.Plugin.Rest
 {
@@ -136,11 +137,11 @@ namespace OctoPatch.Plugin.Rest
         {
             _http = new HttpClient();
 
-            RegisterInputConnector(RestGetInputDescription).HandleRaw(HandleMessage);
+            RegisterInputConnector(RestGetInputDescription).HandleRaw((m) => Task.Run(() => HandleMessage(m)));
             _outputConnector = RegisterOutputConnector(RestGetOutputDescription);
         }
 
-        private async void HandleMessage(Message message)
+        private async Task HandleMessage(Message message)
         {
             if (State != NodeState.Running)
                 return;
