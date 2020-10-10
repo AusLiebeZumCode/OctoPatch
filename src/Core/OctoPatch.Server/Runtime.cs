@@ -147,26 +147,9 @@ namespace OctoPatch.Server
         {
             var description = _descriptions.First(d => d.Key == key);
 
-            INode parent = null;
-            if (parentId.HasValue)
-            {
-                if (!_nodeMapping.TryGetValue(parentId.Value, out var parentSetup))
-                {
-                    throw new ArgumentException("parent does not exist");
-                }
-
-                parent = parentSetup.node;
-            }
-
-            var node = _repository.CreateNode(key, Guid.NewGuid(), parent, connectorKey);
-            if (node == null)
-            {
-                return null;
-            }
-
             var setup = new NodeSetup
             {
-                NodeId = node.Id,
+                NodeId = Guid.NewGuid(),
                 Key = key,
                 ParentNodeId = parentId,
                 ParentConnector = connectorKey,
@@ -174,21 +157,50 @@ namespace OctoPatch.Server
                 Description = description.DisplayDescription,
             };
 
+            return await AddNode(setup, cancellationToken) != null ? setup : null;
+        }
+
+        private async Task<INode> AddNode(NodeSetup setup, CancellationToken cancellationToken)
+        {
+            INode parent = null;
+            if (setup.ParentNodeId.HasValue)
+            {
+                if (!_nodeMapping.TryGetValue(setup.ParentNodeId.Value, out var parentSetup))
+                {
+                    throw new ArgumentException("parent does not exist");
+                }
+
+                parent = parentSetup.node;
+            }
+
+            var node = _repository.CreateNode(setup.Key, setup.NodeId, parent, setup.ParentConnector);
+            if (node == null)
+            {
+                return null;
+            }
+
             _nodeMapping.TryAdd(node.Id, (node, setup));
             await _patch.AddNode(node, cancellationToken);
 
             // automatic configure
-            await node.Initialize(cancellationToken);
+            if (setup.Configuration != null)
+            {
+                await node.Initialize(setup.Configuration, cancellationToken);
+            }
+            else
+            {
+                await node.Initialize(cancellationToken);
+            }
 
             // automatic start
             await node.Start(cancellationToken);
 
-            return setup;
+            return node;
         }
 
         public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
-            if (!_nodeMapping.TryGetValue(nodeId, out var x))
+            if (!_nodeMapping.TryGetValue(nodeId, out _))
             {
                 return;
             }
@@ -209,25 +221,32 @@ namespace OctoPatch.Server
                 WireId = Guid.NewGuid()
             };
 
+            await AddWire(setup, cancellationToken);
+
+            return setup;
+        }
+
+        private async Task<IWire> AddWire(WireSetup setup, CancellationToken cancellationToken)
+        {
             // Lookup Output Connector
-            if (!_nodeMapping.TryGetValue(outputNodeId, out var outputSetup))
+            if (!_nodeMapping.TryGetValue(setup.OutputNodeId, out var outputSetup))
             {
                 throw new ArgumentException("output node does not exist");
             }
 
-            var outputConnector = outputSetup.node.Outputs.FirstOrDefault(c => c.Key == outputConnectorKey);
+            var outputConnector = outputSetup.node.Outputs.FirstOrDefault(c => c.Key == setup.OutputConnectorKey);
             if (outputConnector == null)
             {
                 throw new ArgumentException("output connector could not be found");
             }
 
             // Lookup Input Connector
-            if (!_nodeMapping.TryGetValue(inputNodeId, out var inputSetup))
+            if (!_nodeMapping.TryGetValue(setup.InputNodeId, out var inputSetup))
             {
                 throw new ArgumentException("input node does not exist");
             }
 
-            var inputConnector = inputSetup.node.Inputs.FirstOrDefault(c => c.Key == inputConnectorKey);
+            var inputConnector = inputSetup.node.Inputs.FirstOrDefault(c => c.Key == setup.InputConnectorKey);
             if (inputConnector == null)
             {
                 throw new ArgumentException("input connector could not be found");
@@ -238,7 +257,7 @@ namespace OctoPatch.Server
             _wireMapping.TryAdd(setup.WireId, (wire, setup));
             await _patch.AddWire(wire, cancellationToken);
 
-            return setup;
+            return wire;
         }
 
         public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
@@ -273,7 +292,11 @@ namespace OctoPatch.Server
 
         public Task<GridSetup> GetConfiguration(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new GridSetup
+            {
+                NodeInstances = _nodeMapping.Values.Select(n => n.setup).ToList(),
+                WireInstances = _wireMapping.Values.Select(w => w.setup).ToList()
+            });
         }
 
         public Task SetNodeDescription(Guid nodeId, string name, string description, CancellationToken cancellationToken)
@@ -300,21 +323,86 @@ namespace OctoPatch.Server
             return Task.CompletedTask;
         }
 
-        public Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
+        public async Task SetConfiguration(GridSetup grid, CancellationToken cancellationToken)
         {
-            //var description = _descriptions.First(d => d.Guid == nodeInstance.NodeDescription);
-            //var node = await _repository.CreateNode(description.Guid, nodeInstance.Guid, cancellationToken);
-            //await _patch.AddNode(node, cancellationToken);
+            #region Cleanup current grid
 
-            // _instanceMapping.Add(node.NodeId, (node, nodeInstance));
+            // Remove wires in the first step
+            foreach (var wireId in _wireMapping.Keys.ToArray())
+            {
+                await RemoveWire(wireId, cancellationToken);
+            }
 
-            throw new NotImplementedException();
+            // Remove all nodes
+            var nodes = _nodeMapping.Values.Select(n => n.node).ToList();
+
+            // Remove Splitter
+            foreach (var splitterNode in nodes.OfType<SplitterNode>().ToArray())
+            {
+                await RemoveNode(splitterNode.Id, cancellationToken);
+                nodes.Remove(splitterNode);
+            }
+
+            // Remove collectors
+            foreach (var collectorNode in nodes.OfType<CollectorNode>().ToArray())
+            {
+                await RemoveNode(collectorNode.Id, cancellationToken);
+                nodes.Remove(collectorNode);
+            }
+
+            // Remove regular nodes
+            while (nodes.Any())
+            {
+                var freeNodes = nodes.Where(n => nodes.OfType<IAttachedNode>().All(node => node.ParentNode != n)).ToArray();
+                foreach (var freeNode in freeNodes)
+                {
+                    await RemoveNode(freeNode.Id, cancellationToken);
+                    nodes.Remove(freeNode);
+                }
+            }
+
+            #endregion
+
+            if (grid != null)
+            {
+                if (grid.NodeInstances == null || grid.WireInstances == null)
+                {
+                    throw new ArgumentException("grid setup is not complete");
+                }
+
+                // Create nodes
+                foreach (var rootNode in grid.NodeInstances.Where(n => !n.ParentNodeId.HasValue))
+                {
+                    await CreateNode(rootNode, grid.NodeInstances, cancellationToken);
+                }
+
+                // Create wires
+                foreach (var wireSetup in grid.WireInstances)
+                {
+                    await AddWire(wireSetup, cancellationToken);
+                }
+            }
+        }
+
+        private async Task CreateNode(NodeSetup setup, IEnumerable<NodeSetup> nodes, CancellationToken cancellationToken)
+        {
+            var node = await AddNode(setup, cancellationToken);
+            if (node == null)
+            {
+                return;
+            }
+
+            // Create children
+            foreach (var nodeSetup in nodes.Where(n => n.ParentNodeId == setup.NodeId))
+            {
+                await CreateNode(nodeSetup, nodes, cancellationToken);
+            }
         }
 
         public Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken)
         {
-            _nodeMapping.TryGetValue(nodeGuid, out var node);
-            throw new NotImplementedException();
+            return !_nodeMapping.TryGetValue(nodeGuid, out var node) ? 
+                Task.FromResult<string>(null) : Task.FromResult(node.setup.Configuration);
         }
 
         public Task<string> GetNodeConfiguration(Guid nodeGuid, CancellationToken cancellationToken)
@@ -358,22 +446,22 @@ namespace OctoPatch.Server
 
         /// <inheritdoc />
         public event Action<Guid> NodeRemoved;
-        
+
         /// <inheritdoc />
         public event Action<WireSetup> WireAdded;
-        
+
         /// <inheritdoc />
         public event Action<Guid> WireRemoved;
 
         /// <inheritdoc />
         public event Action<WireSetup> WireUpdated;
-        
+
         /// <inheritdoc />
         public event Action<NodeSetup> NodeUpdated;
 
         /// <inheritdoc />
         public event Action<Guid, NodeState> NodeStateChanged;
-        
+
         /// <inheritdoc />
         public event Action<Guid, string> NodeEnvironmentChanged;
     }

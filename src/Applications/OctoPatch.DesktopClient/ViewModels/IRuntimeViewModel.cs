@@ -8,6 +8,25 @@ namespace OctoPatch.DesktopClient.ViewModels
 {
     public interface IRuntimeViewModel : INotifyPropertyChanged
     {
+        #region Application
+
+        /// <summary>
+        /// Command to clean grid
+        /// </summary>
+        ICommand NewCommand { get; }
+
+        /// <summary>
+        /// Loads a file to the grid
+        /// </summary>
+        ICommand LoadCommand { get; }
+
+        /// <summary>
+        /// Saves the current grid to a file
+        /// </summary>
+        ICommand SaveCommand { get; }
+
+        #endregion
+
         #region Toolbox
 
         /// <summary>
@@ -28,7 +47,7 @@ namespace OctoPatch.DesktopClient.ViewModels
         #endregion
 
         #region Patch
-        
+
         /// <summary>
         /// Hierarchical tree structure
         /// </summary>
@@ -163,6 +182,5 @@ namespace OctoPatch.DesktopClient.ViewModels
         #endregion
 
         #endregion
-
     }
 }

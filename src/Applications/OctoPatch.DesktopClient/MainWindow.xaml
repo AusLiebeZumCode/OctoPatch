@@ -6,7 +6,5 @@
         xmlns:views="clr-namespace:OctoPatch.DesktopClient.Views"
         mc:Ignorable="d"
         Title="OctoPatch Desktop" Height="700" Width="800">
-    <Grid>
-        <views:RuntimeView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-    </Grid>
+    <views:RuntimeView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 </Window>

@@ -132,15 +132,27 @@
 
     </UserControl.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
 
+        <!-- Menu -->
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <MenuItem Header="File">
+                <MenuItem Header="New" Command="{Binding NewCommand}" />
+                <MenuItem Header="Load..." Command="{Binding LoadCommand}" />
+                <MenuItem Header="Save..." Command="{Binding SaveCommand}" />
+            </MenuItem>
+        </Menu>
+        
         <!-- Toolbox column -->
-        <Grid>
-
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -183,7 +195,7 @@
         </Grid>
 
         <!-- Existing blocks -->
-        <TreeView Grid.Column="1" 
+        <TreeView Grid.Row="1" Grid.Column="1" 
                   ItemTemplateSelector="{StaticResource TreeTemplateSelector}"
                   ItemsSource="{Binding NodeTree}" SelectedItemChanged="TreeView_OnSelectedItemChanged">
             <TreeView.ItemContainerStyle>
@@ -194,7 +206,7 @@
         </TreeView>
 
         <!-- Property column -->
-        <StackPanel Grid.Column="2">
+        <StackPanel Grid.Row="1" Grid.Column="2">
 
             <!-- Common node settings -->
             <Grid Background="LightGray" 

@@ -179,9 +179,7 @@ namespace OctoPatch
 
             // Shut down and dispose it
             await node.Deinitialize(cancellationToken);
-
-            // TODO: Remove Wires
-            // TODO: Remove attached nodes
+            node.Dispose();
 
             _nodes.Remove(node);
             NodeRemoved?.Invoke(node);

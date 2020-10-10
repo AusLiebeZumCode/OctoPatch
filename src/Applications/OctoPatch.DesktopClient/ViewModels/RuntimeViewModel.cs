@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
 using OctoPatch.Server;
@@ -25,6 +28,25 @@ namespace OctoPatch.DesktopClient.ViewModels
         private readonly List<NodeDescription> _nodeDescriptions;
 
         private readonly List<AdapterDescription> _adapterDescriptions;
+
+        #region Application
+
+        private ActionCommand _newCommand;
+
+        /// <inheritdoc />
+        public ICommand NewCommand => _newCommand;
+
+        private ActionCommand _loadCommand;
+
+        /// <inheritdoc />
+        public ICommand LoadCommand => _loadCommand;
+
+        private ActionCommand _saveCommand;
+
+        /// <inheritdoc />
+        public ICommand SaveCommand => _saveCommand;
+
+        #endregion
 
         #region Toolbox
 
@@ -385,6 +407,10 @@ namespace OctoPatch.DesktopClient.ViewModels
             _saveAdapter = new ActionCommand(SaveAdapterCallback, false);
             _saveAdapterConfiguration = new ActionCommand(SaveAdapterConfigurationCallback, false);
 
+            _newCommand = new ActionCommand(NewCommandCallback);
+            _loadCommand = new ActionCommand(LoadCommandCallback);
+            _saveCommand = new ActionCommand(SaveCommandCallback);
+
             var repository = new Repository();
             _runtime = new Runtime(repository);
 
@@ -398,6 +424,41 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.WireUpdated += RuntimeOnWireUpdated;
 
             Task.Run(() => Setup(CancellationToken.None));
+        }
+
+        private async void SaveCommandCallback(object obj)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "OctoPatch Grid|*.grid"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var grid = await _runtime.GetConfiguration(CancellationToken.None);
+                var output = JsonConvert.SerializeObject(grid);
+                await File.WriteAllTextAsync(dialog.FileName, output);
+            }
+        }
+
+        private async void LoadCommandCallback(object obj)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "OctoPatch Grid|*.grid"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var input = await File.ReadAllTextAsync(dialog.FileName, CancellationToken.None);
+                var grid = JsonConvert.DeserializeObject<GridSetup>(input);
+                await _runtime.SetConfiguration(grid, CancellationToken.None);
+            }
+        }
+
+        private async void NewCommandCallback(object obj)
+        {
+            await _runtime.SetConfiguration(null, CancellationToken.None);
         }
 
         private void RuntimeOnWireUpdated(WireSetup obj)
