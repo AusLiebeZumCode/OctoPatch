@@ -14,6 +14,21 @@ namespace OctoPatch
         where TConfiguration : IConfiguration
         where TEnvironment : IEnvironment
     {
+        /// <summary>
+        /// Reference to the current subscription
+        /// </summary>
+        private readonly IDisposable _subscription;
+
+        /// <summary>
+        /// Reference to the input
+        /// </summary>
+        protected IOutputConnector Input { get; }
+
+        /// <summary>
+        /// Reference to the output
+        /// </summary>
+        protected IInputConnector Output { get; }
+
         private TConfiguration _configuration;
 
         /// <summary>
@@ -46,12 +61,21 @@ namespace OctoPatch
 
         protected Adapter(IOutputConnector input, IInputConnector output)
         {
+            Input = input;
+            Output = output;
+
+            _subscription = Input.Subscribe(message =>
+            {
+                Output.OnNext(Handle(message));
+            });
         }
 
         public void Dispose()
         {
-
+            _subscription.Dispose();
         }
+
+        protected abstract Message Handle(Message message);
 
         /// <summary>
         /// Sets a new configuration to the adapter
@@ -76,7 +100,7 @@ namespace OctoPatch
             }
 
             // Initialize
-            await OnInitialize(config, cancellationToken);
+            await OnSetConfiguration(config, cancellationToken);
 
             // Write back values
             Configuration = config;
@@ -87,22 +111,18 @@ namespace OctoPatch
         /// </summary>
         /// <param name="configuration">configuration</param>
         /// <param name="cancellationToken">cancellation token</param>
-        protected virtual Task OnInitialize(TConfiguration configuration, CancellationToken cancellationToken)
+        protected virtual Task OnSetConfiguration(TConfiguration configuration, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public string GetEnvironment()
         {
             return JsonConvert.SerializeObject(Environment);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public string GetConfiguration()
         {
             return JsonConvert.SerializeObject(Configuration);
