@@ -74,8 +74,10 @@ namespace OctoPatch
         /// <param name="connectorKey">optional connector key. Is used for splitters and collectors only</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <param name="parentId">optional parent id. Is used for attached nodes, splitter or collectors</param>
+        /// <param name="x">x position</param>
+        /// <param name="y">y position</param>
         /// <returns>new node setup</returns>
-        Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken);
+        Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, int x, int y, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id from the patch

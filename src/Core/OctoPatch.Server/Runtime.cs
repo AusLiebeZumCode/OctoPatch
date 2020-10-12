@@ -143,7 +143,7 @@ namespace OctoPatch.Server
 
         #endregion
 
-        public async Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
+        public async Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, int x, int y, CancellationToken cancellationToken)
         {
             var description = _descriptions.First(d => d.Key == key);
 
@@ -155,6 +155,8 @@ namespace OctoPatch.Server
                 ParentConnector = connectorKey,
                 Name = description.DisplayName,
                 Description = description.DisplayDescription,
+                PositionX = x,
+                PositionY = y
             };
 
             return await AddNode(setup, cancellationToken) != null ? setup : null;
@@ -226,7 +228,7 @@ namespace OctoPatch.Server
             return setup;
         }
 
-        private async Task<IWire> AddWire(WireSetup setup, CancellationToken cancellationToken)
+        private async Task AddWire(WireSetup setup, CancellationToken cancellationToken)
         {
             // Lookup Output Connector
             if (!_nodeMapping.TryGetValue(setup.OutputNodeId, out var outputSetup))
@@ -256,8 +258,6 @@ namespace OctoPatch.Server
 
             _wireMapping.TryAdd(setup.WireId, (wire, setup));
             await _patch.AddWire(wire, cancellationToken);
-
-            return wire;
         }
 
         public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
@@ -393,15 +393,16 @@ namespace OctoPatch.Server
             }
 
             // Create children
-            foreach (var nodeSetup in nodes.Where(n => n.ParentNodeId == setup.NodeId))
+            var localNodes = nodes.ToArray();
+            foreach (var nodeSetup in localNodes.Where(n => n.ParentNodeId == setup.NodeId))
             {
-                await CreateNode(nodeSetup, nodes, cancellationToken);
+                await CreateNode(nodeSetup, localNodes, cancellationToken);
             }
         }
 
         public Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken)
         {
-            return !_nodeMapping.TryGetValue(nodeGuid, out var node) ? 
+            return !_nodeMapping.TryGetValue(nodeGuid, out var node) ?
                 Task.FromResult<string>(null) : Task.FromResult(node.setup.Configuration);
         }
 

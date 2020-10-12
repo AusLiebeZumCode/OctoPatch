@@ -537,15 +537,15 @@ namespace OctoPatch.DesktopClient.ViewModels
 
             if (contextNode is SplitterNodeDescription)
             {
-                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
+                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, 0, 0, CancellationToken.None);
             }
             else if (contextNode is CollectorNodeDescription)
             {
-                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
+                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, 0, 0, CancellationToken.None);
             }
             else if (contextNode is AttachedNodeDescription)
             {
-                await _runtime.AddNode(contextNode.Key, parentId, null, CancellationToken.None);
+                await _runtime.AddNode(contextNode.Key, parentId, null, 0, 0, CancellationToken.None);
             }
         }
 
@@ -657,7 +657,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             var description = SelectedNodeDescription;
             if (description != null)
             {
-                await _runtime.AddNode(description.Key, null, null, CancellationToken.None);
+                await _runtime.AddNode(description.Key, null, null, 0, 0, CancellationToken.None);
             }
         }
 

@@ -145,7 +145,7 @@ namespace OctoPatch.Client
             throw new NotImplementedException();
         }
 
-        public Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, int x, int y, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
