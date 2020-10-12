@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using OctoPatch.DesktopClient.Models;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace OctoPatch.DesktopClient
 {
@@ -32,12 +34,7 @@ namespace OctoPatch.DesktopClient
                         // Scan all existing attributes
                         foreach (var attribute in type.GetCustomAttributes<ConfigurationMapAttribute>())
                         {
-                            Map.Add(new MapEntry
-                            {
-                                ViewType = type,
-                                ModelType = attribute.ModelType,
-                                Key = attribute.Key
-                            });
+                            Map.Add(new MapEntry(attribute.Key, attribute.ModelType, type));
                         }
                     }
                 }
@@ -59,6 +56,30 @@ namespace OctoPatch.DesktopClient
             return entry == null ? null : (ConfigurationModel)Activator.CreateInstance(entry.ModelType);
         }
 
+        public static UserControl GetConfigurationView(ConfigurationModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            var entry = Map.FirstOrDefault(e => e.ModelType == model.GetType());
+            if (entry == null)
+            {
+                return null;
+            }
+
+            var control = (UserControl) Activator.CreateInstance(entry.ViewType);
+
+            // Set data context if possible
+            if (control != null)
+            {
+                control.DataContext = model;
+            }
+
+            return control;
+        }
+
         #region nested types
 
         /// <summary>
@@ -69,17 +90,24 @@ namespace OctoPatch.DesktopClient
             /// <summary>
             /// Gets the type of the data model
             /// </summary>
-            public Type ModelType { get; set; }
+            public Type ModelType { get; }
 
             /// <summary>
             /// Gets the type of the view
             /// </summary>
-            public Type ViewType { get; set; }
+            public Type ViewType { get; }
 
             /// <summary>
             /// Gets the key of the node or adapter
             /// </summary>
-            public string Key { get; set; }
+            public string Key { get; }
+
+            public MapEntry(string key, Type modelType, Type viewType)
+            {
+                Key = key;
+                ModelType = modelType;
+                ViewType = viewType;
+            }
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using OctoPatch.DesktopClient.Models;
 using OctoPatch.DesktopClient.ViewModels;
@@ -16,6 +17,22 @@ namespace OctoPatch.DesktopClient.Views
         {
             InitializeComponent();
             DataContext = _viewModel = new RuntimeViewModel();
+
+            _viewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        }
+
+        private void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(RuntimeViewModel.NodeConfiguration))
+            {
+                // Create proper node configuration control
+                NodeConfigurationContainer.Content = ConfigurationMap.GetConfigurationView(_viewModel.NodeConfiguration);
+            }
+            else if (e.PropertyName == nameof(RuntimeViewModel.AdapterConfiguration))
+            {
+                // Create proper adapter configuration control
+                AdapterConfigurationContainer.Content = ConfigurationMap.GetConfigurationView(_viewModel.NodeConfiguration);
+            }
         }
 
         private void TreeView_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

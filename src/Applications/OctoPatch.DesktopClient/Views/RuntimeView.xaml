@@ -17,24 +17,6 @@
                                           Uninitialized="Gray" 
                                           Failed="Red" />
 
-        <desktopClient:NodeTemplateSelector x:Key="NodeTemplateSelector">
-            <desktopClient:NodeTemplateSelector.MidiDeviceTemplate>
-                <DataTemplate>
-                    <views:MidiDeviceView />
-                </DataTemplate>
-            </desktopClient:NodeTemplateSelector.MidiDeviceTemplate>
-            <desktopClient:NodeTemplateSelector.RestGetTemplate>
-                <DataTemplate>
-                    <views:RestGetView />
-                </DataTemplate>
-            </desktopClient:NodeTemplateSelector.RestGetTemplate>
-            <desktopClient:NodeTemplateSelector.MidiAttachedTemplate>
-                <DataTemplate>
-                    <views:MidiAttachedView />
-                </DataTemplate>
-            </desktopClient:NodeTemplateSelector.MidiAttachedTemplate>
-        </desktopClient:NodeTemplateSelector>
-
         <desktopClient:TreeTemplateSelector x:Key="TreeTemplateSelector">
             <desktopClient:TreeTemplateSelector.AttachedNodeTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Items}">
@@ -262,7 +244,7 @@
                         Foreground="White"
                         FontWeight="Bold"
                         Padding="5" />
-                <ContentControl Grid.Row="1"  ContentTemplateSelector="{StaticResource NodeTemplateSelector}"  Content="{Binding NodeConfiguration}" />
+                <ContentControl Grid.Row="1" x:Name="NodeConfigurationContainer" />
 
                 <!-- Button -->
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
@@ -380,7 +362,7 @@
                     Foreground="White"
                     FontWeight="Bold"
                     Padding="5" />
-                <ContentControl Grid.Row="1"  ContentTemplateSelector="{StaticResource NodeTemplateSelector}"  Content="{Binding AdapterConfiguration}" />
+                <ContentControl Grid.Row="1"  x:Name="AdapterConfigurationContainer" />
 
                 <!-- Button -->
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
