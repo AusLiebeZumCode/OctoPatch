@@ -2,16 +2,12 @@
 
 namespace OctoPatch.DesktopClient.Models
 {
-    public abstract class NodeConfigurationModel : Model
-    {
-        public abstract void Setup(string environment);
-
-        public abstract void SetConfiguration(string configuration);
-
-        public abstract string GetConfiguration();
-    }
-
-    public abstract class NodeConfigurationModel<TConfiguration, TEnvironment> : NodeConfigurationModel
+    /// <summary>
+    /// Basic configuration type for node configuration
+    /// </summary>
+    /// <typeparam name="TConfiguration">model type for configuration</typeparam>
+    /// <typeparam name="TEnvironment">model type for environment</typeparam>
+    public abstract class NodeConfigurationModel<TConfiguration, TEnvironment> : ConfigurationModel
         where TConfiguration : IConfiguration
         where TEnvironment : IEnvironment
     {

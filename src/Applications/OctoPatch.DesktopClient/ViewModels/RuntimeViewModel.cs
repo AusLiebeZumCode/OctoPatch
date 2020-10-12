@@ -31,17 +31,17 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         #region Application
 
-        private ActionCommand _newCommand;
+        private readonly ActionCommand _newCommand;
 
         /// <inheritdoc />
         public ICommand NewCommand => _newCommand;
 
-        private ActionCommand _loadCommand;
+        private readonly ActionCommand _loadCommand;
 
         /// <inheritdoc />
         public ICommand LoadCommand => _loadCommand;
 
-        private ActionCommand _saveCommand;
+        private readonly ActionCommand _saveCommand;
 
         /// <inheritdoc />
         public ICommand SaveCommand => _saveCommand;
@@ -162,29 +162,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         Description = item.Setup.Description
                     };
 
-                    switch (item.Setup.Key)
-                    {
-                        //// TODO: Lookup model by Attribute
-                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode":
-                            NodeConfiguration = new MidiDeviceModel();
-                            break;
-                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiOutputNode":
-                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiInputNode":
-                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiOutputNode":
-                        case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiInputNode":
-                            NodeConfiguration = new MidiAttachedNodeModel();
-                            break;
-                        case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode":
-                            NodeConfiguration = null;
-                            break;
-                        case "40945D30-186D-4AEE-8895-058FB4759EFF:RestGetNode":
-                            NodeConfiguration = new RestGetModel();
-                            break;
-                        default:
-                            NodeConfiguration = null;
-                            break;
-                    }
-
+                    NodeConfiguration = ConfigurationMap.GetConfigurationModel(item.Setup.Key);
                     if (NodeConfiguration != null)
                     {
                         NodeConfiguration.Setup(item.Environment);
@@ -214,13 +192,12 @@ namespace OctoPatch.DesktopClient.ViewModels
                     SelectedAdapterDescription =
                         AdapterDescriptions.FirstOrDefault(d => d.Key == wire.Setup.AdapterKey);
 
-                    switch (wire.Setup.AdapterKey)
+                    AdapterConfiguration = ConfigurationMap.GetConfigurationModel(wire.Setup.AdapterKey);
+                    if (AdapterConfiguration != null)
                     {
-                        // TODO: Lookup model by Attribute
-                        default:
-                            AdapterConfiguration = null;
-                            break;
+
                     }
+
                 }
 
                 _removeSelectedWire.Enabled = wire != null;
@@ -301,9 +278,9 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         #region Node specific configuration
 
-        private NodeConfigurationModel _nodeConfiguration;
+        private ConfigurationModel _nodeConfiguration;
 
-        public NodeConfigurationModel NodeConfiguration
+        public ConfigurationModel NodeConfiguration
         {
             get => _nodeConfiguration;
             private set
@@ -363,9 +340,9 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         #region Adapter configuration
 
-        private AdapterConfigurationModel _adapterConfiguration;
+        private ConfigurationModel _adapterConfiguration;
 
-        public AdapterConfigurationModel AdapterConfiguration
+        public ConfigurationModel AdapterConfiguration
         {
             get => _adapterConfiguration;
             private set

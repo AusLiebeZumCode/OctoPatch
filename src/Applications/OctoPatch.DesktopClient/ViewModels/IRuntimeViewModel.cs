@@ -125,7 +125,7 @@ namespace OctoPatch.DesktopClient.ViewModels
         /// <summary>
         /// Holds the specific configuration model for the current selected tree node
         /// </summary>
-        NodeConfigurationModel NodeConfiguration { get; }
+        ConfigurationModel NodeConfiguration { get; }
 
         /// <summary>
         /// Command to store all the changes made in the node configuration
@@ -172,7 +172,7 @@ namespace OctoPatch.DesktopClient.ViewModels
         /// <summary>
         /// Gets the configuration for the adapter of the current selected wire
         /// </summary>
-        AdapterConfigurationModel AdapterConfiguration { get; }
+        ConfigurationModel AdapterConfiguration { get; }
 
         /// <summary>
         /// Command to store all the changes in the adapter configuration

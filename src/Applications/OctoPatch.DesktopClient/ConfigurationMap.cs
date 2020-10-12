@@ -49,35 +49,14 @@ namespace OctoPatch.DesktopClient
         }
 
         /// <summary>
-        /// Returns a new instance of the node configuration model fitting to the given key or null, when no key is registered
+        /// Returns a new instance of the configuration model fitting to the given key or null, when no key is registered
         /// </summary>
         /// <param name="key">node key</param>
         /// <returns>new model instance</returns>
-        public static NodeConfigurationModel GetNodeConfigurationModel(string key)
-        {
-            return GetConfigurationModel<NodeConfigurationModel>(key);
-        }
-
-        /// <summary>
-        /// Returns a new instance of the adapter configuration model fitting to the given key or null, when no key is registered
-        /// </summary>
-        /// <param name="key">adapter key</param>
-        /// <returns>new model instance</returns>
-        public static AdapterConfigurationModel GetAdapterConfigurationModel(string key)
-        {
-            return GetConfigurationModel<AdapterConfigurationModel>(key);
-        }
-
-        /// <summary>
-        /// Generates an instance of the registered model for the given key
-        /// </summary>
-        /// <typeparam name="T">type of configuration model</typeparam>
-        /// <param name="key">node or adapter key</param>
-        /// <returns>new instance of the given type</returns>
-        private static T GetConfigurationModel<T>(string key) where T : Model
+        public static ConfigurationModel GetConfigurationModel(string key)
         {
             var entry = Map.FirstOrDefault(e => string.Equals(e.Key, key, StringComparison.InvariantCultureIgnoreCase));
-            return entry == null ? null : (T)Activator.CreateInstance(entry.ModelType);
+            return entry == null ? null : (ConfigurationModel)Activator.CreateInstance(entry.ModelType);
         }
 
         #region nested types
