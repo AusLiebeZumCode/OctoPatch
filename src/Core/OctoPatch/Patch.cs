@@ -30,19 +30,21 @@ namespace OctoPatch
         /// </summary>
         private readonly HashSet<IWire> _wires;
 
+        /// <summary>
+        /// Internal list of adapters
+        /// </summary>
+        private readonly Dictionary<IWire, IAdapter> _adapters;
+
         public Patch()
         {
             _localLock = new SemaphoreSlim(1);
 
             _nodes = new HashSet<INode>();
             _wires = new HashSet<IWire>();
+            _adapters = new Dictionary<IWire, IAdapter>();
         }
 
-        #region node management
-
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task AddNode(INode node, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -134,9 +136,7 @@ namespace OctoPatch
             }
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task RemoveNode(Guid nodeId, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -185,13 +185,7 @@ namespace OctoPatch
             NodeRemoved?.Invoke(node);
         }
 
-        #endregion
-
-        #region wire management
-
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task AddWire(IWire wire, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -261,9 +255,7 @@ namespace OctoPatch
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -296,26 +288,92 @@ namespace OctoPatch
             return Task.CompletedTask;
         }
 
-        #endregion
+        /// <inheritdoc />
+        public async Task AddAdapter(Guid wireId, IAdapter adapter, CancellationToken cancellationToken)
+        {
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                InternalAddAdapter(wireId, adapter);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
 
-        /// <summary>
-        /// Gets a call when a new node was added
-        /// </summary>
+        private void InternalAddAdapter(Guid wireId, IAdapter adapter)
+        {
+            if (adapter == null)
+            {
+                throw new ArgumentNullException(nameof(adapter));
+            }
+
+            // Lookup wire
+            var wire = _wires.FirstOrDefault(w => w.Id == wireId);
+            if (wire == null)
+            {
+                throw new ArgumentException("Wire does not exist");
+            }
+
+            // Check if there is already an adapter
+            InternalRemoveAdapter(wireId);
+
+            _adapters.Add(wire, adapter);
+            AdapterAdded?.Invoke(wire, adapter);
+        }
+
+        /// <inheritdoc />
+        public async Task RemoveAdapter(Guid wireId, CancellationToken cancellationToken)
+        {
+            await _localLock.WaitAsync(cancellationToken);
+            try
+            {
+                InternalRemoveAdapter(wireId);
+            }
+            finally
+            {
+                _localLock.Release();
+            }
+        }
+
+        private void InternalRemoveAdapter(Guid wireId)
+        {
+            // Find wire
+            var wire = _wires.FirstOrDefault(w => w.Id == wireId);
+            if (wire == null)
+            {
+                throw new ArgumentException("Wire does not exist");
+            }
+
+            // Find adapter
+            if (!_adapters.TryGetValue(wire, out var adapter))
+            {
+                return;
+            }
+
+            // Dispose
+            adapter.Dispose();
+            AdapterRemoved?.Invoke(wire, adapter);
+            _adapters.Remove(wire);
+        }
+
+        /// <inheritdoc />
         public event Action<INode> NodeAdded;
 
-        /// <summary>
-        /// Gets a call when a node was removed
-        /// </summary>
+        /// <inheritdoc />
         public event Action<INode> NodeRemoved;
 
-        /// <summary>
-        /// Gets a call when a new wire was added
-        /// </summary>
+        /// <inheritdoc />
         public event Action<IWire> WireAdded;
 
-        /// <summary>
-        /// Gets a call when a wire was removed
-        /// </summary>
+        /// <inheritdoc />
         public event Action<IWire> WireRemoved;
+
+        /// <inheritdoc />
+        public event Action<IWire, IAdapter> AdapterAdded;
+
+        /// <inheritdoc />
+        public event Action<IWire, IAdapter> AdapterRemoved;
     }
 }

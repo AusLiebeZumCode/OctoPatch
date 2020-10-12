@@ -167,5 +167,41 @@ namespace OctoPatch
         Task StopNode(Guid nodeId, CancellationToken cancellationToken);
 
         #endregion
+
+        #region Wire / Adapter configuration
+
+        /// <summary>
+        /// Sets the current adapter for a specific wire
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="key">adapter key</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the current adapter environment for the given wire
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>serialized configuration</returns>
+        Task<string> GetAdapterEnvironment(Guid wireId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the current configuration of the adapter of the given wire
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>serialized configuration</returns>
+        Task<string> GetAdapterConfiguration(Guid wireId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Sets the given configuration at the target adapter
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="configuration">serialized configuration</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task SetAdapterConfiguration(Guid wireId, string configuration, CancellationToken cancellationToken);
+
+        #endregion
     }
 }

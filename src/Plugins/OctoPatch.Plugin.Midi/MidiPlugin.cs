@@ -42,10 +42,5 @@ namespace OctoPatch.Plugin.Midi
             RegisterNode<NoteMidiInputNode>(NoteMidiInputNode.NodeDescription);
             RegisterNode<ControlMidiInputNode>(ControlMidiInputNode.NodeDescription);
         }
-
-        protected override IAdapter OnCreateAdapter(Type type)
-        {
-            return null;
-        }
     }
 }

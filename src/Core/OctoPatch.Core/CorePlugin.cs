@@ -25,10 +25,5 @@ namespace OctoPatch.Core
 
             RegisterAdapter<LinearTransformationAdapter>(LinearTransformationAdapter.Description);
         }
-
-        protected override IAdapter OnCreateAdapter(Type type)
-        {
-            return null;
-        }
     }
 }

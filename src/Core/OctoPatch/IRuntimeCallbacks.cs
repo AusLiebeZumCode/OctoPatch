@@ -59,5 +59,10 @@ namespace OctoPatch
         /// </summary>
         /// <param name="setup">updated setup</param>
         void OnWireUpdated(WireSetup setup);
+
+        /// <summary>
+        /// Gets a call when the adapter environment changed
+        /// </summary>
+        void OnAdapterEnvironmentChanged(Guid wireId, string environment);
     }
 }

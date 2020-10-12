@@ -44,7 +44,7 @@ namespace OctoPatch
             }
         }
 
-        protected Adapter(IInputConnector input, IOutputConnector output)
+        protected Adapter(IOutputConnector input, IInputConnector output)
         {
         }
 

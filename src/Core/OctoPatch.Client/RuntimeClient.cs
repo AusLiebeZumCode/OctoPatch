@@ -90,9 +90,7 @@ namespace OctoPatch.Client
             return _hubConnection.InvokeAsync<IEnumerable<AdapterDescription>>(nameof(GetAdapterDescriptions), cancellationToken, cancellationToken);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public Task<string> GetNodeEnvironment(Guid nodeGuid, CancellationToken cancellationToken)
         {
             return _hubConnection.InvokeAsync<string>(nameof(GetNodeEnvironment), nodeGuid, cancellationToken, cancellationToken);
@@ -168,72 +166,95 @@ namespace OctoPatch.Client
             throw new NotImplementedException();
         }
 
+        #region Wire / Adapter configuration
+
+        /// <inheritdoc />
+        public Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task<string> GetAdapterEnvironment(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task<string> GetAdapterConfiguration(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task SetAdapterConfiguration(Guid wireId, string configuration, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #endregion
 
         #region IRuntimeCallbacks
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void OnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
             NodeAdded?.Invoke(setup, state, environment);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void OnNodeStateChanged(Guid nodeId, NodeState state)
         {
             NodeStateChanged?.Invoke(nodeId, state);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void OnNodeEnvironmentChanged(Guid nodeId, string environment)
         {
             NodeEnvironmentChanged?.Invoke(nodeId, environment);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void OnNodeRemoved(Guid instanceGuid)
         {
             NodeRemoved?.Invoke(instanceGuid);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void OnNodeUpdated(NodeSetup setup)
         {
             NodeUpdated?.Invoke(setup);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void OnWireAdded(WireSetup setup)
         {
             WireAdded?.Invoke(setup);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void OnWireRemoved(Guid wireId)
         {
             WireRemoved?.Invoke(wireId);
         }
 
+        /// <inheritdoc />
         public void OnWireUpdated(WireSetup setup)
         {
             WireUpdated?.Invoke(setup);
         }
 
+        /// <inheritdoc />
+        public void OnAdapterEnvironmentChanged(Guid nodeId, string environment)
+        {
+            AdapterEnvironmentChanged?.Invoke(nodeId, environment);
+        }
+
         #endregion
+
+        #region IRuntimeEvents
 
         /// <inheritdoc />
         public event Action<NodeSetup, NodeState, string> NodeAdded;
@@ -258,5 +279,10 @@ namespace OctoPatch.Client
 
         /// <inheritdoc />
         public event Action<WireSetup> WireUpdated;
+
+        /// <inheritdoc />
+        public event Action<Guid, string> AdapterEnvironmentChanged;
+
+        #endregion
     }
 }

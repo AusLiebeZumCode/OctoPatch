@@ -190,5 +190,33 @@ namespace OctoPatch.Server
         {
             throw new NotImplementedException();
         }
+
+        #region Wire / Adapter configuration
+
+        /// <inheritdoc />
+        public Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task<string> GetAdapterEnvironment(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task<string> GetAdapterConfiguration(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task SetAdapterConfiguration(Guid wireId, string configuration, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

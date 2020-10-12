@@ -15,7 +15,7 @@ namespace OctoPatch.Core.Adapters
 
         #endregion
 
-        public LinearTransformationAdapter(IInputConnector input, IOutputConnector output) 
+        public LinearTransformationAdapter(IOutputConnector input, IInputConnector output) 
             : base(input, output)
         {
         }

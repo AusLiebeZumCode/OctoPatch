@@ -41,7 +41,12 @@ namespace OctoPatch.Server
         /// <summary>
         /// Collection of existing wires
         /// </summary>
-        private readonly ConcurrentDictionary<Guid, (IWire wire, WireSetup setup)> _wireMapping;
+        private readonly ConcurrentDictionary<Guid, (IWire wire, IAdapter adapter, WireSetup setup)> _wireMapping;
+
+        /// <summary>
+        /// Collection of all adapters and fitting wire id
+        /// </summary>
+        private readonly ConcurrentDictionary<IAdapter, Guid> _adapterMapping;
 
         public Runtime(IRepository repository)
         {
@@ -52,13 +57,16 @@ namespace OctoPatch.Server
             _descriptions = nodes.ToArray();
 
             _nodeMapping = new ConcurrentDictionary<Guid, (INode node, NodeSetup setup)>();
-            _wireMapping = new ConcurrentDictionary<Guid, (IWire wire, WireSetup setup)>();
+            _wireMapping = new ConcurrentDictionary<Guid, (IWire wire, IAdapter adapter, WireSetup setup)>();
+            _adapterMapping = new ConcurrentDictionary<IAdapter, Guid>();
 
             _patch = new Patch();
             _patch.NodeAdded += PatchOnNodeAdded;
             _patch.NodeRemoved += PatchOnNodeRemoved;
             _patch.WireAdded += PatchOnWireAdded;
             _patch.WireRemoved += PatchOnWireRemoved;
+            _patch.AdapterAdded += PatchOnAdapterAdded;
+            _patch.AdapterRemoved += PatchOnAdapterRemoved;
         }
 
         #region Patch events
@@ -93,12 +101,10 @@ namespace OctoPatch.Server
             NodeRemoved?.Invoke(node.Id);
         }
 
-        private void PatchOnWireRemoved(IWire wire)
-        {
-            _wireMapping.TryRemove(wire.Id, out _);
-            WireRemoved?.Invoke(wire.Id);
-        }
-
+        /// <summary>
+        /// Handles a new wire
+        /// </summary>
+        /// <param name="wire">added wire</param>
         private void PatchOnWireAdded(IWire wire)
         {
             // Find setup and report new node to the outside
@@ -106,6 +112,41 @@ namespace OctoPatch.Server
             {
                 WireAdded?.Invoke(wireSetup.setup);
             }
+        }
+
+        /// <summary>
+        /// Handles removed wires
+        /// </summary>
+        /// <param name="wire">removed wire</param>
+        private void PatchOnWireRemoved(IWire wire)
+        {
+            WireRemoved?.Invoke(wire.Id);
+        }
+
+        /// <summary>
+        /// Handles added adapter
+        /// </summary>
+        /// <param name="wire">host wire</param>
+        /// <param name="adapter">added adapter</param>
+        private void PatchOnAdapterAdded(IWire wire, IAdapter adapter)
+        {
+            adapter.EnvironmentChanged += AdapterOnEnvironmentChanged;
+            adapter.ConfigurationChanged += AdapterOnConfigurationChanged;
+
+            _adapterMapping.TryAdd(adapter, wire.Id);
+        }
+
+        /// <summary>
+        /// Handles removed adapter
+        /// </summary>
+        /// <param name="wire">host wire</param>
+        /// <param name="adapter">removed adapter</param>
+        private void PatchOnAdapterRemoved(IWire wire, IAdapter adapter)
+        {
+            adapter.EnvironmentChanged -= AdapterOnEnvironmentChanged;
+            adapter.ConfigurationChanged -= AdapterOnConfigurationChanged;
+
+            _adapterMapping.TryRemove(adapter, out _);
         }
 
         #endregion
@@ -139,9 +180,49 @@ namespace OctoPatch.Server
         /// <param name="configuration">new configuration</param>
         private void NodeOnConfigurationChanged(INode node, string configuration)
         {
+            if (_nodeMapping.TryGetValue(node.Id, out var nodeSetup))
+            {
+                nodeSetup.setup.Configuration = configuration;
+                NodeUpdated?.Invoke(nodeSetup.setup);
+            }
         }
 
         #endregion
+
+        #region Adapter events
+
+        /// <summary>
+        /// Handles a changed configuration of the adapter
+        /// </summary>
+        /// <param name="adapter">adapter</param>
+        /// <param name="configuration">configuration</param>
+        private void AdapterOnConfigurationChanged(IAdapter adapter, string configuration)
+        {
+            if (_adapterMapping.TryGetValue(adapter, out var wireId) &&
+                _wireMapping.TryGetValue(wireId, out var wireSetup))
+            {
+                wireSetup.setup.AdapterConfiguration = configuration;
+                WireUpdated?.Invoke(wireSetup.setup);
+            }
+        }
+
+        /// <summary>
+        /// Handles a changed environment of the adapter
+        /// </summary>
+        /// <param name="adapter"></param>
+        /// <param name="environment"></param>
+        private void AdapterOnEnvironmentChanged(IAdapter adapter, string environment)
+        {
+            if (_adapterMapping.TryGetValue(adapter, out var wireId) &&
+                _wireMapping.TryGetValue(wireId, out var wireSetup))
+            {
+                AdapterEnvironmentChanged?.Invoke(wireSetup.wire.Id, environment);
+            }
+        }
+
+        #endregion
+
+        #region IRuntimeMethods
 
         public async Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, int x, int y, CancellationToken cancellationToken)
         {
@@ -256,12 +337,13 @@ namespace OctoPatch.Server
 
             var wire = new Wire(setup.WireId, inputConnector, outputConnector);
 
-            _wireMapping.TryAdd(setup.WireId, (wire, setup));
+            _wireMapping.TryAdd(setup.WireId, (wire, null, setup));
             await _patch.AddWire(wire, cancellationToken);
         }
 
         public Task RemoveWire(Guid wireId, CancellationToken cancellationToken)
         {
+            _wireMapping.TryRemove(wireId, out _);
             return _patch.RemoveWire(wireId, cancellationToken);
         }
 
@@ -442,6 +524,67 @@ namespace OctoPatch.Server
             }
         }
 
+        public async Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken)
+        {
+            if (!_wireMapping.TryGetValue(wireId, out var wireSetup))
+            {
+                throw new ArgumentException("wire does not exist");
+            }
+
+            // Try to create an adapter
+            var adapter = _repository.CreateAdapter(key, wireSetup.wire.Output, wireSetup.wire.Input);
+            await _patch.AddAdapter(wireSetup.wire.Id, adapter, cancellationToken);
+
+            wireSetup.adapter = adapter;
+            wireSetup.setup.AdapterKey = key;
+            wireSetup.setup.AdapterConfiguration = adapter.GetConfiguration();
+
+            // Send out events
+            WireUpdated?.Invoke(wireSetup.setup);
+            AdapterEnvironmentChanged?.Invoke(wireId, adapter.GetEnvironment());
+        }
+
+        public Task<string> GetAdapterEnvironment(Guid wireId, CancellationToken cancellationToken)
+        {
+            if (_wireMapping.TryGetValue(wireId, out var wireSetup))
+            {
+                var adapter = wireSetup.adapter;
+                if (adapter != null)
+                {
+                    return Task.FromResult(wireSetup.adapter.GetEnvironment());
+                }
+            }
+
+            return Task.FromResult<string>(null);
+        }
+
+        public Task<string> GetAdapterConfiguration(Guid wireId, CancellationToken cancellationToken)
+        {
+            if (_wireMapping.TryGetValue(wireId, out var wireSetup))
+            {
+                var adapter = wireSetup.adapter;
+                if (adapter != null)
+                {
+                    return Task.FromResult(wireSetup.adapter.GetConfiguration());
+                }
+            }
+
+            return Task.FromResult<string>(null);
+        }
+
+        public Task SetAdapterConfiguration(Guid wireId, string configuration, CancellationToken cancellationToken)
+        {
+            if (_wireMapping.TryGetValue(wireId, out var wireSetup) && wireSetup.adapter != null)
+            {
+                var adapter = wireSetup.adapter;
+                return wireSetup.adapter.SetConfiguration(configuration, cancellationToken);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        #endregion
+
         /// <inheritdoc />
         public event Action<NodeSetup, NodeState, string> NodeAdded;
 
@@ -465,5 +608,8 @@ namespace OctoPatch.Server
 
         /// <inheritdoc />
         public event Action<Guid, string> NodeEnvironmentChanged;
+
+        /// <inheritdoc />
+        public event Action<Guid, string> AdapterEnvironmentChanged;
     }
 }
