@@ -172,7 +172,7 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(node));
             }
 
-            if (!_nodes.ToArray().Contains(node))
+            if (!_nodes.Contains(node))
             {
                 throw new ArgumentException("node does not exist", nameof(node));
             }
@@ -282,6 +282,16 @@ namespace OctoPatch
                 throw new ArgumentNullException(nameof(wire));
             }
 
+            if (!_wires.Contains(wire))
+            {
+                throw new ArgumentException("wire does not exist", nameof(wire));
+            }
+
+            // Dispose potential existing adapters
+            InternalRemoveAdapter(wire.Id);
+
+            wire.Dispose();
+
             _wires.Remove(wire);
             WireRemoved?.Invoke(wire);
 
@@ -354,6 +364,7 @@ namespace OctoPatch
 
             // Dispose
             adapter.Dispose();
+
             AdapterRemoved?.Invoke(wire, adapter);
             _adapters.Remove(wire);
         }
