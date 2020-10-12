@@ -22,6 +22,7 @@ namespace OctoPatch.Core
         public CorePlugin()
         {
             RegisterNode<ConsoleNode>(ConsoleNode.Description);
+            RegisterNode<SinusGeneratorNode>(SinusGeneratorNode.NodeDescription);
 
             RegisterAdapter<LinearTransformationAdapter>(LinearTransformationAdapter.Description);
         }
