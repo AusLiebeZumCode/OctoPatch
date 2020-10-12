@@ -184,11 +184,18 @@ namespace OctoPatch.DesktopClient.ViewModels
                 var wire = _wires.FirstOrDefault(w => w.InputWire == value || w.OutputWire == value);
                 if (wire == null)
                 {
+                    AdapterDescriptions.Clear();
                     SelectedAdapterDescription = null;
                     AdapterConfiguration = null;
                 }
                 else
                 {
+                    // Fill list of supported adapter
+                    foreach (var adapter in wire.SupportedAdapter)
+                    {
+                        AdapterDescriptions.Add(adapter);
+                    }
+
                     SelectedAdapterDescription =
                         AdapterDescriptions.FirstOrDefault(d => d.Key == wire.Setup.AdapterKey);
 
@@ -676,7 +683,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             _wires.Remove(wire);
         }
 
-        private void RuntimeOnOnWireAdded(WireSetup wire)
+        private async void RuntimeOnOnWireAdded(WireSetup wire)
         {
             var inputNode = _nodes.First(n => n.Setup.NodeId == wire.InputNodeId);
             var inputConnector = inputNode.Model.Items.OfType<InputNodeModel>()
@@ -692,13 +699,16 @@ namespace OctoPatch.DesktopClient.ViewModels
             var outputWire = new WireNodeModel(wire.WireId, $"Wire to {inputNode.Model.Name} ({inputConnector.Name})");
             outputConnector.Items.Add(outputWire);
 
+            var supportedAdapters = await _runtime.GetSupportedAdapters(wire.WireId, CancellationToken.None);
+
             _wires.Add(new WireItem
             {
                 InputConnector = inputConnector,
                 InputWire = inputWire,
                 OutputConnector = outputConnector,
                 OutputWire = outputWire,
-                Setup = wire
+                Setup = wire,
+                SupportedAdapter = _adapterDescriptions.Where(a => supportedAdapters.Contains(a.Key)).ToArray()
             });
         }
 
@@ -852,6 +862,8 @@ namespace OctoPatch.DesktopClient.ViewModels
             public WireNodeModel OutputWire { get; set; }
 
             public WireSetup Setup { get; set; }
+
+            public AdapterDescription[] SupportedAdapter { get; set; }
         }
     }
 }

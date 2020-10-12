@@ -171,6 +171,14 @@ namespace OctoPatch
         #region Wire / Adapter configuration
 
         /// <summary>
+        /// Returns a list of fitting adapters for the given wire
+        /// </summary>
+        /// <param name="wireId">wire</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>list of adapters</returns>
+        Task<IEnumerable<string>> GetSupportedAdapters(Guid wireId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Sets the current adapter for a specific wire
         /// </summary>
         /// <param name="wireId">target wire</param>

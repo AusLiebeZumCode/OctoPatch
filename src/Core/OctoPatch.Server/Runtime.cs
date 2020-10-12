@@ -31,7 +31,12 @@ namespace OctoPatch.Server
         /// <summary>
         /// List of all available node descriptions
         /// </summary>
-        private readonly NodeDescription[] _descriptions;
+        private readonly NodeDescription[] _nodeDescriptions;
+
+        /// <summary>
+        /// LIst of all available adapter descriptions
+        /// </summary>
+        private readonly AdapterDescription[] _adapterDescriptions;
 
         /// <summary>
         /// Collection of existing nodes
@@ -51,10 +56,8 @@ namespace OctoPatch.Server
         public Runtime(IRepository repository)
         {
             _repository = repository;
-            var nodes = new List<NodeDescription>();
-            nodes.AddRange(repository.GetNodeDescriptions());
-
-            _descriptions = nodes.ToArray();
+            _nodeDescriptions = repository.GetNodeDescriptions().ToArray();
+            _adapterDescriptions = repository.GetAdapterDescriptions().ToArray();
 
             _nodeMapping = new ConcurrentDictionary<Guid, (INode node, NodeSetup setup)>();
             _wireMapping = new ConcurrentDictionary<Guid, (IWire wire, IAdapter adapter, WireSetup setup)>();
@@ -226,7 +229,7 @@ namespace OctoPatch.Server
 
         public async Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, int x, int y, CancellationToken cancellationToken)
         {
-            var description = _descriptions.First(d => d.Key == key);
+            var description = _nodeDescriptions.First(d => d.Key == key);
 
             var setup = new NodeSetup
             {
@@ -523,6 +526,32 @@ namespace OctoPatch.Server
                 await nodeSetup.node.Stop(cancellationToken);
             }
         }
+
+        public Task<IEnumerable<string>> GetSupportedAdapters(Guid wireId, CancellationToken cancellationToken)
+        {
+            var fittingAdapters = new List<string>();
+            if (_wireMapping.TryGetValue(wireId, out var wireSetup))
+            {
+                return Task.FromResult(fittingAdapters.AsEnumerable());
+            }
+
+            var input = wireSetup.wire.Output.ContentType.Type;
+            var output = wireSetup.wire.Input.ContentType.Type;
+
+            foreach (var adapterDescription in _adapterDescriptions)
+            {
+                // See if any of the supported combinations fits to the given situation
+                if (adapterDescription.SupportedTypeCombinations.Any(d =>
+                    string.Equals(d.input, input, StringComparison.InvariantCultureIgnoreCase) &&
+                    string.Equals(d.output, output, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    fittingAdapters.Add(adapterDescription.Key);
+                }
+            }
+
+            return Task.FromResult(fittingAdapters.AsEnumerable());
+        }
+
 
         public async Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken)
         {

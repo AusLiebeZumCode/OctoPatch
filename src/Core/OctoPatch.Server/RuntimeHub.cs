@@ -194,6 +194,12 @@ namespace OctoPatch.Server
         #region Wire / Adapter configuration
 
         /// <inheritdoc />
+        public Task<IEnumerable<string>> GetSupportedAdapters(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
         public Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
