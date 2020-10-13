@@ -320,7 +320,7 @@ namespace OctoPatch.Server
                 throw new ArgumentException("output node does not exist");
             }
 
-            var outputConnector = outputSetup.node.Outputs.FirstOrDefault(c => c.Key == setup.OutputConnectorKey);
+            var outputConnector = outputSetup.node.Inputs.FirstOrDefault(c => c.Key == setup.OutputConnectorKey);
             if (outputConnector == null)
             {
                 throw new ArgumentException("output connector could not be found");
@@ -332,7 +332,7 @@ namespace OctoPatch.Server
                 throw new ArgumentException("input node does not exist");
             }
 
-            var inputConnector = inputSetup.node.Inputs.FirstOrDefault(c => c.Key == setup.InputConnectorKey);
+            var inputConnector = inputSetup.node.Outputs.FirstOrDefault(c => c.Key == setup.InputConnectorKey);
             if (inputConnector == null)
             {
                 throw new ArgumentException("input connector could not be found");

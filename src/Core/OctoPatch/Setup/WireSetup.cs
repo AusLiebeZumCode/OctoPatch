@@ -16,25 +16,25 @@ namespace OctoPatch.Setup
         public Guid WireId { get; set; }
 
         /// <summary>
-        /// Instance id of the node with the output connector
+        /// Instance id of the target node
         /// </summary>
         [DataMember]
         public Guid OutputNodeId { get; set; }
 
         /// <summary>
-        /// connector key of the output connector
+        /// connector key of the target node
         /// </summary>
         [DataMember]
         public string OutputConnectorKey { get; set; }
 
         /// <summary>
-        /// Instance id of the node with the input connector
+        /// Instance id of the source node
         /// </summary>
         [DataMember]
         public Guid InputNodeId { get; set; }
 
         /// <summary>
-        /// connector key of the input connector
+        /// connector key of the source node
         /// </summary>
         [DataMember]
         public string InputConnectorKey { get; set; }
