@@ -12,11 +12,12 @@ namespace OctoPatch.Plugin.Keyboard
         public override Guid Id => Guid.Parse(PluginId);
         public override string Name => "Keyboard";
         public override string Description => "Adds keyboard support to the octo patch";
-        public override Version Version => new Version(1, 0, 0);
+        public override Version Version => new Version(1, 1, 0);
 
         public KeyboardPlugin()
         {
             RegisterNode<KeyboardNode>(KeyboardNode.NodeDescription);
+            RegisterNode<KeyboardStringNode>(KeyboardStringNode.NodeDescription);
         }
     }
 }
