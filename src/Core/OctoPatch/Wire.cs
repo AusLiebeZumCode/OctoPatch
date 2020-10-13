@@ -7,35 +7,20 @@ namespace OctoPatch
     /// </summary>
     public sealed class Wire : IWire
     {
-        private readonly IDisposable _subscription;
-
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public Guid Id { get; }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
-        public IInputConnector Input { get; }
+        public IInputConnector Output { get; }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
-        public IOutputConnector Output { get; }
+        public IOutputConnector Input { get; }
 
-        public Wire(Guid id, IInputConnector input, IOutputConnector output)
+        public Wire(Guid id, IOutputConnector input, IInputConnector output)
         {
             Id = id;
             Input = input;
             Output = output;
-
-            _subscription = output.Subscribe(input);
-        }
-
-        public void Dispose()
-        {
-            _subscription.Dispose();
         }
     }
 }
