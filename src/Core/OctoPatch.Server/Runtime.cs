@@ -53,7 +53,7 @@ namespace OctoPatch.Server
         /// </summary>
         private readonly ConcurrentDictionary<IAdapter, Guid> _adapterMapping;
 
-        public Runtime(IRepository repository)
+        public Runtime(IRepository repository, IPatch patch = null)
         {
             _repository = repository;
             _nodeDescriptions = repository.GetNodeDescriptions().ToArray();
@@ -63,7 +63,7 @@ namespace OctoPatch.Server
             _wireMapping = new ConcurrentDictionary<Guid, (IWire wire, IAdapter adapter, WireSetup setup)>();
             _adapterMapping = new ConcurrentDictionary<IAdapter, Guid>();
 
-            _patch = new Patch();
+            _patch = patch ?? new Patch();
             _patch.NodeAdded += PatchOnNodeAdded;
             _patch.NodeRemoved += PatchOnNodeRemoved;
             _patch.WireAdded += PatchOnWireAdded;
