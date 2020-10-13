@@ -530,7 +530,7 @@ namespace OctoPatch.Server
         public Task<IEnumerable<string>> GetSupportedAdapters(Guid wireId, CancellationToken cancellationToken)
         {
             var fittingAdapters = new List<string>();
-            if (_wireMapping.TryGetValue(wireId, out var wireSetup))
+            if (!_wireMapping.TryGetValue(wireId, out var wireSetup))
             {
                 return Task.FromResult(fittingAdapters.AsEnumerable());
             }

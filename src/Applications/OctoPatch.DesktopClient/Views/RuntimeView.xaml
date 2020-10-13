@@ -339,7 +339,11 @@
                     
                     <!-- Name -->
                     <Label Grid.Row="0" Content="Adapter" FontWeight="Bold" />
-                    <ComboBox Grid.Row="1" ItemsSource="{Binding AdapterDescriptions}" SelectedItem="{Binding SelectedAdapterDescription}" Margin="5 0 5 10" />
+                    <ComboBox Grid.Row="1" 
+                              ItemsSource="{Binding AdapterDescriptions}" 
+                              SelectedItem="{Binding SelectedAdapterDescription}" 
+                              DisplayMemberPath="DisplayName"
+                              Margin="5 0 5 10" />
 
                     <!-- Button -->
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">

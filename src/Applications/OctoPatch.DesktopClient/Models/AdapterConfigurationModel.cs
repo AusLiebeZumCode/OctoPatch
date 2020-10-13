@@ -7,8 +7,9 @@ namespace OctoPatch.DesktopClient.Models
     /// </summary>
     /// <typeparam name="TConfiguration">model type for configuration</typeparam>
     /// <typeparam name="TEnvironment">model type for environment</typeparam>
-    public abstract class AdapterConfigurationModel<TConfiguration> : ConfigurationModel 
+    public abstract class AdapterConfigurationModel<TConfiguration, TEnvironment> : ConfigurationModel
         where TConfiguration : IConfiguration
+        where TEnvironment : IEnvironment
     {
         public override void Setup(string environment)
         {

@@ -31,7 +31,7 @@ namespace OctoPatch.DesktopClient.Views
             else if (e.PropertyName == nameof(RuntimeViewModel.AdapterConfiguration))
             {
                 // Create proper adapter configuration control
-                AdapterConfigurationContainer.Content = ConfigurationMap.GetConfigurationView(_viewModel.NodeConfiguration);
+                AdapterConfigurationContainer.Content = ConfigurationMap.GetConfigurationView(_viewModel.AdapterConfiguration);
             }
         }
 

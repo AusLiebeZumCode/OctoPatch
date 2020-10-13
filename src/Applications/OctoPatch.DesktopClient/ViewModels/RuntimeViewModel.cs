@@ -202,7 +202,8 @@ namespace OctoPatch.DesktopClient.ViewModels
                     AdapterConfiguration = ConfigurationMap.GetConfigurationModel(wire.Setup.AdapterKey);
                     if (AdapterConfiguration != null)
                     {
-
+                        AdapterConfiguration.Setup(wire.Environment);
+                        AdapterConfiguration.SetConfiguration(wire.Setup.AdapterConfiguration);
                     }
 
                 }
@@ -406,6 +407,7 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.WireAdded += RuntimeOnOnWireAdded;
             _runtime.WireRemoved += RuntimeOnOnWireRemoved;
             _runtime.WireUpdated += RuntimeOnWireUpdated;
+            _runtime.AdapterEnvironmentChanged += RuntimeOnAdapterEnvironmentChanged;
 
             Task.Run(() => Setup(CancellationToken.None));
         }
@@ -445,19 +447,48 @@ namespace OctoPatch.DesktopClient.ViewModels
             await _runtime.SetConfiguration(null, CancellationToken.None);
         }
 
-        private void RuntimeOnWireUpdated(WireSetup obj)
+        private void RuntimeOnWireUpdated(WireSetup wireSetup)
         {
-            // Nothing to do yet
+            var wire = _wires.FirstOrDefault(n => n.Setup.WireId == wireSetup.WireId);
+            if (wire == null)
+            {
+                return;
+            }
+
+            wire.Setup = wireSetup;
         }
+
+        private void RuntimeOnAdapterEnvironmentChanged(Guid wireId, string environment)
+        {
+            var wire = _wires.FirstOrDefault(n => n.Setup.WireId == wireId);
+            if (wire == null)
+            {
+                return;
+            }
+
+            wire.Environment = environment;
+        }
+
 
         private void SaveAdapterConfigurationCallback(object obj)
         {
             throw new NotImplementedException();
         }
 
-        private void SaveAdapterCallback(object obj)
+        private async void SaveAdapterCallback(object obj)
         {
-            throw new NotImplementedException();
+            var node = SelectedNode;
+            var item = _wires.FirstOrDefault(n => n.InputWire == node || n.OutputWire == node);
+            if (item == null)
+            {
+                return;
+            }
+
+            var adapterDescription = SelectedAdapterDescription;
+            if (adapterDescription != null)
+            {
+                await _runtime.SetAdapter(item.Setup.WireId, adapterDescription.Key, CancellationToken.None);
+            }
         }
 
         private async void RemoveSelectedWireCallback(object obj)
@@ -862,6 +893,8 @@ namespace OctoPatch.DesktopClient.ViewModels
             public WireNodeModel OutputWire { get; set; }
 
             public WireSetup Setup { get; set; }
+
+            public string Environment { get; set; }
 
             public AdapterDescription[] SupportedAdapter { get; set; }
         }

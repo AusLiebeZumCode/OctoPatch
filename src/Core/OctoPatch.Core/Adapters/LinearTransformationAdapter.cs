@@ -4,7 +4,7 @@ using OctoPatch.ContentTypes;
 
 namespace OctoPatch.Core.Adapters
 {
-    public sealed class LinearTransformationAdapter : Adapter<EmptyConfiguration, EmptyEnvironment>
+    public sealed class LinearTransformationAdapter : Adapter<LinearTransformationAdapter.Config, EmptyEnvironment>
     {
         #region definitions
 
@@ -26,6 +26,11 @@ namespace OctoPatch.Core.Adapters
         protected override Message Handle(Message message)
         {
             return message;
+        }
+
+        public sealed class Config : IConfiguration
+        {
+            public bool Inverted { get; set; }
         }
     }
 }
