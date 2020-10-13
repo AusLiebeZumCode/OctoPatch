@@ -26,9 +26,9 @@ namespace OctoPatch.DesktopClient.Models
 
         protected override KeyboardStringConfiguration OnGetConfiguration()
         {
-            return new KeyboardStringConfiguration()
+            return new KeyboardStringConfiguration
             {
-                IgnoreNotPrintable = this.IgnoreNotPrintable
+                IgnoreNotPrintable = IgnoreNotPrintable
             };
         }
 
