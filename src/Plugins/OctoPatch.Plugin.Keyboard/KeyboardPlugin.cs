@@ -19,10 +19,5 @@ namespace OctoPatch.Plugin.Keyboard
             RegisterNode<KeyboardNode>(KeyboardNode.NodeDescription);
             RegisterNode<KeyboardStringNode>(KeyboardStringNode.NodeDescription);
         }
-
-        protected override IAdapter OnCreateAdapter(Type type)
-        {
-            return null;
-        }
     }
 }

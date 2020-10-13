@@ -33,10 +33,5 @@ namespace OctoPatch.Plugin.Rest
         {
             RegisterNode<RestGetNode>(RestGetNode.Description);
         }
-
-        protected override IAdapter OnCreateAdapter(Type type)
-        {
-            return null;
-        }
     }
 }

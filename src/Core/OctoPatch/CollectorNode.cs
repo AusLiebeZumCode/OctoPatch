@@ -10,15 +10,17 @@ namespace OctoPatch
     /// </summary>
     public sealed class CollectorNode : Node<EmptyConfiguration, EmptyEnvironment>, ICollectorNode
     {
-        private readonly TypeDescription _description;
-
         public IInputConnector Connector { get; }
 
         protected override EmptyConfiguration DefaultConfiguration => new EmptyConfiguration();
 
         public CollectorNode(Guid nodeId, TypeDescription description, IInputConnector connector) : base(nodeId)
         {
-            _description = description ?? throw new ArgumentNullException(nameof(description));
+            if (description == null)
+            {
+                throw new ArgumentNullException(nameof(description));
+            }
+
             Connector = connector ?? throw new ArgumentNullException(nameof(connector));
         }
 

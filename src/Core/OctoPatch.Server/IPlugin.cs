@@ -61,7 +61,9 @@ namespace OctoPatch.Server
         /// Method to generate a new instance of the adapter with the given key.
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="output">reference to the input connector of the target node</param>
+        /// <param name="input">reference to the output connector of the source node</param>
         /// <returns></returns>
-        IAdapter CreateAdapter(string key);
+        IAdapter CreateAdapter(string key, IOutputConnector input, IInputConnector output);
     }
 }

@@ -126,14 +126,14 @@ namespace OctoPatch.Server
         /// <summary>
         /// <inheritdoc />
         /// </summary>
-        public IAdapter CreateAdapter(string key)
+        public IAdapter CreateAdapter(string key, IOutputConnector input, IInputConnector output)
         {
             if (!_adapterMapping.TryGetValue(key, out var plugin))
             {
                 return null;
             }
 
-            return plugin.CreateAdapter(key);
+            return plugin.CreateAdapter(key, input, output);
         }
     }
 }

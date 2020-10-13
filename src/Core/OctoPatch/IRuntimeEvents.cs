@@ -47,5 +47,10 @@ namespace OctoPatch
         /// Gets a call when an existing wire changed setup
         /// </summary>
         event Action<WireSetup> WireUpdated;
+
+        /// <summary>
+        /// Gets a call when the adapter environment changed
+        /// </summary>
+        event Action<Guid, string> AdapterEnvironmentChanged;
     }
 }

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
 using OctoPatch.Server;
@@ -22,7 +25,28 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private readonly List<WireItem> _wires;
 
-        private readonly List<NodeDescription> _descriptions;
+        private readonly List<NodeDescription> _nodeDescriptions;
+
+        private readonly List<AdapterDescription> _adapterDescriptions;
+
+        #region Application
+
+        private readonly ActionCommand _newCommand;
+
+        /// <inheritdoc />
+        public ICommand NewCommand => _newCommand;
+
+        private readonly ActionCommand _loadCommand;
+
+        /// <inheritdoc />
+        public ICommand LoadCommand => _loadCommand;
+
+        private readonly ActionCommand _saveCommand;
+
+        /// <inheritdoc />
+        public ICommand SaveCommand => _saveCommand;
+
+        #endregion
 
         #region Toolbox
 
@@ -71,7 +95,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                 {
                     case InputNodeModel input:
 
-                        foreach (var description in _descriptions.OfType<CollectorNodeDescription>().Where(d => d.TypeKey == input.TypeKey))
+                        foreach (var description in _nodeDescriptions.OfType<CollectorNodeDescription>().Where(d => d.TypeKey == input.TypeKey))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -79,7 +103,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         break;
                     case OutputNodeModel output:
 
-                        foreach (var description in _descriptions.OfType<SplitterNodeDescription>().Where(d => d.TypeKey == output.TypeKey))
+                        foreach (var description in _nodeDescriptions.OfType<SplitterNodeDescription>().Where(d => d.TypeKey == output.TypeKey))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -88,7 +112,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
                     case CommonNodeModel common:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == common.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == common.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -96,7 +120,7 @@ namespace OctoPatch.DesktopClient.ViewModels
                         break;
                     case AttachedNodeModel attached:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == attached.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == attached.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -105,7 +129,7 @@ namespace OctoPatch.DesktopClient.ViewModels
 
                     case SplitterNodeModel splitter:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == splitter.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == splitter.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
@@ -114,20 +138,21 @@ namespace OctoPatch.DesktopClient.ViewModels
 
                     case CollectorNodeModel collector:
 
-                        foreach (var description in _descriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == collector.Key))
+                        foreach (var description in _nodeDescriptions.OfType<AttachedNodeDescription>().Where(d => d.ParentKey == collector.Key))
                         {
                             ContextNodeDescriptions.Add(description);
                         }
 
                         break;
-
                 }
 
-                var item = _nodes.FirstOrDefault(n => n.Model == value);
+                #region node management
 
+                var item = _nodes.FirstOrDefault(n => n.Model == value);
                 if (item == null)
                 {
                     NodeDescription = null;
+                    NodeConfiguration = null;
                 }
                 else
                 {
@@ -136,6 +161,13 @@ namespace OctoPatch.DesktopClient.ViewModels
                         Name = item.Setup.Name,
                         Description = item.Setup.Description
                     };
+
+                    NodeConfiguration = ConfigurationMap.GetConfigurationModel(item.Setup.Key);
+                    if (NodeConfiguration != null)
+                    {
+                        NodeConfiguration.Setup(item.Environment);
+                        NodeConfiguration.SetConfiguration(item.Setup.Configuration);
+                    }
                 }
 
                 _removeSelectedNode.Enabled = item != null;
@@ -143,40 +175,44 @@ namespace OctoPatch.DesktopClient.ViewModels
                 _stopSelectedNode.Enabled = item != null;
                 _saveNodeDescription.Enabled = item != null;
                 _takeConnector.Enabled = SelectedWireConnector != null && value is InputNodeModel || value is OutputNodeModel;
-
-                switch (item?.Setup.Key)
-                {
-                    //// TODO: Lookup model by Attribute
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:MidiDeviceNode":
-                        NodeConfiguration = new MidiDeviceModel();
-                        break;
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiOutputNode":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:ControlMidiInputNode":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiOutputNode":
-                    case "12ea0035-45af-4da8-8b5d-e1b9d9484ba4:NoteMidiInputNode":
-                        NodeConfiguration = new MidiAttachedNodeModel();
-                        break;
-                    case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardNode":
-                        NodeConfiguration = null;
-                        break;
-                    case "40945d30-186d-4aee-8895-058fb4759eff:RestGetNode":
-                        NodeConfiguration = new RestGetModel();
-                        break;
-                    case "a6fe76d7-5f0e-4763-a3a5-fcaf43c71464:KeyboardStringNode":
-                        NodeConfiguration = new KeyboardStringModel();
-                        break;
-                    default:
-                        NodeConfiguration = null;
-                        break;
-                }
-
-                if (NodeConfiguration != null)
-                {
-                    NodeConfiguration.Setup(item.Environment);
-                    NodeConfiguration.SetConfiguration(item.Setup.Configuration);
-                }
-
                 _saveNodeConfiguration.Enabled = NodeConfiguration != null;
+
+                #endregion
+
+                #region wire management
+
+                var wire = _wires.FirstOrDefault(w => w.InputWire == value || w.OutputWire == value);
+                if (wire == null)
+                {
+                    AdapterDescriptions.Clear();
+                    SelectedAdapterDescription = null;
+                    AdapterConfiguration = null;
+                }
+                else
+                {
+                    // Fill list of supported adapter
+                    foreach (var adapter in wire.SupportedAdapter)
+                    {
+                        AdapterDescriptions.Add(adapter);
+                    }
+
+                    SelectedAdapterDescription =
+                        AdapterDescriptions.FirstOrDefault(d => d.Key == wire.Setup.AdapterKey);
+
+                    AdapterConfiguration = ConfigurationMap.GetConfigurationModel(wire.Setup.AdapterKey);
+                    if (AdapterConfiguration != null)
+                    {
+                        AdapterConfiguration.Setup(wire.Environment);
+                        AdapterConfiguration.SetConfiguration(wire.Setup.AdapterConfiguration);
+                    }
+
+                }
+
+                _removeSelectedWire.Enabled = wire != null;
+                _saveAdapter.Enabled = wire != null;
+                _saveAdapterConfiguration.Enabled = AdapterConfiguration != null;
+
+                #endregion
             }
         }
 
@@ -250,9 +286,9 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         #region Node specific configuration
 
-        private NodeConfigurationModel _nodeConfiguration;
+        private ConfigurationModel _nodeConfiguration;
 
-        public NodeConfigurationModel NodeConfiguration
+        public ConfigurationModel NodeConfiguration
         {
             get => _nodeConfiguration;
             private set
@@ -312,9 +348,9 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         #region Adapter configuration
 
-        private AdapterConfigurationModel _adapterConfiguration;
+        private ConfigurationModel _adapterConfiguration;
 
-        public AdapterConfigurationModel AdapterConfiguration
+        public ConfigurationModel AdapterConfiguration
         {
             get => _adapterConfiguration;
             private set
@@ -336,7 +372,8 @@ namespace OctoPatch.DesktopClient.ViewModels
         {
             _nodes = new List<NodeItem>();
             _wires = new List<WireItem>();
-            _descriptions = new List<NodeDescription>();
+            _nodeDescriptions = new List<NodeDescription>();
+            _adapterDescriptions = new List<AdapterDescription>();
 
             NodeDescriptions = new ObservableCollection<NodeDescription>();
             ContextNodeDescriptions = new ObservableCollection<NodeDescription>();
@@ -355,6 +392,10 @@ namespace OctoPatch.DesktopClient.ViewModels
             _saveAdapter = new ActionCommand(SaveAdapterCallback, false);
             _saveAdapterConfiguration = new ActionCommand(SaveAdapterConfigurationCallback, false);
 
+            _newCommand = new ActionCommand(NewCommandCallback);
+            _loadCommand = new ActionCommand(LoadCommandCallback);
+            _saveCommand = new ActionCommand(SaveCommandCallback);
+
             var repository = new Repository();
             _runtime = new Runtime(repository);
 
@@ -366,28 +407,100 @@ namespace OctoPatch.DesktopClient.ViewModels
             _runtime.WireAdded += RuntimeOnOnWireAdded;
             _runtime.WireRemoved += RuntimeOnOnWireRemoved;
             _runtime.WireUpdated += RuntimeOnWireUpdated;
+            _runtime.AdapterEnvironmentChanged += RuntimeOnAdapterEnvironmentChanged;
 
             Task.Run(() => Setup(CancellationToken.None));
         }
 
-        private void RuntimeOnWireUpdated(WireSetup obj)
+        private async void SaveCommandCallback(object obj)
         {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "OctoPatch Grid|*.grid"
+            };
 
+            if (dialog.ShowDialog() == true)
+            {
+                var grid = await _runtime.GetConfiguration(CancellationToken.None);
+                var output = JsonConvert.SerializeObject(grid);
+                await File.WriteAllTextAsync(dialog.FileName, output);
+            }
         }
+
+        private async void LoadCommandCallback(object obj)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "OctoPatch Grid|*.grid"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var input = await File.ReadAllTextAsync(dialog.FileName, CancellationToken.None);
+                var grid = JsonConvert.DeserializeObject<GridSetup>(input);
+                await _runtime.SetConfiguration(grid, CancellationToken.None);
+            }
+        }
+
+        private async void NewCommandCallback(object obj)
+        {
+            await _runtime.SetConfiguration(null, CancellationToken.None);
+        }
+
+        private void RuntimeOnWireUpdated(WireSetup wireSetup)
+        {
+            var wire = _wires.FirstOrDefault(n => n.Setup.WireId == wireSetup.WireId);
+            if (wire == null)
+            {
+                return;
+            }
+
+            wire.Setup = wireSetup;
+        }
+
+        private void RuntimeOnAdapterEnvironmentChanged(Guid wireId, string environment)
+        {
+            var wire = _wires.FirstOrDefault(n => n.Setup.WireId == wireId);
+            if (wire == null)
+            {
+                return;
+            }
+
+            wire.Environment = environment;
+        }
+
 
         private void SaveAdapterConfigurationCallback(object obj)
         {
             throw new NotImplementedException();
         }
 
-        private void SaveAdapterCallback(object obj)
+        private async void SaveAdapterCallback(object obj)
         {
-            throw new NotImplementedException();
+            var node = SelectedNode;
+            var item = _wires.FirstOrDefault(n => n.InputWire == node || n.OutputWire == node);
+            if (item == null)
+            {
+                return;
+            }
+
+            var adapterDescription = SelectedAdapterDescription;
+            if (adapterDescription != null)
+            {
+                await _runtime.SetAdapter(item.Setup.WireId, adapterDescription.Key, CancellationToken.None);
+            }
         }
 
-        private void RemoveSelectedWireCallback(object obj)
+        private async void RemoveSelectedWireCallback(object obj)
         {
-            throw new NotImplementedException();
+            var node = SelectedNode;
+            var item = _wires.FirstOrDefault(n => n.InputWire == node || n.OutputWire == node);
+            if (item == null)
+            {
+                return;
+            }
+
+            await _runtime.RemoveWire(item.Setup.WireId, CancellationToken.None);
         }
 
         private async void TakeConnectorCallback(object obj)
@@ -462,15 +575,15 @@ namespace OctoPatch.DesktopClient.ViewModels
 
             if (contextNode is SplitterNodeDescription)
             {
-                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
+                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, 0, 0, CancellationToken.None);
             }
             else if (contextNode is CollectorNodeDescription)
             {
-                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, CancellationToken.None);
+                await _runtime.AddNode(contextNode.Key, parentId, connectorKey, 0, 0, CancellationToken.None);
             }
             else if (contextNode is AttachedNodeDescription)
             {
-                await _runtime.AddNode(contextNode.Key, parentId, null, CancellationToken.None);
+                await _runtime.AddNode(contextNode.Key, parentId, null, 0, 0, CancellationToken.None);
             }
         }
 
@@ -582,15 +695,26 @@ namespace OctoPatch.DesktopClient.ViewModels
             var description = SelectedNodeDescription;
             if (description != null)
             {
-                await _runtime.AddNode(description.Key, null, null, CancellationToken.None);
+                await _runtime.AddNode(description.Key, null, null, 0, 0, CancellationToken.None);
             }
         }
 
-        private void RuntimeOnOnWireRemoved(Guid obj)
+        private void RuntimeOnOnWireRemoved(Guid wireId)
         {
+            var wire = _wires.FirstOrDefault(n => n.Setup.WireId == wireId);
+            if (wire == null)
+            {
+                return;
+            }
+
+            // Remove node in tree
+            RemoveRecursive(wire.InputWire, NodeTree);
+            RemoveRecursive(wire.OutputWire, NodeTree);
+
+            _wires.Remove(wire);
         }
 
-        private void RuntimeOnOnWireAdded(WireSetup wire)
+        private async void RuntimeOnOnWireAdded(WireSetup wire)
         {
             var inputNode = _nodes.First(n => n.Setup.NodeId == wire.InputNodeId);
             var inputConnector = inputNode.Model.Items.OfType<InputNodeModel>()
@@ -606,13 +730,16 @@ namespace OctoPatch.DesktopClient.ViewModels
             var outputWire = new WireNodeModel(wire.WireId, $"Wire to {inputNode.Model.Name} ({inputConnector.Name})");
             outputConnector.Items.Add(outputWire);
 
+            var supportedAdapters = await _runtime.GetSupportedAdapters(wire.WireId, CancellationToken.None);
+
             _wires.Add(new WireItem
             {
                 InputConnector = inputConnector,
                 InputWire = inputWire,
                 OutputConnector = outputConnector,
                 OutputWire = outputWire,
-                Setup = wire
+                Setup = wire,
+                SupportedAdapter = _adapterDescriptions.Where(a => supportedAdapters.Contains(a.Key)).ToArray()
             });
         }
 
@@ -653,7 +780,7 @@ namespace OctoPatch.DesktopClient.ViewModels
         private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
             // identify description
-            var description = _descriptions.FirstOrDefault(d => d.Key == setup.Key);
+            var description = _nodeDescriptions.FirstOrDefault(d => d.Key == setup.Key);
 
             NodeModel nodeModel = null;
             switch (description)
@@ -724,15 +851,19 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         public async Task Setup(CancellationToken cancellationToken)
         {
-            var descriptions = await _runtime.GetNodeDescriptions(cancellationToken);
+            var nodeDescriptions = await _runtime.GetNodeDescriptions(cancellationToken);
+            var adapterDescriptions = await _runtime.GetAdapterDescriptions(cancellationToken);
 
-            _descriptions.Clear();
-            _descriptions.AddRange(descriptions);
+            _nodeDescriptions.Clear();
+            _nodeDescriptions.AddRange(nodeDescriptions);
 
-            foreach (var description in _descriptions.OfType<CommonNodeDescription>())
+            foreach (var description in _nodeDescriptions.OfType<CommonNodeDescription>())
             {
                 NodeDescriptions.Add(description);
             }
+
+            _adapterDescriptions.Clear();
+            _adapterDescriptions.AddRange(adapterDescriptions);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -762,6 +893,10 @@ namespace OctoPatch.DesktopClient.ViewModels
             public WireNodeModel OutputWire { get; set; }
 
             public WireSetup Setup { get; set; }
+
+            public string Environment { get; set; }
+
+            public AdapterDescription[] SupportedAdapter { get; set; }
         }
     }
 }

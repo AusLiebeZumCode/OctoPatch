@@ -25,9 +25,7 @@ namespace OctoPatch
 
         private readonly List<IOutputConnector> _outputs;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public Guid Id { get; }
 
         private TConfiguration _configuration;
@@ -62,9 +60,7 @@ namespace OctoPatch
 
         private NodeState _state;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public NodeState State
         {
             get => _state;
@@ -75,27 +71,19 @@ namespace OctoPatch
             }
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public IEnumerable<IInputConnector> Inputs => _inputs;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public IEnumerable<IOutputConnector> Outputs => _outputs;
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public string GetEnvironment()
         {
             return JsonConvert.SerializeObject(Environment);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public string GetConfiguration()
         {
             return JsonConvert.SerializeObject(Configuration);
@@ -119,9 +107,7 @@ namespace OctoPatch
 
         #region Lifecycle methods
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public Task Initialize(CancellationToken cancellationToken)
         {
             var configuration = JsonConvert.SerializeObject(DefaultConfiguration);
@@ -133,9 +119,7 @@ namespace OctoPatch
         /// </summary>
         protected abstract TConfiguration DefaultConfiguration { get; }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task Initialize(string configuration, CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -239,9 +223,7 @@ namespace OctoPatch
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task Start(CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -308,9 +290,7 @@ namespace OctoPatch
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task Stop(CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -376,9 +356,7 @@ namespace OctoPatch
             return Task.CompletedTask;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public async Task Deinitialize(CancellationToken cancellationToken)
         {
             await _localLock.WaitAsync(cancellationToken);
@@ -547,9 +525,7 @@ namespace OctoPatch
             State = initialized ? NodeState.Failed : NodeState.InitializationFailed;
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
         public void Dispose()
         {
             OnDispose();
@@ -615,19 +591,13 @@ namespace OctoPatch
 
         #endregion
 
-        /// <summary>
-        /// Gets a call when the current node state changes.
-        /// </summary>
+        /// <inheritdoc />
         public event Action<INode, NodeState> StateChanged;
 
-        /// <summary>
-        /// Gets a call when the current configuration changes.
-        /// </summary>
+        /// <inheritdoc />
         public event Action<INode, string> ConfigurationChanged;
 
-        /// <summary>
-        /// Gets a call when the current environment changes.
-        /// </summary>
+        /// <inheritdoc />
         public event Action<INode, string> EnvironmentChanged;
     }
 }

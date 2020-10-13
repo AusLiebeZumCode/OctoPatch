@@ -33,6 +33,7 @@ namespace OctoPatch.Server
         /// </summary>
         public Task<IEnumerable<NodeDescription>> GetNodeDescriptions(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Asked for node descriptions");
             return Task.FromResult(_repository.GetNodeDescriptions());
         }
 
@@ -99,7 +100,7 @@ namespace OctoPatch.Server
             //return Task.CompletedTask;
         }
 
-        public Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken)
+        public Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, int x, int y, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -189,5 +190,39 @@ namespace OctoPatch.Server
         {
             throw new NotImplementedException();
         }
+
+        #region Wire / Adapter configuration
+
+        /// <inheritdoc />
+        public Task<IEnumerable<string>> GetSupportedAdapters(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task<string> GetAdapterEnvironment(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task<string> GetAdapterConfiguration(Guid wireId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task SetAdapterConfiguration(Guid wireId, string configuration, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

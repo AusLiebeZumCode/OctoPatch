@@ -39,6 +39,21 @@ namespace OctoPatch
         Task RemoveWire(Guid wireId, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Sets a new adapter for the given node
+        /// </summary>
+        /// <param name="wireId">wire id</param>
+        /// <param name="adapter">adapter instance</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task AddAdapter(Guid wireId, IAdapter adapter, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Removes the adapter of the given wire
+        /// </summary>
+        /// <param name="wireId">wire id</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task RemoveAdapter(Guid wireId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Gets a call when a new node was added
         /// </summary>
         event Action<INode> NodeAdded;
@@ -57,5 +72,15 @@ namespace OctoPatch
         /// Gets a call when a wire was removed
         /// </summary>
         event Action<IWire> WireRemoved;
+
+        /// <summary>
+        /// Gets a call when a new adapter was added
+        /// </summary>
+        event Action<IWire, IAdapter> AdapterAdded;
+
+        /// <summary>
+        /// Gets a call when an adapter was removed
+        /// </summary>
+        event Action<IWire, IAdapter> AdapterRemoved;
     }
 }

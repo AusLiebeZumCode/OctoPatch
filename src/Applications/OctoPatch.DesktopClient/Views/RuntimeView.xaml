@@ -17,29 +17,6 @@
                                           Uninitialized="Gray" 
                                           Failed="Red" />
 
-        <desktopClient:NodeTemplateSelector x:Key="NodeTemplateSelector">
-            <desktopClient:NodeTemplateSelector.MidiDeviceTemplate>
-                <DataTemplate>
-                    <views:MidiDeviceView />
-                </DataTemplate>
-            </desktopClient:NodeTemplateSelector.MidiDeviceTemplate>
-            <desktopClient:NodeTemplateSelector.RestGetTemplate>
-                <DataTemplate>
-                    <views:RestGetView />
-                </DataTemplate>
-            </desktopClient:NodeTemplateSelector.RestGetTemplate>
-            <desktopClient:NodeTemplateSelector.MidiAttachedTemplate>
-                <DataTemplate>
-                    <views:MidiAttachedView />
-                </DataTemplate>
-            </desktopClient:NodeTemplateSelector.MidiAttachedTemplate>
-            <desktopClient:NodeTemplateSelector.KeyboardStringTemplate>
-                <DataTemplate>
-                    <views:KeyboardStringView />
-                </DataTemplate>
-            </desktopClient:NodeTemplateSelector.KeyboardStringTemplate>
-        </desktopClient:NodeTemplateSelector>
-
         <desktopClient:TreeTemplateSelector x:Key="TreeTemplateSelector">
             <desktopClient:TreeTemplateSelector.AttachedNodeTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Items}">
@@ -137,15 +114,27 @@
 
     </UserControl.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
 
+        <!-- Menu -->
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <MenuItem Header="File">
+                <MenuItem Header="New" Command="{Binding NewCommand}" />
+                <MenuItem Header="Load..." Command="{Binding LoadCommand}" />
+                <MenuItem Header="Save..." Command="{Binding SaveCommand}" />
+            </MenuItem>
+        </Menu>
+        
         <!-- Toolbox column -->
-        <Grid>
-
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -188,13 +177,18 @@
         </Grid>
 
         <!-- Existing blocks -->
-        <TreeView Grid.Column="1" 
+        <TreeView Grid.Row="1" Grid.Column="1" 
                   ItemTemplateSelector="{StaticResource TreeTemplateSelector}"
                   ItemsSource="{Binding NodeTree}" SelectedItemChanged="TreeView_OnSelectedItemChanged">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="True"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
         </TreeView>
 
         <!-- Property column -->
-        <StackPanel Grid.Column="2">
+        <StackPanel Grid.Row="1" Grid.Column="2">
 
             <!-- Common node settings -->
             <Grid Background="LightGray" 
@@ -205,7 +199,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock 
-                        Text="Common settings" 
+                        Text="Common node settings" 
                         Background="#333333" 
                         Foreground="White"
                         FontWeight="Bold"
@@ -250,7 +244,9 @@
                         Foreground="White"
                         FontWeight="Bold"
                         Padding="5" />
-                <ContentControl Grid.Row="1"  ContentTemplateSelector="{StaticResource NodeTemplateSelector}"  Content="{Binding NodeConfiguration}" />
+                <ContentControl Grid.Row="1" x:Name="NodeConfigurationContainer" />
+
+                <!-- Button -->
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
                     <Button Content="Save" Margin="5" Padding="10 5" Command="{Binding SaveNodeConfiguration}" />
                 </StackPanel>
@@ -321,9 +317,45 @@
                 </StackPanel>
             </Grid>
 
+            <!-- Common wire settings -->
+            <Grid Background="LightGray" Visibility="{Binding SelectedNode, Converter={StaticResource WireNodesToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock 
+                    Text="Common wire settings" 
+                    Background="#333333" 
+                    Foreground="White"
+                    FontWeight="Bold"
+                    Padding="5" />
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Name -->
+                    <Label Grid.Row="0" Content="Adapter" FontWeight="Bold" />
+                    <ComboBox Grid.Row="1" 
+                              ItemsSource="{Binding AdapterDescriptions}" 
+                              SelectedItem="{Binding SelectedAdapterDescription}" 
+                              DisplayMemberPath="DisplayName"
+                              Margin="5 0 5 10" />
+
+                    <!-- Button -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                        <Button Content="Save" Margin="5" Padding="10 5" Command="{Binding SaveAdapter}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
             <!-- Wire settings -->
             <Grid Background="LightGray" Visibility="{Binding SelectedNode, Converter={StaticResource WireNodesToVisibilityConverter}}">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -334,35 +366,30 @@
                     Foreground="White"
                     FontWeight="Bold"
                     Padding="5" />
-                <!--<Grid Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                <ContentControl Grid.Row="1"  x:Name="AdapterConfigurationContainer" />
 
-                    -->
-                <!-- Name -->
-                <!--
-                    <Label Grid.Row="0" Content="Name" FontWeight="Bold" />
-                    <TextBox Grid.Row="1" VerticalContentAlignment="Center" Text="{Binding Path=NodeDescription.Name}" Margin="5 0 5 10" />
-
-                    -->
-                <!-- Description -->
-                <!--
-                    <Label Grid.Row="2" Content="Description" VerticalAlignment="Top" FontWeight="Bold" />
-                    <TextBox VerticalContentAlignment="Center" TextWrapping="Wrap"  Grid.Row="3" Margin="5 0 5 10" Text="{Binding Path=NodeDescription.Description}" />
-
-                    -->
                 <!-- Button -->
-                <!--
-                    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-                        <Button Content="Save" Margin="5" Padding="10 5" Command="{Binding SaveNodeDescription}" />
-                    </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                    <Button Content="Save" Margin="5" Padding="10 5" Command="{Binding SaveAdapterConfiguration}" />
+                </StackPanel>
+            </Grid>
 
-                </Grid>-->
+            <!-- Wire controlling -->
+            <Grid Background="LightGray" 
+                  Visibility="{Binding SelectedNode, Converter={StaticResource WireNodesToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock 
+                    Text="Wire controlling" 
+                    Background="#333333" 
+                    Foreground="White"
+                    FontWeight="Bold"
+                    Padding="5" />
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5" HorizontalAlignment="Right" >
+                    <Button Content="Remove" Margin="5" Padding="10 5" Command="{Binding RemoveSelectedWire}" />
+                </StackPanel>
             </Grid>
 
         </StackPanel>

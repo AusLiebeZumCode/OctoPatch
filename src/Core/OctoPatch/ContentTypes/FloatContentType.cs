@@ -43,5 +43,14 @@ namespace OctoPatch.ContentTypes
 
             return input;
         }
+
+        public static FloatContentType Create(float? minimumValue = null, float? maximumValue = null)
+        {
+            return new FloatContentType
+            {
+                MinimumValue = minimumValue,
+                MaximumValue = maximumValue
+            };
+        }
     }
 }

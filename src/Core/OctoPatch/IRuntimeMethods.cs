@@ -74,8 +74,10 @@ namespace OctoPatch
         /// <param name="connectorKey">optional connector key. Is used for splitters and collectors only</param>
         /// <param name="cancellationToken">cancellation token</param>
         /// <param name="parentId">optional parent id. Is used for attached nodes, splitter or collectors</param>
+        /// <param name="x">x position</param>
+        /// <param name="y">y position</param>
         /// <returns>new node setup</returns>
-        Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, CancellationToken cancellationToken);
+        Task<NodeSetup> AddNode(string key, Guid? parentId, string connectorKey, int x, int y, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the node with the given id from the patch
@@ -163,6 +165,50 @@ namespace OctoPatch
         /// <param name="nodeId">node id</param>
         /// <param name="cancellationToken">cancellation token</param>
         Task StopNode(Guid nodeId, CancellationToken cancellationToken);
+
+        #endregion
+
+        #region Wire / Adapter configuration
+
+        /// <summary>
+        /// Returns a list of fitting adapters for the given wire
+        /// </summary>
+        /// <param name="wireId">wire</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>list of adapters</returns>
+        Task<IEnumerable<string>> GetSupportedAdapters(Guid wireId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Sets the current adapter for a specific wire
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="key">adapter key</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task SetAdapter(Guid wireId, string key, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the current adapter environment for the given wire
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>serialized configuration</returns>
+        Task<string> GetAdapterEnvironment(Guid wireId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Gets the current configuration of the adapter of the given wire
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns>serialized configuration</returns>
+        Task<string> GetAdapterConfiguration(Guid wireId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Sets the given configuration at the target adapter
+        /// </summary>
+        /// <param name="wireId">target wire</param>
+        /// <param name="configuration">serialized configuration</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        Task SetAdapterConfiguration(Guid wireId, string configuration, CancellationToken cancellationToken);
 
         #endregion
     }
