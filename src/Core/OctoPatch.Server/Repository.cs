@@ -123,17 +123,15 @@ namespace OctoPatch.Server
             return plugin.CreateNode(key, nodeId, parent, connectorKey);
         }
 
-        /// <summary>
         /// <inheritdoc />
-        /// </summary>
-        public IAdapter CreateAdapter(string key, IOutputConnector input, IInputConnector output)
+        public IAdapter CreateAdapter(string key, IWire wire)
         {
             if (!_adapterMapping.TryGetValue(key, out var plugin))
             {
                 return null;
             }
 
-            return plugin.CreateAdapter(key, input, output);
+            return plugin.CreateAdapter(key, wire);
         }
     }
 }

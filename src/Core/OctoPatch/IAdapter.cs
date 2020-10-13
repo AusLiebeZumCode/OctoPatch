@@ -10,6 +10,11 @@ namespace OctoPatch
     public interface IAdapter : IDisposable
     {
         /// <summary>
+        /// Gets the related wire
+        /// </summary>
+        IWire Wire { get; }
+
+        /// <summary>
         /// Returns the current environment serialized as string
         /// </summary>
         /// <returns>serialized environment</returns>

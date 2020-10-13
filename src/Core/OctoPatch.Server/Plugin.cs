@@ -160,26 +160,26 @@ namespace OctoPatch.Server
             return (INode)Activator.CreateInstance(type, nodeId);
         }
 
-        public IAdapter CreateAdapter(string key, IOutputConnector input, IInputConnector output)
+        /// <inheritdoc />
+        public IAdapter CreateAdapter(string key, IWire wire)
         {
             if (!_adapterTypeMapping.TryGetValue(key, out var type))
             {
                 return null;
             }
 
-            return OnCreateAdapter(type, input, output);
+            return OnCreateAdapter(type, wire);
         }
 
         /// <summary>
         /// Gets a call when the given adapter was requested
         /// </summary>
         /// <param name="type">requested adapter type</param>
-        /// <param name="output">reference to the input connector of the target node</param>
-        /// <param name="input">reference to the output connector of the source node</param>
+        /// <param name="wire">reference to the wire</param>
         /// <returns>new instance</returns>
-        protected virtual IAdapter OnCreateAdapter(Type type, IOutputConnector input, IInputConnector output)
+        protected virtual IAdapter OnCreateAdapter(Type type, IWire wire)
         {
-            return (IAdapter)Activator.CreateInstance(type, input, output);
+            return (IAdapter)Activator.CreateInstance(type, wire);
         }
     }
 }

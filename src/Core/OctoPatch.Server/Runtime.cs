@@ -561,7 +561,7 @@ namespace OctoPatch.Server
             }
 
             // Try to create an adapter
-            var adapter = _repository.CreateAdapter(key, wireSetup.wire.Output, wireSetup.wire.Input);
+            var adapter = _repository.CreateAdapter(key, wireSetup.wire);
             await _patch.AddAdapter(wireSetup.wire.Id, adapter, cancellationToken);
 
             wireSetup.adapter = adapter;

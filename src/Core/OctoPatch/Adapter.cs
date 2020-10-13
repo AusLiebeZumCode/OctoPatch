@@ -19,16 +19,6 @@ namespace OctoPatch
         /// </summary>
         private readonly IDisposable _subscription;
 
-        /// <summary>
-        /// Reference to the input
-        /// </summary>
-        protected IOutputConnector Input { get; }
-
-        /// <summary>
-        /// Reference to the output
-        /// </summary>
-        protected IInputConnector Output { get; }
-
         private TConfiguration _configuration;
 
         /// <summary>
@@ -59,14 +49,28 @@ namespace OctoPatch
             }
         }
 
-        protected Adapter(IOutputConnector input, IInputConnector output)
-        {
-            Input = input;
-            Output = output;
+        /// <summary>
+        /// Internal reference to the input connector
+        /// </summary>
+        protected IOutputConnector Input { get; }
 
-            _subscription = Input.Subscribe(message =>
+        /// <summary>
+        /// Internal reference to the output connector
+        /// </summary>
+        protected IInputConnector Output { get; }
+
+        /// <inheritdoc />
+        public IWire Wire { get; }
+
+        protected Adapter(IWire wire)
+        {
+            Wire = wire ?? throw new ArgumentNullException(nameof(wire));
+            Input = wire.Input ?? throw new ArgumentNullException(nameof(wire.Input));
+            Output = wire.Output ?? throw new ArgumentNullException(nameof(wire.Output));
+
+            _subscription = Wire.Input.Subscribe(message =>
             {
-                Output.OnNext(Handle(message));
+                Wire.Output.OnNext(Handle(message));
             });
         }
 
