@@ -43,8 +43,8 @@ namespace OctoPatch.DesktopClient.Models
 
         protected override void OnSetConfiguration(AttachedNodeConfiguration configuration)
         {
-            Channel = configuration.Channel;
-            Key = configuration.Key;
+            Channel = configuration?.Channel ?? 0;
+            Key = configuration?.Key ?? 0;
         }
 
         protected override AttachedNodeConfiguration OnGetConfiguration()
