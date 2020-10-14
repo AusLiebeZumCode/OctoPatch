@@ -65,7 +65,7 @@ namespace OctoPatch.Test
         public void EmptyHandler()
         {
             var connector = InputConnector.Create<bool>(DefaultNodeGuid, DefaultDescription);
-            Assert.Throws<ArgumentNullException>(() => connector.Handle(null));
+            Assert.Throws<ArgumentNullException>(() => connector.Handle((Action)null));
             Assert.Throws<ArgumentNullException>(() => connector.Handle<bool>(null));
             Assert.Throws<ArgumentNullException>(() => connector.HandleRaw(null));
         }

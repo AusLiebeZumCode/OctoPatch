@@ -752,6 +752,152 @@ namespace OctoPatch
 
         #endregion
 
+        #region Input Management
+
+        /// <summary>
+        /// Registers a new raw input connector to the node
+        /// </summary>
+        /// <param name="description">input connector description</param>
+        /// <param name="handler">message handler</param>
+        /// <returns>new connector</returns>
+        protected void RegisterRawInput(ConnectorDescription description, Action<Message> handler)
+        {
+            var inputConnector = InputConnector.Create(Id, description);
+            _inputs.Add(inputConnector);
+
+            if (handler != null)
+            {
+                inputConnector.HandleRaw(handler.Invoke);
+            }
+        }
+
+        /// <summary>
+        /// Registers a new trigger input connector to the node
+        /// </summary>
+        /// <param name="description">input connector description</param>
+        /// <param name="handler">message handler</param>
+        /// <returns>new connector</returns>
+        protected void RegisterTriggerInput(ConnectorDescription description, Action handler)
+        {
+            if (!description.ContentType.IsSupportedType(typeof(void)))
+            {
+                throw new NotSupportedException("handler does not fit to the connector description");
+            }
+
+            var inputConnector = InputConnector.Create(Id, description);
+            _inputs.Add(inputConnector);
+
+            if (handler != null)
+            {
+                inputConnector.HandleRaw(m =>
+                {
+                    // Make sure message fits to the expected input
+                    if (m.Type != typeof(void))
+                    {
+                        return;
+                    }
+
+                    handler.Invoke();
+                });
+            }
+        }
+
+        /// <summary>
+        /// Registers a new input connector to the node
+        /// </summary>
+        /// <typeparam name="T">message type</typeparam>
+        /// <param name="description">input connector description</param>
+        /// <param name="handler">message handler</param>
+        /// <returns>new connector</returns>
+        protected void RegisterInput<T>(ConnectorDescription description, Action<T> handler) where T : struct
+        {
+            if (!description.ContentType.IsSupportedType<T>())
+            {
+                throw new NotSupportedException("handler does not fit to the connector description");
+            }
+
+            var inputConnector = InputConnector.Create(Id, description);
+            _inputs.Add(inputConnector);
+
+            if (handler != null)
+            {
+                inputConnector.HandleRaw(m =>
+                {
+                    // Make sure message fits to the expected input
+                    if (m.Type != typeof(T))
+                    {
+                        return;
+                    }
+
+                    handler.Invoke((T)m.Content);
+                });
+            }
+        }
+
+        /// <summary>
+        /// Registers a new string input connector to the node
+        /// </summary>
+        /// <param name="description">input connector description</param>
+        /// <param name="handler">message handler</param>
+        /// <returns>new connector</returns>
+        protected void RegisterStringInput(ConnectorDescription description, Action<string> handler)
+        {
+            if (!description.ContentType.IsSupportedType<string>())
+            {
+                throw new NotSupportedException("handler does not fit to the connector description");
+            }
+
+            var inputConnector = InputConnector.Create(Id, description);
+            _inputs.Add(inputConnector);
+
+            if (handler != null)
+            {
+                inputConnector.HandleRaw(m =>
+                {
+                    // Make sure message fits to the expected input
+                    if (m.Type != typeof(string))
+                    {
+                        return;
+                    }
+
+                    handler.Invoke(((StringContentType.StringContainer)m.Content).Content);
+                });
+            }
+        }
+
+        /// <summary>
+        /// Registers a new binary input connector to the node
+        /// </summary>
+        /// <param name="description">input connector description</param>
+        /// <param name="handler">message handler</param>
+        /// <returns>new connector</returns>
+        protected void RegisterBinaryInput(ConnectorDescription description, Action<byte[]> handler)
+        {
+            if (!description.ContentType.IsSupportedType<byte[]>())
+            {
+                throw new NotSupportedException("handler does not fit to the connector description");
+            }
+
+            var inputConnector = InputConnector.Create(Id, description);
+            _inputs.Add(inputConnector);
+
+            if (handler != null)
+            {
+                inputConnector.HandleRaw(m =>
+                {
+                    // Make sure message fits to the expected input
+                    if (m.Type != typeof(byte[]))
+                    {
+                        return;
+                    }
+
+                    handler.Invoke(((BinaryContentType.BinaryContainer)m.Content).Content);
+                });
+            }
+        }
+
+        #endregion
+
         /// <inheritdoc />
         public event Action<INode, NodeState> StateChanged;
 

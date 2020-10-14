@@ -22,10 +22,18 @@ namespace OctoPatch
         /// </summary>
         private readonly List<IHandler> _handlers;
 
+        private readonly List<Action<Message>> _handlerList;
+
         private InputConnector(Guid nodeId, Type supportedType, ConnectorDescription description)
             : base(nodeId, supportedType, description)
         {
             _handlers = new List<IHandler>();
+            _handlerList = new List<Action<Message>>();
+        }
+
+        public void Handle(Action<Message> handler)
+        {
+            _handlerList.Add(handler ?? throw new ArgumentNullException(nameof(handler)));
         }
 
         /// <inheritdoc />
@@ -103,6 +111,25 @@ namespace OctoPatch
 
         public void OnNext(Message value)
         {
+            // Normalize value by the given content type
+            value = new Message(value.Type, ContentType.NormalizeValue(value.Content));
+
+            foreach (var action in _handlerList)
+            {
+                try
+                {
+                    action(value);
+                }
+                catch (InvalidCastException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Error in message handler");
+                }
+            }
+
             foreach (var handler in _handlers)
             {
                 try
