@@ -19,13 +19,21 @@ namespace OctoPatch.Core.Nodes
         /// </summary>
         public static NodeDescription Description =>
             CommonNodeDescription.Create<ConsoleNode>(Guid.Parse(CorePlugin.PluginId), 
-                "Console", "Console output").AddInputDescription(InputDescription);
+                "Console", "Console output")
+                .AddInputDescription(InputDescription)
+                .AddInputDescription(FloatDescription);
 
         /// <summary>
         /// Description of the input connector
         /// </summary>
         public static ConnectorDescription InputDescription => new ConnectorDescription(
             "Input", "Input", "Common input", new AllContentType());
+
+        /// <summary>
+        /// Description of the float connector
+        /// </summary>
+        public static ConnectorDescription FloatDescription => new ConnectorDescription(
+            "Float", "Float", "Float", FloatContentType.Create(0, 1));
 
         #endregion
 
@@ -34,6 +42,10 @@ namespace OctoPatch.Core.Nodes
         public ConsoleNode(Guid id) : base(id)
         {
             RegisterInputConnector<object>(InputDescription).HandleRaw(Handle);
+            RegisterInputConnector<float>(FloatDescription).Handle<float>((m) =>
+            {
+                Trace.WriteLine(m.ToString());
+            });
         }
 
         private void Handle(Message message)
