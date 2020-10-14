@@ -518,8 +518,9 @@ namespace OctoPatch.DesktopClient.ViewModels
             if (SelectedWireConnector != null && node is InputNodeModel inputNode)
             {
                 await _runtime.AddWire(
+                    inputNode.ParentId, inputNode.Key,
                     SelectedWireConnector.ParentId, SelectedWireConnector.Key,
-                    inputNode.ParentId, inputNode.Key, CancellationToken.None);
+                     CancellationToken.None);
                 SelectedWireConnector = null;
                 _takeConnector.Enabled = false;
             }
@@ -717,11 +718,11 @@ namespace OctoPatch.DesktopClient.ViewModels
         private async void RuntimeOnOnWireAdded(WireSetup wire)
         {
             var inputNode = _nodes.First(n => n.Setup.NodeId == wire.InputNodeId);
-            var inputConnector = inputNode.Model.Items.OfType<InputNodeModel>()
+            var inputConnector = inputNode.Model.Items.OfType<OutputNodeModel>()
                 .First(m => m.Key == wire.InputConnectorKey);
 
             var outputNode = _nodes.First(n => n.Setup.NodeId == wire.OutputNodeId);
-            var outputConnector = outputNode.Model.Items.OfType<OutputNodeModel>()
+            var outputConnector = outputNode.Model.Items.OfType<InputNodeModel>()
                 .First(m => m.Key == wire.OutputConnectorKey);
 
             var inputWire = new WireNodeModel(wire.WireId, $"Wire to {outputNode.Model.Name} ({outputConnector.Name})");
@@ -884,9 +885,9 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private sealed class WireItem
         {
-            public InputNodeModel InputConnector { get; set; }
+            public OutputNodeModel InputConnector { get; set; }
 
-            public OutputNodeModel OutputConnector { get; set; }
+            public InputNodeModel OutputConnector { get; set; }
 
             public WireNodeModel InputWire { get; set; }
 
