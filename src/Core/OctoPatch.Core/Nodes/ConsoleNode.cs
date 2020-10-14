@@ -18,7 +18,7 @@ namespace OctoPatch.Core.Nodes
         /// Node description
         /// </summary>
         public static NodeDescription Description =>
-            CommonNodeDescription.Create<ConsoleNode>(Guid.Parse(CorePlugin.PluginId), 
+            CommonNodeDescription.Create<ConsoleNode>(Guid.Parse(CorePlugin.PluginId),
                 "Console", "Console output")
                 .AddInputDescription(InputDescription)
                 .AddInputDescription(FloatDescription);
@@ -41,11 +41,8 @@ namespace OctoPatch.Core.Nodes
 
         public ConsoleNode(Guid id) : base(id)
         {
-            RegisterInputConnector<object>(InputDescription).HandleRaw(Handle);
-            RegisterInputConnector<float>(FloatDescription).Handle<float>((m) =>
-            {
-                Trace.WriteLine(m.ToString());
-            });
+            RegisterRawInput(InputDescription, Handle);
+            RegisterInput<float>(FloatDescription, m => Trace.WriteLine(m.ToString()));
         }
 
         private void Handle(Message message)

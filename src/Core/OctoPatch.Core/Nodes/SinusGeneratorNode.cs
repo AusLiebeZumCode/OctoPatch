@@ -39,9 +39,9 @@ namespace OctoPatch.Core.Nodes
 
         #endregion
 
-        private readonly IOutputConnectorHandler _integerHandler;
+        private readonly IOutput<int> _integerHandler;
 
-        private readonly IOutputConnectorHandler _floatHandler;
+        private readonly IOutput<float> _floatHandler;
 
         private readonly Timer _timer;
 
@@ -49,8 +49,8 @@ namespace OctoPatch.Core.Nodes
 
         public SinusGeneratorNode(Guid id) : base(id)
         {
-            _integerHandler = RegisterOutputConnector<int>(IntegerOutputDescription);
-            _floatHandler = RegisterOutputConnector<float>(FloatOutputDescription);
+            _integerHandler = RegisterOutput<int>(IntegerOutputDescription);
+            _floatHandler = RegisterOutput<float>(FloatOutputDescription);
 
             _timer = new Timer(100);
             _timer.Elapsed += OnElapsed;

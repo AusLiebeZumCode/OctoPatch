@@ -29,7 +29,7 @@ namespace OctoPatch.Plugin.Keyboard
 
         #endregion
 
-        private readonly IOutputConnectorHandler _outputConnector;
+        private readonly IOutput<int> _outputConnector;
 
         internal readonly GlobalKeyboardHook _hook;
         internal readonly KeyboardTranslator _keyboard;
@@ -43,7 +43,7 @@ namespace OctoPatch.Plugin.Keyboard
 
             _keyboard = new KeyboardTranslator(CultureInfo.CurrentCulture);
 
-            _outputConnector = RegisterOutputConnector<int>(KeyOutputDescription);
+            _outputConnector = RegisterOutput<int>(KeyOutputDescription);
         }
 
         private void HookOnKeyboardPressed(object sender, GlobalKeyboardHook.GlobalKeyboardHookEventArgs e)

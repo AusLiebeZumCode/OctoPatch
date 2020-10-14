@@ -546,6 +546,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="description">output connector description</param>
         /// <returns>new connector</returns>
+        [Obsolete]
         protected IOutputConnectorHandler RegisterOutputConnector(ConnectorDescription description)
         {
             var outputConnector = OutputConnector.Create(Id, description);
@@ -558,6 +559,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="description">output connector description</param>
         /// <returns>new connector</returns>
+        [Obsolete]
         protected IOutputConnectorHandler RegisterOutputConnector<T>(ConnectorDescription description)
         {
             var outputConnector = OutputConnector.Create<T>(Id, description);
@@ -570,6 +572,7 @@ namespace OctoPatch
         /// </summary>
         /// <param name="description">input connector description</param>
         /// <returns>new connector</returns>
+        [Obsolete]
         protected IInputConnectorHandler RegisterInputConnector(ConnectorDescription description)
         {
             var inputConnector = InputConnector.Create(Id, description);
@@ -583,6 +586,7 @@ namespace OctoPatch
         /// <typeparam name="T">message type</typeparam>
         /// <param name="description">input connector description</param>
         /// <returns>new connector</returns>
+        [Obsolete]
         protected IInputConnectorHandler RegisterInputConnector<T>(ConnectorDescription description)
         {
             var inputConnector = InputConnector.Create<T>(Id, description);
@@ -683,6 +687,9 @@ namespace OctoPatch
         /// </summary>
         private abstract class Output : IRawOutput
         {
+            /// <summary>
+            /// Reference to the connector
+            /// </summary>
             private readonly OutputConnector _connector;
 
             protected Output(OutputConnector connector)
@@ -690,42 +697,56 @@ namespace OctoPatch
                 _connector = connector ?? throw new ArgumentNullException(nameof(connector));
             }
 
+            /// <inheritdoc />
             public void SendRaw(Message message)
             {
                 _connector.SendRaw(message);
             }
         }
 
+        /// <summary>
+        /// Handler for trigger outputs
+        /// </summary>
         private sealed class TriggerOutput : Output, IOutput
         {
             public TriggerOutput(OutputConnector connector) : base(connector)
             {
             }
 
+            /// <inheritdoc />
             public void Send()
             {
                 SendRaw(Message.Create());
             }
         }
 
+        /// <summary>
+        /// Handler for value outputs
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         private sealed class StructOutput<T> : Output, IOutput<T> where T : struct
         {
             public StructOutput(OutputConnector connector) : base(connector)
             {
             }
 
+            /// <inheritdoc />
             public void Send(T input)
             {
                 SendRaw(Message.Create(input));
             }
         }
 
+        /// <summary>
+        /// Handler for string outputs
+        /// </summary>
         private sealed class StringOutput : Output, IOutput<string>
         {
             public StringOutput(OutputConnector connector) : base(connector)
             {
             }
 
+            /// <inheritdoc />
             public void Send(string input)
             {
                 var message = new Message(typeof(string),
@@ -734,12 +755,16 @@ namespace OctoPatch
             }
         }
 
+        /// <summary>
+        /// Handler for binary outputs
+        /// </summary>
         private sealed class BinaryOutput : Output, IOutput<byte[]>
         {
             public BinaryOutput(OutputConnector connector) : base(connector)
             {
             }
 
+            /// <inheritdoc />
             public void Send(byte[] input)
             {
                 // TODO: Think about cloning the array since this is a mutable type
@@ -816,7 +841,7 @@ namespace OctoPatch
                 throw new NotSupportedException("handler does not fit to the connector description");
             }
 
-            var inputConnector = InputConnector.Create(Id, description);
+            var inputConnector = InputConnector.Create<T>(Id, description);
             _inputs.Add(inputConnector);
 
             if (handler != null)

@@ -49,10 +49,10 @@ namespace OctoPatch.Plugin.Keyboard
         protected override KeyboardStringConfiguration DefaultConfiguration => new KeyboardStringConfiguration();
 
         private readonly KeyboardNode _node;
-        private readonly IOutputConnectorHandler _stringPressedOutputConnector;
-        private readonly IOutputConnectorHandler _stringReleasedOutputConnector;
-        private readonly IOutputConnectorHandler _charPressedOutputConnector;
-        private readonly IOutputConnectorHandler _charReleasedOutputConnector;
+        private readonly IOutput<string> _stringPressedOutputConnector;
+        private readonly IOutput<string> _stringReleasedOutputConnector;
+        private readonly IOutput<string> _charPressedOutputConnector;
+        private readonly IOutput<string> _charReleasedOutputConnector;
 
         public KeyboardStringNode(Guid nodeId, KeyboardNode parentNode)
             : base(nodeId, parentNode)
@@ -60,10 +60,10 @@ namespace OctoPatch.Plugin.Keyboard
             _node = parentNode;
             _node._hook.KeyboardPressed += Hook_KeyboardPressed;
 
-            _stringPressedOutputConnector = RegisterOutputConnector<string>(KeyStringPressedOutputDescription);
-            _stringReleasedOutputConnector = RegisterOutputConnector<string>(KeyStringReleasedOutputDescription);
-            _charPressedOutputConnector = RegisterOutputConnector<string>(KeyCharPressedOutputDescription);
-            _charReleasedOutputConnector = RegisterOutputConnector<string>(KeyCharReleasedOutputDescription);
+            _stringPressedOutputConnector = RegisterStringOutput(KeyStringPressedOutputDescription);
+            _stringReleasedOutputConnector = RegisterStringOutput(KeyStringReleasedOutputDescription);
+            _charPressedOutputConnector = RegisterStringOutput(KeyCharPressedOutputDescription);
+            _charReleasedOutputConnector = RegisterStringOutput(KeyCharReleasedOutputDescription);
         }
 
         protected override void OnDispose()
