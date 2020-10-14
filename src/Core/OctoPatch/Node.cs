@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -587,6 +588,166 @@ namespace OctoPatch
             var inputConnector = InputConnector.Create<T>(Id, description);
             _inputs.Add(inputConnector);
             return inputConnector;
+        }
+
+        #endregion
+
+        #region Output Management
+
+        /// <summary>
+        /// Registers a new trigger output connector to the node
+        /// </summary>
+        /// <param name="description">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IOutput RegisterOutput(ConnectorDescription description)
+        {
+            var outputConnector = OutputConnector.Create(Id, description);
+            _outputs.Add(outputConnector);
+            return new TriggerOutput(outputConnector);
+        }
+
+        /// <summary>
+        /// Registers a new output connector to the node
+        /// </summary>
+        /// <param name="description">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IOutput<T> RegisterOutput<T>(ConnectorDescription description) where T : struct
+        {
+            var outputConnector = OutputConnector.Create<T>(Id, description);
+            _outputs.Add(outputConnector);
+            return new StructOutput<T>(outputConnector);
+        }
+
+        /// <summary>
+        /// Registers a new string output connector to the node
+        /// </summary>
+        /// <param name="description">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IOutput<string> RegisterStringOutput(ConnectorDescription description)
+        {
+            var outputConnector = OutputConnector.Create<string>(Id, description);
+            _outputs.Add(outputConnector);
+            return new StringOutput(outputConnector);
+        }
+
+        /// <summary>
+        /// Registers a new binary output connector to the node
+        /// </summary>
+        /// <param name="description">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IOutput<byte[]> RegisterBinaryOutput(ConnectorDescription description)
+        {
+            var outputConnector = OutputConnector.Create<string>(Id, description);
+            _outputs.Add(outputConnector);
+            return new BinaryOutput(outputConnector);
+        }
+
+        /// <summary>
+        /// Interface for basic raw output
+        /// </summary>
+        protected interface IRawOutput
+        {
+            /// <summary>
+            /// Sends out raw message through the output
+            /// </summary>
+            /// <param name="message">raw message</param>
+            void SendRaw(Message message);
+        }
+
+        /// <summary>
+        /// Interface for a trigger output
+        /// </summary>
+        protected interface IOutput : IRawOutput
+        {
+            /// <summary>
+            /// Sends a trigger through the output
+            /// </summary>
+            void Send();
+        }
+
+        /// <summary>
+        /// Interface for value outputs
+        /// </summary>
+        /// <typeparam name="T">message type</typeparam>
+        protected interface IOutput<in T> : IRawOutput
+        {
+            /// <summary>
+            /// Sends the given message through the output
+            /// </summary>
+            /// <param name="input">message</param>
+            void Send(T input);
+        }
+
+        /// <summary>
+        /// Basic implementation for all outputs
+        /// </summary>
+        private abstract class Output : IRawOutput
+        {
+            private readonly OutputConnector _connector;
+
+            protected Output(OutputConnector connector)
+            {
+                _connector = connector ?? throw new ArgumentNullException(nameof(connector));
+            }
+
+            public void SendRaw(Message message)
+            {
+                _connector.SendRaw(message);
+            }
+        }
+
+        private sealed class TriggerOutput : Output, IOutput
+        {
+            public TriggerOutput(OutputConnector connector) : base(connector)
+            {
+            }
+
+            public void Send()
+            {
+                SendRaw(Message.Create());
+            }
+        }
+
+        private sealed class StructOutput<T> : Output, IOutput<T> where T : struct
+        {
+            public StructOutput(OutputConnector connector) : base(connector)
+            {
+            }
+
+            public void Send(T input)
+            {
+                SendRaw(Message.Create(input));
+            }
+        }
+
+        private sealed class StringOutput : Output, IOutput<string>
+        {
+            public StringOutput(OutputConnector connector) : base(connector)
+            {
+            }
+
+            public void Send(string input)
+            {
+                var message = new Message(typeof(string),
+                    new StringContentType.StringContainer { Content = input });
+                SendRaw(message);
+            }
+        }
+
+        private sealed class BinaryOutput : Output, IOutput<byte[]>
+        {
+            public BinaryOutput(OutputConnector connector) : base(connector)
+            {
+            }
+
+            public void Send(byte[] input)
+            {
+                // TODO: Think about cloning the array since this is a mutable type
+
+                var message = new Message(typeof(byte[]), 
+                    new BinaryContentType.BinaryContainer { Content = input });
+                SendRaw(message);
+            }
         }
 
         #endregion
