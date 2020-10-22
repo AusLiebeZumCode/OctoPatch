@@ -3,11 +3,14 @@ using System.ComponentModel;
 using System.Windows.Input;
 using OctoPatch.Descriptions;
 using OctoPatch.DesktopClient.Models;
+using OctoPatch.Server;
 
 namespace OctoPatch.DesktopClient.ViewModels
 {
     public interface IRuntimeViewModel : INotifyPropertyChanged
     {
+        IRuntime Runtime { get; }
+
         #region Application
 
         /// <summary>

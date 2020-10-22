@@ -29,6 +29,8 @@ namespace OctoPatch.DesktopClient.ViewModels
 
         private readonly List<AdapterDescription> _adapterDescriptions;
 
+        public IRuntime Runtime => _runtime;
+
         #region Application
 
         private readonly ActionCommand _newCommand;
