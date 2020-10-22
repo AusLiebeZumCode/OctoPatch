@@ -539,63 +539,6 @@ namespace OctoPatch
 
         #endregion
 
-        #region Connector Management
-
-        /// <summary>
-        /// Registers a new trigger output connector to the node
-        /// </summary>
-        /// <param name="description">output connector description</param>
-        /// <returns>new connector</returns>
-        [Obsolete]
-        protected IOutputConnectorHandler RegisterOutputConnector(ConnectorDescription description)
-        {
-            var outputConnector = OutputConnector.Create(Id, description);
-            _outputs.Add(outputConnector);
-            return outputConnector;
-        }
-
-        /// <summary>
-        /// Registers a new output connector to the node
-        /// </summary>
-        /// <param name="description">output connector description</param>
-        /// <returns>new connector</returns>
-        [Obsolete]
-        protected IOutputConnectorHandler RegisterOutputConnector<T>(ConnectorDescription description)
-        {
-            var outputConnector = OutputConnector.Create<T>(Id, description);
-            _outputs.Add(outputConnector);
-            return outputConnector;
-        }
-
-        /// <summary>
-        /// Registers a new trigger input connector to the node
-        /// </summary>
-        /// <param name="description">input connector description</param>
-        /// <returns>new connector</returns>
-        [Obsolete]
-        protected IInputConnectorHandler RegisterInputConnector(ConnectorDescription description)
-        {
-            var inputConnector = InputConnector.Create(Id, description);
-            _inputs.Add(inputConnector);
-            return inputConnector;
-        }
-
-        /// <summary>
-        /// Registers a new input connector to the node
-        /// </summary>
-        /// <typeparam name="T">message type</typeparam>
-        /// <param name="description">input connector description</param>
-        /// <returns>new connector</returns>
-        [Obsolete]
-        protected IInputConnectorHandler RegisterInputConnector<T>(ConnectorDescription description)
-        {
-            var inputConnector = InputConnector.Create<T>(Id, description);
-            _inputs.Add(inputConnector);
-            return inputConnector;
-        }
-
-        #endregion
-
         #region Output Management
 
         /// <summary>
@@ -608,6 +551,18 @@ namespace OctoPatch
             var outputConnector = OutputConnector.Create(Id, description);
             _outputs.Add(outputConnector);
             return new TriggerOutput(outputConnector);
+        }
+
+        /// <summary>
+        /// Registers a new raw output connector to the node
+        /// </summary>
+        /// <param name="description">output connector description</param>
+        /// <returns>new connector</returns>
+        protected IRawOutput RegisterRawOutput(ConnectorDescription description)
+        {
+            var outputConnector = OutputConnector.Create(Id, description);
+            _outputs.Add(outputConnector);
+            return new Output(outputConnector);
         }
 
         /// <summary>
@@ -685,14 +640,14 @@ namespace OctoPatch
         /// <summary>
         /// Basic implementation for all outputs
         /// </summary>
-        private abstract class Output : IRawOutput
+        private class Output : IRawOutput
         {
             /// <summary>
             /// Reference to the connector
             /// </summary>
             private readonly OutputConnector _connector;
 
-            protected Output(OutputConnector connector)
+            public Output(OutputConnector connector)
             {
                 _connector = connector ?? throw new ArgumentNullException(nameof(connector));
             }
@@ -700,7 +655,7 @@ namespace OctoPatch
             /// <inheritdoc />
             public void SendRaw(Message message)
             {
-                _connector.SendRaw(message);
+                _connector.Send(message);
             }
         }
 
@@ -792,7 +747,7 @@ namespace OctoPatch
 
             if (handler != null)
             {
-                inputConnector.HandleRaw(handler.Invoke);
+                inputConnector.Handle(handler.Invoke);
             }
         }
 
@@ -814,7 +769,7 @@ namespace OctoPatch
 
             if (handler != null)
             {
-                inputConnector.HandleRaw(m =>
+                inputConnector.Handle(m =>
                 {
                     // Make sure message fits to the expected input
                     if (m.Type != typeof(void))
@@ -846,7 +801,7 @@ namespace OctoPatch
 
             if (handler != null)
             {
-                inputConnector.HandleRaw(m =>
+                inputConnector.Handle(m =>
                 {
                     // Make sure message fits to the expected input
                     if (m.Type != typeof(T))
@@ -877,7 +832,7 @@ namespace OctoPatch
 
             if (handler != null)
             {
-                inputConnector.HandleRaw(m =>
+                inputConnector.Handle(m =>
                 {
                     // Make sure message fits to the expected input
                     if (m.Type != typeof(string))
@@ -908,7 +863,7 @@ namespace OctoPatch
 
             if (handler != null)
             {
-                inputConnector.HandleRaw(m =>
+                inputConnector.Handle(m =>
                 {
                     // Make sure message fits to the expected input
                     if (m.Type != typeof(byte[]))

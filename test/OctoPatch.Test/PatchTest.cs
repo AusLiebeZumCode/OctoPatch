@@ -1256,8 +1256,8 @@ namespace OctoPatch.Test
 
             public CommonTestNode(Guid id) : base(id)
             {
-                RegisterInputConnector<TestType>(new ConnectorDescription("input", "input", "input", ComplexContentType.Create<TestType>(DefaultPluginGuid)));
-                RegisterOutputConnector<TestType>(new ConnectorDescription("output", "output", "output", ComplexContentType.Create<TestType>(DefaultPluginGuid)));
+                RegisterInput<TestType>(new ConnectorDescription("input", "input", "input", ComplexContentType.Create<TestType>(DefaultPluginGuid)), m => {});
+                RegisterOutput<TestType>(new ConnectorDescription("output", "output", "output", ComplexContentType.Create<TestType>(DefaultPluginGuid)));
             }
 
             protected override EmptyConfiguration DefaultConfiguration =>

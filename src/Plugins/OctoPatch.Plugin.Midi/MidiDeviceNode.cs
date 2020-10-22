@@ -49,19 +49,19 @@ namespace OctoPatch.Plugin.Midi
         /// Description of the MIDI input connector
         /// </summary>
         public static ConnectorDescription MidiInputDescription => new ConnectorDescription(
-            "MidiInput", "MIDI Input", "MIDI input signal", 
+            "MidiInput", "MIDI Input", "MIDI input signal",
             ComplexContentType.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId)));
 
         /// <summary>
         /// Description of the MIDI output connector
         /// </summary>
         public static ConnectorDescription MidiOutputDescription => new ConnectorDescription(
-            "MidiOutput", "MIDI Output", "MIDI output signal", 
+            "MidiOutput", "MIDI Output", "MIDI output signal",
             ComplexContentType.Create<MidiMessage>(Guid.Parse(MidiPlugin.PluginId)));
 
         #endregion
 
-        private readonly IOutputConnectorHandler _output;
+        private readonly IOutput<MidiMessage> _output;
 
         private IMidiInputDevice _inputDevice;
 
@@ -71,8 +71,8 @@ namespace OctoPatch.Plugin.Midi
 
         public MidiDeviceNode(Guid nodeId) : base(nodeId)
         {
-            _output = RegisterOutputConnector<MidiMessage>(MidiOutputDescription);
-            RegisterInputConnector<MidiMessage>(MidiInputDescription).Handle<MidiMessage>(HandleMessage);
+            _output = RegisterOutput<MidiMessage>(MidiOutputDescription);
+            RegisterInput<MidiMessage>(MidiInputDescription, HandleMessage);
 
             // Build environment
             UpdateEnvironment(new MidiDeviceEnvironment
@@ -89,14 +89,14 @@ namespace OctoPatch.Plugin.Midi
                 switch (message.MessageType)
                 {
                     case ControlChangedMessageType:
-                        _outputDevice?.Send(new ControlChangeMessage((Channel) message.Channel, message.Key,
+                        _outputDevice?.Send(new ControlChangeMessage((Channel)message.Channel, message.Key,
                             message.Value));
                         break;
                     case NoteOnMessageType:
-                        _outputDevice?.Send(new NoteOnMessage((Channel) message.Channel, (Key)message.Key, message.Value));
+                        _outputDevice?.Send(new NoteOnMessage((Channel)message.Channel, (Key)message.Key, message.Value));
                         break;
                     case NoteOffMessageType:
-                        _outputDevice?.Send(new NoteOffMessage((Channel) message.Channel, (Key) message.Key,
+                        _outputDevice?.Send(new NoteOffMessage((Channel)message.Channel, (Key)message.Key,
                             message.Value));
                         break;
                 }

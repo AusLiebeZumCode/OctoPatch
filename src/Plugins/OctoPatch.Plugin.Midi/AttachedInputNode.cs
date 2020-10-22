@@ -53,10 +53,10 @@ namespace OctoPatch.Plugin.Midi
         {
             _output = parentNode.Inputs.First(o => o.Key == MidiDeviceNode.MidiInputDescription.Key);
 
-            RegisterInputConnector<int>(ValueInputDescription).Handle<int>(HandleValue);
-            RegisterInputConnector<bool>(FlagInputDescription).Handle<bool>(HandleBool);
-            RegisterInputConnector(EnabledInputDescription).Handle(HandleEnabledTrigger);
-            RegisterInputConnector(DisabledInputDescription).Handle(HandleDisabledTrigger);
+            RegisterInput<int>(ValueInputDescription, HandleValue);
+            RegisterInput<bool>(FlagInputDescription, HandleBool);
+            RegisterTriggerInput(EnabledInputDescription, HandleEnabledTrigger);
+            RegisterTriggerInput(DisabledInputDescription, HandleDisabledTrigger);
         }
 
         /// <summary>

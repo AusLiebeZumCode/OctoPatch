@@ -47,22 +47,22 @@ namespace OctoPatch.Plugin.Midi
         /// <summary>
         /// Connector handler for raw value
         /// </summary>
-        private readonly IOutputConnectorHandler _valueOutput;
+        private readonly IOutput<int> _valueOutput;
 
         /// <summary>
         /// Connector handler for On/Off flag
         /// </summary>
-        private readonly IOutputConnectorHandler _flagOutput;
+        private readonly IOutput<bool> _flagOutput;
 
         /// <summary>
         /// Connector handler for a enable trigger
         /// </summary>
-        private readonly IOutputConnectorHandler _enabledOutput;
+        private readonly IOutput _enabledOutput;
 
         /// <summary>
         /// Connector handler for a disabled trigger
         /// </summary>
-        private readonly IOutputConnectorHandler _disabledOutput;
+        private readonly IOutput _disabledOutput;
 
         /// <summary>
         /// Input connector
@@ -84,10 +84,10 @@ namespace OctoPatch.Plugin.Midi
             _input = parentNode.Outputs
                 .First(o => o.Key == MidiDeviceNode.MidiOutputDescription.Key);
 
-            _valueOutput = RegisterOutputConnector<int>(ValueOutputDescription);
-            _flagOutput = RegisterOutputConnector<bool>(FlagOutputDescription);
-            _enabledOutput = RegisterOutputConnector(EnabledOutputDescription);
-            _disabledOutput = RegisterOutputConnector(DisabledOutputDescription);
+            _valueOutput = RegisterOutput<int>(ValueOutputDescription);
+            _flagOutput = RegisterOutput<bool>(FlagOutputDescription);
+            _enabledOutput = RegisterOutput(EnabledOutputDescription);
+            _disabledOutput = RegisterOutput(DisabledOutputDescription);
         }
 
         /// <inheritdoc />

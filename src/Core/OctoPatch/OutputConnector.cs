@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using OctoPatch.ContentTypes;
 using OctoPatch.Descriptions;
 
 namespace OctoPatch
@@ -8,7 +7,7 @@ namespace OctoPatch
     /// <summary>
     /// Connector implementation for outgoing messages
     /// </summary>
-    public sealed class OutputConnector : Connector, IOutputConnector, IOutputConnectorHandler
+    public sealed class OutputConnector : Connector, IOutputConnector
     {
         private readonly HashSet<Subscription> _subscriptions;
 
@@ -20,45 +19,7 @@ namespace OctoPatch
             _subscriptions = new HashSet<Subscription>();
         }
 
-        /// <inheritdoc />
-        public void Send()
-        {
-            var message = Message.Create();
-            InternalSend(message);
-        }
-
-        /// <inheritdoc />
-        public void SendRaw(Message message)
-        {
-            InternalSend(message);
-        }
-
-        /// <inheritdoc />
-        public void Send(string value)
-        {
-            var message = new Message(typeof(string),
-                new StringContentType.StringContainer { Content = value });
-            InternalSend(message);
-        }
-
-        /// <inheritdoc />
-        public void Send(byte[] value)
-        {
-            // TODO: Think about cloning the array since this is a mutable type
-
-            var message = new Message(typeof(byte[]), 
-                new BinaryContentType.BinaryContainer { Content = value });
-            InternalSend(message);
-        }
-
-        /// <inheritdoc />
-        public void Send<T>(T value) where T : struct
-        {
-            var message = Message.Create(value);
-            InternalSend(message);
-        }
-
-        private void InternalSend(Message message)
+        public void Send(Message message)
         {
             // Prevent output from sending invalid types
             if (!Description.ContentType.IsSupportedType(message.Type))
@@ -67,13 +28,12 @@ namespace OctoPatch
             }
 
             // Normalize message content
-            var normalizedMessage = new Message(
-                    message.Type,
+            message = new Message(message.Type,
                     Description.ContentType.NormalizeValue(message.Content));
 
             foreach (var subscription in _subscriptions)
             {
-                subscription.Send(normalizedMessage);
+                subscription.Send(message);
             }
         }
 

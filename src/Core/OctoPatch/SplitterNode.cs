@@ -17,7 +17,7 @@ namespace OctoPatch
 
         private readonly TypeDescription _description;
 
-        private readonly Dictionary<string, IOutputConnectorHandler> _outputs;
+        private readonly Dictionary<string, IRawOutput> _outputs;
 
         protected override EmptyConfiguration DefaultConfiguration => new EmptyConfiguration();
 
@@ -26,10 +26,10 @@ namespace OctoPatch
             _description = description ?? throw new ArgumentNullException(nameof(description));
             Connector = connector ?? throw new ArgumentNullException(nameof(connector));
 
-            _outputs = new Dictionary<string, IOutputConnectorHandler>();
+            _outputs = new Dictionary<string, IRawOutput>();
             foreach (var propertyDescription in description.PropertyDescriptions)
             {
-                var output = RegisterOutputConnector(new ConnectorDescription(
+                var output = RegisterRawOutput(new ConnectorDescription(
                     propertyDescription.Key, 
                     propertyDescription.DisplayName, 
                     propertyDescription.DisplayDescription,

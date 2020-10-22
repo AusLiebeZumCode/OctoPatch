@@ -130,18 +130,18 @@ namespace OctoPatch.Plugin.Rest
         /// </summary>
         protected override RestGetConfiguration DefaultConfiguration => new RestGetConfiguration();
 
-        private readonly IOutputConnectorHandler _outputConnector;
+        private readonly IOutput<RestGetResult> _outputConnector;
         private readonly HttpClient _http;
 
         public RestGetNode(Guid id) : base(id)
         {
             _http = new HttpClient();
 
-            RegisterInputConnector(RestGetInputDescription).HandleRaw((m) => Task.Run(() => HandleMessage(m)));
-            _outputConnector = RegisterOutputConnector(RestGetOutputDescription);
+            RegisterRawInput(RestGetInputDescription, (m) => Task.Run(HandleMessage));
+            _outputConnector = RegisterOutput<RestGetResult>(RestGetOutputDescription);
         }
 
-        private async Task HandleMessage(Message message)
+        private async Task HandleMessage()
         {
             if (State != NodeState.Running)
                 return;
