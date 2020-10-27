@@ -40,7 +40,7 @@ namespace OctoPatch
             private set
             {
                 _configuration = value;
-                ConfigurationChanged?.Invoke(this, GetEnvironment());
+                ConfigurationChanged?.Invoke(this, GetConfiguration());
             }
         }
 
