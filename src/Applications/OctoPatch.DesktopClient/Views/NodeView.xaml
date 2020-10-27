@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="OctoPatch.DesktopClient.Views.NodeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:modelsX="clr-namespace:OctoPatch.DesktopClient.ModelsX"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance modelsX:NodeModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" Content="{Binding Path=Setup.Name}"></Label>
+
+        <ItemsControl Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Description.InputDescriptions}" HorizontalContentAlignment="Left">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid ToolTip="{Binding DisplayDescription}" Background="Azure">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Grid.Column="0" Width="10" Height="10" Fill="Red" VerticalAlignment="Center"></Rectangle>
+                        <Label Grid.Column="1" Content="{Binding DisplayName}"></Label>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+        </ItemsControl>
+
+        <ItemsControl Grid.Column="2" Grid.Row="1" ItemsSource="{Binding Description.OutputDescriptions}" HorizontalContentAlignment="Right">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid ToolTip="{Binding DisplayDescription}" Background="Azure">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="{Binding DisplayName}"></Label>
+                        <Rectangle Grid.Column="1" Width="10" Height="10" Fill="Red" VerticalAlignment="Center"></Rectangle>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </Grid>
+</UserControl>

@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
+using OctoPatch.Descriptions;
 using OctoPatch.Server;
 using OctoPatch.Setup;
 
@@ -17,11 +17,9 @@ namespace OctoPatch.DesktopClient.Views
     /// </summary>
     public partial class PatchView : Canvas
     {
-        private const int NodeWidth = 50;
-
-        private const int NodeHeight = 25;
-
         private IRuntime _runtime;
+
+        private NodeDescription[] _nodeDescriptions;
 
         private readonly ConcurrentDictionary<Guid, NodeModel> _nodes;
 
@@ -52,14 +50,26 @@ namespace OctoPatch.DesktopClient.Views
 
             var position = e.GetPosition(this);
 
+            var node = _nodes.Values.FirstOrDefault(n => 
+                GetLeft(n.View) <= position.X && 
+                GetLeft(n.View) + n.View.ActualWidth >= position.X &&
+                GetTop(n.View) <= position.Y && 
+                GetTop(n.View) + n.View.ActualHeight >= position.Y);
+
             // Find node
-            var widthHalf = (double) NodeWidth / 2;
-            var heightHalf = (double) NodeHeight / 2;
-            var node = _nodes.Values.FirstOrDefault(n =>
-                n.Setup.PositionX - widthHalf <= position.X &&
-                n.Setup.PositionX + widthHalf >= position.X &&
-                n.Setup.PositionY - heightHalf <= position.Y &&
-                n.Setup.PositionY + heightHalf >= position.Y);
+            //var widthHalf = (double) NodeWidth / 2;
+            //var heightHalf = (double) NodeHeight / 2;
+            //var node = _nodes.Values.FirstOrDefault(n =>
+            //    n.View.ActualWidth / 2 Model.Setup.PositionX - widthHalf <= position.X &&
+            //    n.Model.Setup.PositionX + widthHalf >= position.X &&
+            //    n.Model.Setup.PositionY - heightHalf <= position.Y &&
+            //    n.Model.Setup.PositionY + heightHalf >= position.Y);
+
+            //var node = _nodes.Values.FirstOrDefault(n =>
+            //    n.Model.Setup.PositionX - widthHalf <= position.X &&
+            //    n.Model.Setup.PositionX + widthHalf >= position.X &&
+            //    n.Model.Setup.PositionY - heightHalf <= position.Y &&
+            //    n.Model.Setup.PositionY + heightHalf >= position.Y);
 
             SetSelectedNode(node);
 
@@ -72,7 +82,7 @@ namespace OctoPatch.DesktopClient.Views
             // Deselect current selection
             if (_selectedNode != null)
             {
-                _selectedNode.Rectangle.Stroke = null;
+                _selectedNode.View.BorderBrush = null;
             }
 
             _selectedNode = null;
@@ -81,7 +91,7 @@ namespace OctoPatch.DesktopClient.Views
             if (nodeModel != null)
             {
                 _selectedNode = nodeModel;
-                _selectedNode.Rectangle.Stroke = new SolidColorBrush(Colors.Black);
+                _selectedNode.View.BorderBrush = new SolidColorBrush(Colors.Black);
             }
         }
 
@@ -96,22 +106,24 @@ namespace OctoPatch.DesktopClient.Views
             if (_draggingNode != null)
             {
                 var position = e.GetPosition(this);
-                var newPos = new Point(_draggingNode.Setup.PositionX, _draggingNode.Setup.PositionY) +
+                var newPos = new Point(_draggingNode.Model.Setup.PositionX, _draggingNode.Model.Setup.PositionY) +
                              (position - _draggingStart);
 
-                SetLeft(_draggingNode.Rectangle, newPos.X - (double) NodeWidth / 2);
-                SetTop(_draggingNode.Rectangle, newPos.Y - (double) NodeHeight / 2);
+                SetLeft(_draggingNode.View, newPos.X - _draggingNode.View.ActualWidth / 2);
+                SetTop(_draggingNode.View, newPos.Y - _draggingNode.View.ActualHeight / 2);
 
-                _runtime.SetNodePosition(_draggingNode.Setup.NodeId, (int) newPos.X, (int) newPos.Y,
+                _runtime.SetNodePosition(_draggingNode.Model.Setup.NodeId, (int) newPos.X, (int) newPos.Y,
                     CancellationToken.None);
 
                 _draggingNode = null;
             }
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             _runtime = DataContext as IRuntime;
+
+            _nodeDescriptions = (await _runtime.GetNodeDescriptions(CancellationToken.None)).ToArray();
 
             _runtime.NodeAdded += RuntimeOnOnNodeAdded;
             _runtime.NodeRemoved += RuntimeOnOnNodeRemoved;
@@ -132,34 +144,39 @@ namespace OctoPatch.DesktopClient.Views
             }
 
             var position = e.GetPosition(this);
-            var newPos = new Point(_draggingNode.Setup.PositionX, _draggingNode.Setup.PositionY) + (position - _draggingStart);
+            var newPos = new Point(_draggingNode.Model.Setup.PositionX, _draggingNode.Model.Setup.PositionY) + (position - _draggingStart);
 
-            SetLeft(_draggingNode.Rectangle, newPos.X - (double) NodeWidth / 2);
-            SetTop(_draggingNode.Rectangle, newPos.Y - (double) NodeHeight / 2);
+            SetLeft(_draggingNode.View, newPos.X - _draggingNode.View.ActualWidth / 2);
+            SetTop(_draggingNode.View, newPos.Y - _draggingNode.View.ActualHeight / 2);
         }
 
         #region Nodes
 
         private void RuntimeOnOnNodeAdded(NodeSetup setup, NodeState state, string environment)
         {
-            // TODO: Create control
-
-            var rectangle = new Rectangle
+            var description = _nodeDescriptions.First(d => d.Key == setup.Key);
+            var model = new ModelsX.NodeModel
             {
-                Width = NodeWidth,
-                Height = NodeHeight,
-                Fill = new SolidColorBrush(Colors.Brown),
-                StrokeThickness = 2
+                Setup = setup,
+                Description = description,
             };
 
-            SetLeft(rectangle, -((double)NodeWidth / 2) + setup.PositionX);
-            SetTop(rectangle, -((double)NodeHeight / 2) + setup.PositionY);
-            Children.Add(rectangle);
+
+            var nodeView = new NodeView
+            {
+                DataContext = model,
+                Background = new SolidColorBrush(Colors.Brown),
+                BorderThickness = new Thickness(2)
+            };
+
+            SetLeft(nodeView, -(nodeView.ActualWidth / 2) + setup.PositionX);
+            SetTop(nodeView, -(nodeView.ActualHeight / 2) + setup.PositionY);
+            Children.Add(nodeView);
 
             var node = new NodeModel
             {
-                Setup = setup,
-                Rectangle = rectangle,
+                Model = model,
+                View = nodeView,
                 State = state,
                 Environment = environment
             };
@@ -174,12 +191,12 @@ namespace OctoPatch.DesktopClient.Views
                 return;
             }
 
-            node.Setup = setup;
+            node.Model.Setup = setup;
 
             // TODO: Update control
 
-            SetLeft(node.Rectangle, setup.PositionX - (double) NodeWidth / 2);
-            SetTop(node.Rectangle, setup.PositionY - (double) NodeHeight / 2);
+            SetLeft(node.View, setup.PositionX - node.View.ActualWidth / 2);
+            SetTop(node.View, setup.PositionY - node.View.ActualHeight / 2);
         }
 
         private void RuntimeOnOnNodeEnvironmentChanged(Guid nodeId, string environment)
@@ -212,14 +229,14 @@ namespace OctoPatch.DesktopClient.Views
             }
 
             // Remove control
-            Children.Remove(node.Rectangle);
+            Children.Remove(node.View);
         }
 
         private sealed class NodeModel
         {
-            public NodeSetup Setup { get; set; }
+            public ModelsX.NodeModel Model { get; set; }
 
-            public Rectangle Rectangle { get; set; }
+            public NodeView View { get; set; }
 
             public NodeState State { get; set; }
 

@@ -132,7 +132,7 @@
                 <MenuItem Header="Save..." Command="{Binding SaveCommand}" />
             </MenuItem>
         </Menu>
-        
+
         <!-- Toolbox column -->
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
@@ -177,7 +177,10 @@
         </Grid>
 
         <!-- Existing blocks -->
-        <TreeView Grid.Row="1" Grid.Column="1" 
+        <views:PatchView Grid.Row="1" Grid.Column="1" DataContext="{Binding Runtime}" />
+
+        <!-- Existing blocks -->
+        <!--<TreeView Grid.Row="1" Grid.Column="1" 
                   ItemTemplateSelector="{StaticResource TreeTemplateSelector}"
                   ItemsSource="{Binding NodeTree}" SelectedItemChanged="TreeView_OnSelectedItemChanged">
             <TreeView.ItemContainerStyle>
@@ -185,7 +188,7 @@
                     <Setter Property="IsExpanded" Value="True"/>
                 </Style>
             </TreeView.ItemContainerStyle>
-        </TreeView>
+        </TreeView>-->
 
         <!-- Property column -->
         <StackPanel Grid.Row="1" Grid.Column="2">
@@ -336,7 +339,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    
+
                     <!-- Name -->
                     <Label Grid.Row="0" Content="Adapter" FontWeight="Bold" />
                     <ComboBox Grid.Row="1" 
